@@ -1,0 +1,6 @@
+interface:
+  display_name: "컷신 스튜디오"
+  short_description: "소설의 컷신을 3D 장면으로 준비하고 수정한 구도에서 최종 작화까지 이어갑니다"
+  default_prompt: "$cutscene-studio 이 소설에서 필요한 컷을 골라 로컬 편집기용 장면 JSON을 만들어줘."
+policy:
+  allow_implicit_invocation: true

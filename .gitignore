@@ -1,0 +1,9 @@
+.tools/
+app/node_modules/
+app/dist/
+validation/
+.review-tools/
+.env
+.env.*
+!.env.example
+*.log
