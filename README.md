@@ -6,6 +6,8 @@
 
 검증용 비공개 저장소를 클론해 실행하는 PowerShell 명령입니다. 해당 저장소 접근 권한이 있는 GitHub 계정으로 인증해야 합니다.
 
+[저장소 인계와 새 설치 확인 결과](docs/REPOSITORY_HANDOFF.md)도 함께 확인하세요.
+
 ```powershell
 git clone https://github.com/muzik1014/cutscene-studio.git D:\github\cutscene-studio
 Set-Location D:\github\cutscene-studio
