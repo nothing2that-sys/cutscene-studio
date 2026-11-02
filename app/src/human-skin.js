@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import asset from './assets/gallery-human.json';
+import asset from './assets/reference-human.json';
+import {segmentedBody} from './segmented-body.js';
 
 
 const V=(a=[])=>new THREE.Vector3(...a),Z=new THREE.Vector3(0,0,1);
@@ -33,16 +34,18 @@ export function buildHumanSkin(m,material,bones){
    }
    return fit(a,b,c,d,cross);
   });
-  const chest=m.userData.bodyProfile?.chest,heightDelta=((chest?.height??.65)-.65)*5,spacingDelta=((chest?.spacing??.46)-.46)*3;
-  const morphAmounts=chest?{heightUp:Math.max(0,heightDelta),heightDown:Math.max(0,-heightDelta),spacingIn:Math.max(0,-spacingDelta),spacingOut:Math.max(0,spacingDelta),volume:(chest.projection-1)*.65}:{flat:1,volume:-.25};
-  const positions=[];for(let i=0;i<asset.positions.length/3;i++){const point=V(asset.positions.slice(i*3,i*3+3)),result=new THREE.Vector3();for(const [name,amount]of Object.entries(morphAmounts))if(amount)point.addScaledVector(V(asset.morphDeltas[name].slice(i*3,i*3+3)),amount);for(let j=0;j<4;j++){const w=asset.skinWeight[i*4+j];if(w)result.addScaledVector(point.clone().applyMatrix4(matrices[asset.skinIndex[i*4+j]]),w);}positions.push(...result.toArray());}
+  const positions=[];for(let i=0;i<asset.positions.length/3;i++){const point=V(asset.positions.slice(i*3,i*3+3)),result=new THREE.Vector3();for(let j=0;j<4;j++){const w=asset.skinWeight[i*4+j];if(w)result.addScaledVector(point.clone().applyMatrix4(matrices[asset.skinIndex[i*4+j]]),w);}positions.push(...result.toArray());}
   let minY=Infinity,maxY=-Infinity;for(let i=1;i<positions.length;i+=3){minY=Math.min(minY,positions[i]);maxY=Math.max(maxY,positions[i]);}
   for(let i=1;i<positions.length;i+=3)positions[i]=whole.min.y+(positions[i]-minY)/(maxY-minY)*(whole.max.y-whole.min.y);
   smoothSurface(positions);minY=Infinity;maxY=-Infinity;for(let i=1;i<positions.length;i+=3){minY=Math.min(minY,positions[i]);maxY=Math.max(maxY,positions[i]);}for(let i=1;i<positions.length;i+=3)positions[i]=whole.min.y+(positions[i]-minY)/(maxY-minY)*(whole.max.y-whole.min.y);
-  const anchors=[new THREE.Vector3(),new THREE.Vector3()],totals=[0,0],toTorso=new THREE.Matrix4().multiplyMatrices(m.torso.imageWrapper.matrixWorld.clone().invert(),m.matrixWorld);for(let i=0;i<positions.length/3;i++)for(let side=0;side<2;side++){const w=asset.chestMask[i*2+side];if(w){anchors[side].addScaledVector(V(positions.slice(i*3,i*3+3)),w);totals[side]+=w;}}
-  m.userData.surfaceChestAnchors=chest?anchors.map((p,i)=>p.multiplyScalar(1/totals[i]).applyMatrix4(toTorso).toArray()):null;
-  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setIndex(asset.indices);geometry.setAttribute('skinIndex',new THREE.Uint16BufferAttribute(asset.skinIndex,4));geometry.setAttribute('skinWeight',new THREE.Float32BufferAttribute(asset.skinWeight,4));geometry.setAttribute('color',new THREE.Float32BufferAttribute(positions.map(()=>1),3));geometry.setAttribute('headGuide',new THREE.Float32BufferAttribute(Array.from({length:positions.length/3},(_,i)=>{const p=positions.slice(i*3,i*3+3),weight=asset.skinIndex.slice(i*4,i*4+4).reduce((sum,id,j)=>sum+(id===asset.keys.indexOf('head')?asset.skinWeight[i*4+j]:0),0),y=(p[1]-headBox.min.y)/(headBox.max.y-headBox.min.y);return [(p[2]-headCenter.z)/(headBox.max.z-headBox.min.z)*2,(y-.52)*2,weight>.9&&p[0]>headCenter.x-.4&&y>.08&&y<.97?1:0];}).flat(),3));geometry.computeVertexNormals();
-  material.onBeforeCompile=shader=>{shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 headGuide;varying vec3 vHeadGuide;').replace('#include <begin_vertex>','#include <begin_vertex>\nvHeadGuide=headGuide;');shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vHeadGuide;').replace('#include <color_fragment>','#include <color_fragment>\nfloat lineDistance=min(abs(vHeadGuide.x),abs(vHeadGuide.y));float lineWidth=max(fwidth(lineDistance),.01);float lineMask=(1.-smoothstep(.01,.01+lineWidth,lineDistance))*smoothstep(.75,.95,vHeadGuide.z);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.24),lineMask);');};material.customProgramCacheKey=()=>"gallery-head-guides-v1";
+  const geometry=segmentedBody(m,{...asset,positions},headBox,rootInverse),draw=geometry.attributes.position.array,ids=geometry.attributes.skinIndex.array,weights=geometry.attributes.skinWeight.array;
+  geometry.setAttribute('headGuide',new THREE.Float32BufferAttribute(Array.from({length:draw.length/3},(_,i)=>{const p=draw.slice(i*3,i*3+3),weight=ids.slice(i*4,i*4+4).reduce((sum,id,j)=>sum+(id===asset.keys.indexOf('head')?weights[i*4+j]:0),0),y=(p[1]-headBox.min.y)/(headBox.max.y-headBox.min.y);return [(p[2]-headCenter.z)/(headBox.max.z-headBox.min.z)*2,(y-.52)*2,weight>.9&&p[0]>headCenter.x-.4&&y>.08&&y<.97?1:0];}).flat(),3));
+  material.userData.bodyGuides??={value:1};
+  material.onBeforeCompile=shader=>{
+   shader.uniforms.bodyGuideEnabled=material.userData.bodyGuides;
+   shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 headGuide;attribute vec3 bodyGuide;varying vec3 vHeadGuide;varying vec3 vBodyGuide;').replace('#include <begin_vertex>','#include <begin_vertex>\nvHeadGuide=headGuide;vBodyGuide=bodyGuide;');
+   shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform float bodyGuideEnabled;varying vec3 vHeadGuide;varying vec3 vBodyGuide;').replace('#include <color_fragment>','#include <color_fragment>\nfloat lineDistance=min(abs(vHeadGuide.x),abs(vHeadGuide.y));float lineWidth=max(fwidth(lineDistance),.01);float lineMask=(1.-smoothstep(.01,.01+lineWidth,lineDistance))*smoothstep(.75,.95,vHeadGuide.z);float bodyDistance=min(abs(vBodyGuide.x),abs(vBodyGuide.y));float bodyWidth=max(fwidth(bodyDistance),.012);float bodyLine=(1.-smoothstep(.015,.015+bodyWidth,bodyDistance))*smoothstep(.5,.9,vBodyGuide.z)*bodyGuideEnabled;diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.24),max(lineMask,bodyLine));');
+  };material.customProgramCacheKey=()=>"segmented-guides-v1";
   Object.assign(HUMAN_SKIN_STATS,{vertices:geometry.attributes.position.count,triangles:geometry.index.count/3,bones:asset.keys.length});
   if(!bones)bones=asset.keys.map(key=>{const bone=new THREE.Bone();bone.name='Skin '+key;skinJoint(m,key).add(bone);return bone;});
   m.updateWorldMatrix(true,true);const mesh=new THREE.SkinnedMesh(geometry,material),skeleton=new THREE.Skeleton(bones);mesh.name='Drawing mannequin';mesh.frustumCulled=false;mesh.castShadow=true;mesh.receiveShadow=true;m.add(mesh);mesh.bind(skeleton,m.matrixWorld.clone());mesh.normalizeSkinWeights();
@@ -51,6 +54,6 @@ export function buildHumanSkin(m,material,bones){
   const outlineMaterial=new THREE.MeshBasicMaterial({color:'#454954',side:THREE.BackSide});
   outlineMaterial.onBeforeCompile=shader=>{shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\ntransformed += normal * 0.055;');};
   const outline=new THREE.SkinnedMesh(geometry,outlineMaterial);outline.name='Drawing contour';outline.userData.bodyOutline=true;outline.frustumCulled=false;outline.raycast=()=>{};mesh.add(outline);outline.bind(skeleton,m.matrixWorld.clone());
-  mesh.userData.skinAsset='gallery-human-v1';return {mesh,bones};
+  mesh.userData.skinAsset='segmented-anatomical-v1';return {mesh,bones};
  }finally{for(const [joint,r]of saved)joint.rotation.fromArray(r);m.updateWorldMatrix(true,true);}
 }

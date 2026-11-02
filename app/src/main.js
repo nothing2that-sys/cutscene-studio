@@ -988,7 +988,7 @@ function bodyProfilePanel() {
 function bindBodyProfile() {
   if(!activeMannequin?.torso)return;
   document.querySelectorAll('[data-head-units]').forEach(button=>button.onclick=()=>{document.getElementById('body-head-units').value=button.dataset.headUnits;});
-  document.querySelectorAll('[data-body-preset]').forEach(button=>button.onclick=()=>{const enabled=button.dataset.bodyPreset==='feminine';document.getElementById('body-chest-enabled').checked=enabled;if(enabled){document.getElementById('body-chest-height').value=67;document.getElementById('body-chest-spacing').value=46;document.getElementById('body-chest-projection').value=1;}document.getElementById('body-apply').click();});
+  document.querySelectorAll('[data-body-preset]').forEach(button=>button.onclick=()=>{const enabled=button.dataset.bodyPreset==='feminine';document.getElementById('body-chest-enabled').checked=enabled;if(enabled){document.getElementById('body-chest-height').value=65;document.getElementById('body-chest-spacing').value=46;document.getElementById('body-chest-projection').value=1;}document.getElementById('body-apply').click();});
   document.getElementById('body-chest-enabled').onchange=e=>{document.getElementById('body-chest-options').hidden=!e.target.checked;};
   document.getElementById('body-apply').onclick=()=>{
     const message=document.getElementById('body-status');

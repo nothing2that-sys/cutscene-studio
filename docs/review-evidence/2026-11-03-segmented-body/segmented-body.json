@@ -1,0 +1,41 @@
+{
+  "checks": [
+    "14 rigid body sections preserve sampled dimensions through six poses; authored finger skinning retained",
+    "hands/feet are trimmed authored geometry with closed caps; generated section boundaries are closed",
+    "female body including two contour passes fits 45000 rendered triangles",
+    "reference pose and neutral three-view PNGs export from actual app; construction guide toggle changes rendering"
+  ],
+  "sections": [
+    "pelvis",
+    "torso",
+    "head",
+    "neck",
+    "l_arm",
+    "l_elbow",
+    "l_leg",
+    "l_knee",
+    "r_arm",
+    "r_elbow",
+    "r_leg",
+    "r_knee",
+    "r_wrist",
+    "r_ankle",
+    "l_wrist",
+    "l_ankle"
+  ],
+  "vertices": 11220,
+  "triangles": 22312,
+  "renderedTriangles": 44624,
+  "poses": [
+    "neutral",
+    "squat",
+    "kneeling",
+    "armUp",
+    "twist",
+    "lying"
+  ],
+  "rigidDistanceSamples": 266,
+  "maxSectionDrift": 3.469446951953614e-16,
+  "boundaryEdges": 0,
+  "pageErrors": []
+}

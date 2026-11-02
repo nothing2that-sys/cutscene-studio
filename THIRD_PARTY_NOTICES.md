@@ -1,5 +1,7 @@
 # 재사용 코드와 출처
 
+2026-11-03 현행 인체는 부위별 곡선·단면으로 생성한 작화용 볼륨과 기존 MakeHuman CC0 손·발 영역을 조합합니다. 손·발 절단면을 닫고 기존 관절에 연결했으며 라이선스·원본 SHA-256은 `app/src/assets/reference-human.source.json`과 기존 CC0 전문을 유지합니다. [현행 구현·검증·한계](docs/SEGMENTED_BODY.md). 아래 연속 인체 관련 항목은 이전 버전 이력입니다.
+
 2026-11-02 현행 인체: MakeHuman CC0 인체·기본 가중치·성인 체형/비례·가슴 변형 데이터를 가공합니다. 얼굴은 목 경계에 연결된 단순 머리로 재구성했습니다. 고정 원본·SHA-256·변형 계수는 `app/src/assets/gallery-human.source.json`, [사용·제한·재현](docs/GALLERY_PROPORTIONS.md)에 기록했습니다. AI Pose Gallery의 이미지는 시각 참고로만 확인했으며 앱이나 보고서에 재배포하지 않습니다. 아래 부위 도형 생성·손발만 재사용한 항목은 이전 버전의 이력입니다.
 
 이 작업은 [fanverseio/pose-toolkit](https://github.com/fanverseio/pose-toolkit)의 [기반 커밋 5ad2d16](https://github.com/fanverseio/pose-toolkit/commit/5ad2d16ae107c8e5ee3304fd30bbadb7ed213e33)을 `app`에 복제해 확장했습니다. 기반의 저작권 고지와 [GPL-3.0 라이선스](app/LICENSE)를 유지합니다. `app`의 새 장면 포맷·스튜디오 UI와 기존 코드 수정은 2026년 11월 1일 추가했으며 GPL-3.0으로 제공합니다. 기반 이력은 위 upstream 링크에서, 이후 확장·수정은 이 저장소의 Git 이력에서 확인할 수 있습니다. 배포 저장소에는 내부 `app/.git`을 포함하지 않습니다.

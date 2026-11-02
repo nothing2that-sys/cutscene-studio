@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {bodySurfaceMode,setBodySurfaceMode} from './body-surface.js';
+import {bodySurfaceMode,setBodySurfaceMode,bodyGuidesVisible,setBodyGuides} from './body-surface.js';
 
 export function initViewPerformance(api){
   const {stage}=api,renderer=stage.renderer;
@@ -9,9 +9,10 @@ export function initViewPerformance(api){
   options.innerHTML='<label><input id="pose-solo" type="checkbox" checked> 포즈는 선택 인물만</label><label><input id="edit-lightweight" type="checkbox"> 가벼운 화면</label><details id="render-info"><summary>렌더링 정보</summary><pre id="render-info-text"></pre></details>';
   document.querySelector('#direct-editor').appendChild(options);
   const surfaceLabel=document.createElement('label');surfaceLabel.textContent='인체 표시 ';
-  const surfaceSelect=document.createElement('select');surfaceSelect.id='body-surface-mode';surfaceSelect.setAttribute('aria-label','인체 표시 방식');surfaceSelect.innerHTML='<option value="human">갤러리 비례 · 인체</option><option value="rig">기존 관절 마네킹</option>';surfaceSelect.value=bodySurfaceMode();surfaceLabel.appendChild(surfaceSelect);options.prepend(surfaceLabel);
-  surfaceSelect.onchange=()=>{setBodySurfaceMode(surfaceSelect.value,api.objects());invalidate();};
+  const surfaceSelect=document.createElement('select');surfaceSelect.id='body-surface-mode';surfaceSelect.setAttribute('aria-label','인체 표시 방식');surfaceSelect.innerHTML='<option value="human">관절별 작화 인체</option><option value="rig">기존 관절 마네킹</option>';surfaceSelect.value=bodySurfaceMode();surfaceLabel.appendChild(surfaceSelect);options.prepend(surfaceLabel);
+  surfaceSelect.onchange=()=>{setBodySurfaceMode(surfaceSelect.value,api.objects());guideInput.disabled=surfaceSelect.value==='rig';invalidate();};
   const modelPreview=document.createElement('a');modelPreview.href='/model-preview.html';modelPreview.target='_blank';modelPreview.rel='noopener';modelPreview.className='btn';modelPreview.textContent='인체 외형 비교';options.appendChild(modelPreview);
+  const guideLabel=document.createElement('label');guideLabel.innerHTML='<input id="body-guides" type="checkbox"> 인체 구조선';options.appendChild(guideLabel);const guideInput=guideLabel.querySelector('input');guideInput.checked=bodyGuidesVisible();guideInput.disabled=surfaceSelect.value==='rig';guideInput.onchange=()=>{setBodyGuides(guideInput.checked,api.objects());invalidate();};
   const soloInput=options.querySelector('#pose-solo'),lightInput=options.querySelector('#edit-lightweight');lightInput.checked=lightweight;
   const originalDamping=stage.controls.enableDamping,stats={renders:0,lastDrawCalls:0,lastTriangles:0,lastVisibleActors:0};
   function invalidate(){dirty=true;revision++;api.invalidatePreview();}

@@ -14,12 +14,17 @@ const value=id=>document.getElementById(id).value;
 function build(){
  const stature=Number(value('preview-height'))/100;if(!Number.isFinite(stature)||stature<.5||stature>3){document.getElementById('preview-status').textContent='키는 50~300cm로 입력하세요.';return;}
  if(model){const geometries=new Set(),materials=new Set();model.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)for(const material of [o.material].flat())materials.add(material);});getHumanSkin(model)?.skeleton.dispose();model.removeFromParent();for(const geometry of geometries)geometry.dispose();for(const material of materials)material.dispose();}
- model=createCharacter({height:stature,headUnits:Number(value('preview-heads')),...(value('preview-body')==='feminine'?{chest:{height:.65,spacing:.46,projection:1}}:{})});setBodySurface(model,'human');
+ model=createCharacter({height:stature,headUnits:Number(value('preview-heads')),...(value('preview-body')==='feminine'?{chest:{height:.65,spacing:.46,projection:1}}:{})});setBodySurface(model,'human');getHumanSkin(model).material.userData.bodyGuides.value=document.getElementById('preview-guides').checked?1:0;
  for(const part of ['body','torso','neck','head'])model[part].rotation.set(0,0,0);
  if(value('preview-pose')==='hips'){
   for(const side of ['l','r']){model[side+'_arm'].raise=-5;model[side+'_arm'].straddle=55;model[side+'_elbow'].bend=100;}
   constrainBody(model);
   for(const side of ['l','r']){const target=model.torso.imageWrapper.localToWorld(new THREE.Vector3(4,1.5,side==='l'?-5:5));for(let i=0;i<25;i++)solveConstrainedIK(model,[side+'_arm',side+'_elbow',side+'_wrist'],target);}
+ }else if(value('preview-pose')==='reference'){
+  model.torso.tilt=-8;model.torso.turn=8;model.l_arm.raise=155;model.l_arm.straddle=35;model.l_elbow.bend=105;model.r_arm.raise=-5;model.r_arm.straddle=55;model.r_elbow.bend=100;model.l_leg.straddle=12;model.r_leg.raise=5;model.r_knee.bend=15;constrainBody(model);
+  const hand=model.torso.imageWrapper.localToWorld(new THREE.Vector3(4,1.5,5)),overhead=model.head.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(.015,model.userData.bodyMetrics.headHeight*.65,-.02));
+  for(let i=0;i<30;i++){solveConstrainedIK(model,['r_arm','r_elbow','r_wrist'],hand);solveConstrainedIK(model,['l_arm','l_elbow','l_wrist'],overhead);}
+  Object.assign(model.l_wrist,{bend:30,turn:60,straddle:45});
  }else if(value('preview-pose')==='raised'){model.l_arm.raise=150;model.l_arm.straddle=25;model.l_elbow.bend=105;model.r_elbow.bend=75;}
  else if(value('preview-pose')==='squat'){for(const side of ['l','r']){model[side+'_leg'].raise=100;model[side+'_leg'].straddle=20;model[side+'_knee'].bend=130;model[side+'_arm'].raise=80;}model.torso.bend=20;}
  constrainBody(model);const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());center=bounds.getCenter(new THREE.Vector3());range=Math.max(size.y*.57,.45);span=Math.max(size.x,size.z);orbit.target.copy(center);frame(new THREE.Vector3(6,.35,4));ready=true;resize();document.getElementById('preview-status').textContent=`${Math.round(stature*100)}cm · ${value('preview-heads')}등신 · 동일한 체형·자세의 방향 비교`;
@@ -32,8 +37,9 @@ function render(){
  else viewport(0,width,mode==='front'?new THREE.Vector3(6,.02,0):mode==='side'?new THREE.Vector3(0,.02,6):null);
  renderer.setScissorTest(false);
 }
-function resize(){width=Math.min(1600,Math.max(1,host.clientWidth));height=Math.min(1000,Math.max(1,host.clientHeight));renderer.setSize(width,height,false);render();}
+function resize(){width=Math.min(1600,Math.max(1,host.clientWidth));height=Math.min(1000,Math.max(1,host.clientHeight));renderer.setSize(width,height,false);renderer.domElement.style.width='100%';renderer.domElement.style.height='100%';render();}
 for(const id of ['preview-body','preview-height','preview-heads','preview-pose'])document.getElementById(id).addEventListener('change',build);
 document.getElementById('preview-view').addEventListener('change',()=>{frame(new THREE.Vector3(6,.35,4));render();});
+document.getElementById('preview-guides').onchange=()=>{getHumanSkin(model).material.userData.bodyGuides.value=document.getElementById('preview-guides').checked?1:0;render();};
 document.getElementById('preview-capture').onclick=()=>{render();const link=document.createElement('a');link.download='gallery-body-comparison.png';link.href=renderer.domElement.toDataURL('image/png');link.click();};
 new ResizeObserver(resize).observe(host);build();
