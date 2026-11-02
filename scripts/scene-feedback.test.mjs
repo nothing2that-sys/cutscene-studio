@@ -29,7 +29,7 @@ test('wrong shapes fail as field reports rather than TypeError',()=>{
   }
 });
 test('malformed native project rejected before scene mutation and has source',()=>{
-  const original=JSON.parse(readFileSync(new URL('../validation/project-initial.json',import.meta.url),'utf8'));
+  const original=JSON.parse(readFileSync(new URL('./fixtures/native-project.json',import.meta.url),'utf8'));
   assert.equal(analyzeInputText(JSON.stringify(original),'project.json').valid,true);
   const bad=structuredClone(original);bad.mannequins[0].position=[1,'two',3];bad.studio.activeShot=99;
   const r=analyzeInputText(JSON.stringify(bad),'broken-project.json');

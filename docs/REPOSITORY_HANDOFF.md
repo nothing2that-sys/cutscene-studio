@@ -32,6 +32,8 @@ node --test scripts/scene-format.test.mjs scripts/scene-feedback.test.mjs
 - 일반 자격 증명 패턴 검사: 일치 없음. 모든 종류의 민감 정보 검출을 보장하는 검사는 아닙니다.
 - 기존 브라우저 테스트 전체를 업로드 준비 과정에서 재실행하지는 않았습니다.
 
+실제 `D:\github\cutscene-studio` 클론 검사에서 단위 테스트가 제외된 `validation/project-initial.json`에 의존하는 문제를 발견했습니다. 실제 예제 프로젝트를 `scripts/fixtures/native-project.json`으로 포함하고 테스트 경로를 바꿔, 사전 브라우저 실행 없이 재현할 수 있도록 수정했습니다.
+
 ## 외부 검증에 포함할 의존성 문제
 
 2026-11-02의 새 설치와 `npm audit`에서 2건이 보고되었습니다: Vite high 1건, 간접 의존성 esbuild moderate 1건. 당시 npm은 Vite 8.3.5로의 메이저 업그레이드를 수정 후보로 제시했습니다. 검증 대상의 동작 변경을 피하기 위해 이 인계에서는 버전을 변경하지 않았습니다. 업그레이드와 회귀 검증을 별도 작업으로 평가하세요. 의존성 감사 결과는 조회 시점에 따라 바뀔 수 있습니다.
