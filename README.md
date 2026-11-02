@@ -18,7 +18,7 @@ npm --prefix app run build
 
 외부 검증이나 새 PC의 `D:\github\<레포명>`에서 시작한다면 [외부 검증 인계 문서](docs/EXTERNAL_REVIEW.md)를 먼저 읽으세요. 저장소 포함 범위, 새 설치, 자동·수동 검증, 알려진 제약과 검증 AI용 요청문을 정리했습니다. 결과는 [검증 보고서 양식](docs/EXTERNAL_REVIEW_REPORT_TEMPLATE.md)에 남길 수 있습니다.
 
-이 작업 폴더에서 `start.cmd`를 실행하고 브라우저로 http://127.0.0.1:3001 을 여세요. 현재 작업 폴더에는 빌드 결과인 `app/dist`가 준비됩니다. 편집 중 외부 API나 인터넷 연결이 필요하지 않습니다. Node.js는 필요하며, 실행기는 일반 Node.js와 이 PC의 Codex 제공 Node.js를 찾습니다.
+이 작업 폴더에서 `start.cmd`를 실행하고 브라우저로 http://127.0.0.1:3001 을 여세요. 소스 클론 후에는 아래 명령으로 `app/dist`를 먼저 빌드합니다. 편집 중 외부 API나 인터넷 연결이 필요하지 않습니다. 실행기는 `CUTSCENE_NODE` 설정, PATH의 Node.js, 프로젝트 내부 `.review-tools/node/node.exe` 순으로 찾습니다. 특정 PC의 Codex 설치 경로는 필요하지 않습니다.
 
 다른 PC나 소스만 복사한 경우 Node.js와 npm을 설치한 뒤 `app`에서 다음을 실행합니다. 최초 의존성 설치에는 인터넷 연결이 필요합니다.
 
@@ -50,7 +50,7 @@ npm run build
 
 카메라 컷은 현재 동일한 인물·포즈·공간을 공유합니다. 컷별로 다른 동작을 저장하려면 별도 프로젝트 파일을 사용하세요. 컷별 포즈 상태, 접촉·접지 제약, OpenPose 출력과 VRM은 후속 고도화 대상입니다. 소설을 자동 분석하는 LLM 호출과 최종 이미지 생성 호출은 아직 연결하지 않았습니다. 일반 이미지 참조만으로 생성 모델의 정확한 구도 보존을 보장하지 않습니다.
 
-정밀 프로젝트의 `studio.document`와 전달 묶음의 `proposal`은 최초 장면 제안입니다. 실제 수정된 배치·관절의 기준은 프로젝트의 `mannequins`·`importedModels`, 전달 묶음의 `editorState`입니다. 원래 제안과 편집 결과를 혼동하지 않게 구별합니다.
+정밀 프로젝트의 `studio.initialProposal`과 전달 묶음의 `proposal`은 최초 장면 제안을 보존합니다. `studio.document`의 공간·조명·제목·원문은 현재 편집값이며, 인물·소품 배치와 관절은 `mannequins`·`importedModels`가 기준입니다. 전달 묶음의 `editorState`는 이 현재 상태 전체를 담습니다. 구형 프로젝트는 최초 제안을 복원할 수 없어 `proposalOrigin: legacy-current-state`로 표시합니다. 인물이 없는 장면도 지원하며 Delete 키와 목록 휴지통 모두 마지막 인물을 삭제할 수 있습니다.
 
 ## 설계와 출처
 
@@ -63,10 +63,10 @@ npm run build
 ## 검증 명령
 
 ```powershell
-node --test scripts/scene-format.test.mjs
+node --test scripts/scene-format.test.mjs scripts/scene-feedback.test.mjs
 ```
 
-`scripts/browser-check.mjs`는 이 PC의 Codex 런타임에 있는 Playwright와 Chrome을 이용하는 개발용 검증 스크립트입니다. 편집기를 실행한 상태에서 실행하며, Playwright가 없는 일반 PC에서는 해당 경로를 환경에 맞게 바꿔야 합니다.
+브라우저 검사는 `npm install --prefix .review-tools --no-save playwright`와 Google Chrome 설치 후 실행합니다. 스크립트는 프로젝트의 Playwright를 찾아 사용하므로 개발 PC 경로나 `NODE_PATH` 수정이 필요하지 않습니다. 서버와 검사 순서는 [외부 검증 인계 문서](docs/EXTERNAL_REVIEW.md)를 참고하세요. IK 연속성은 `scripts/ik-continuity-check.mjs`, 잔여 결함 회귀는 `scripts/review-regression-check.mjs`로 확인합니다.
 
 ## 코덱스 통합 스킬
 

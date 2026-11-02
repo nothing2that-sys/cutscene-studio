@@ -8,6 +8,9 @@ import { createValidationPanel } from './validation-panel.js';
 export function initCutsceneStudio(api) {
   const { THREE, stage } = api;
   let document = validateScene(EXAMPLE_SCENE);
+  let initialProposal = structuredClone(document);
+  let proposalOrigin = 'scene-import';
+  const lightPresets={left:[-3,5,3],right:[3,5,3],back:[0,4,-4],top:[0,6,0]};
   let shots = [];
   let activeShot = -1;
   let aspect = 16/9;
@@ -39,7 +42,7 @@ export function initCutsceneStudio(api) {
         <div class="studio-row"><span>방 크기 m</span><input id="studio-room-x" type="number" aria-label="방 너비" min="1" max="30" step="0.5"><input id="studio-room-y" type="number" aria-label="방 높이" min="1" max="30" step="0.5"><input id="studio-room-z" type="number" aria-label="방 깊이" min="1" max="30" step="0.5"></div>
         <label class="studio-check"><input id="studio-walls" type="checkbox"> 뒤쪽 벽 표시</label>
         <label class="studio-label">주광 세기 <input id="studio-light" type="range" min="0" max="6" step="0.1"></label>
-        <label class="studio-label">주광 방향 <select id="studio-light-direction"><option value="left">왼쪽 앞</option><option value="right">오른쪽 앞</option><option value="back">뒤쪽 역광</option><option value="top">위에서</option></select></label>
+        <label class="studio-label">주광 방향 <select id="studio-light-direction"><option value="custom" disabled>사용자 지정</option><option value="left">왼쪽 앞</option><option value="right">오른쪽 앞</option><option value="back">뒤쪽 역광</option><option value="top">위에서</option></select></label>
         <div class="studio-row"><label>빛 색 <input id="studio-light-color" type="color"></label><label>주변광 <input id="studio-ambient" type="number" min="0" max="3" step="0.1"></label></div>
       </details>
       <details><summary>소품 추가</summary><div class="studio-row"><button class="btn" data-prop="box">상자</button><button class="btn" data-prop="table">탁자</button><button class="btn" data-prop="chair">의자</button><button class="btn" data-prop="sphere">구체</button></div><p class="studio-help">오른쪽 목록에서 선택한 뒤 Move / Rotate로 옮깁니다. 크기는 장면 JSON의 size로 지정합니다.</p></details>
@@ -179,7 +182,7 @@ export function initCutsceneStudio(api) {
     data.importedModels=next.props.map(p=>({name:p.name,primitive:p,position:p.position,rotation:[0,THREE.MathUtils.degToRad(p.yaw),0,'XYZ'],scale:[1,1,1]}));
     const camera=new THREE.PerspectiveCamera();setCamera(camera,next.camera);
     data.camera={...next.camera,rotation:camera.rotation.toArray()};
-    data.studio={document:next,shots:next.shots.length?next.shots:[{id:'initial',name:'첫 구도',purpose:'초기 추천 구도',camera:next.camera}],activeShot:0,aspect};
+    data.studio={document:next,initialProposal:structuredClone(next),proposalOrigin:'scene-import',shots:next.shots.length?next.shots:[{id:'initial',name:'첫 구도',purpose:'초기 추천 구도',camera:next.camera}],activeShot:0,aspect};
     api.applyState(JSON.stringify(data));api.commit();
     status(`「${next.title}」 · 인물 ${next.actors.length}명, 소품 ${next.props.length}개를 배치했습니다.`);
   }
@@ -225,11 +228,12 @@ export function initCutsceneStudio(api) {
     ['x','y','z'].forEach((a,i)=>$(`studio-room-${a}`).value=document.room.size[i]);
     $('studio-walls').checked=document.room.walls;$('studio-light').value=document.lighting.intensity;
     $('studio-light-color').value=document.lighting.color;$('studio-ambient').value=document.lighting.ambient;
+    $('studio-light-direction').value=Object.keys(lightPresets).find(key=>lightPresets[key].every((v,i)=>Math.abs(v-document.lighting.position[i])<1e-8))||'custom';
     $('studio-fov').value=stage.camera.fov;$('studio-aspect').value=String(aspect);renderShots();
   }
   function promptText() {
     const shot=currentShot();
-    return `장면: ${document.title}\n원문: ${document.sourceText}\n연출상 추정: ${document.assumptions}\n컷: ${shot.name}\n목적: ${shot.purpose}\n\n첨부 color PNG는 구도·원근·인원·포즈·가림·접지·광원 방향의 기준입니다. 캐릭터 정본 이미지는 얼굴·머리·체형·복식·화풍의 기준입니다. 정본의 정면 조명이나 배경을 장면에 복사하지 마세요. 장면의 명암과 그림자에 맞춰 캐릭터를 적용하세요. 말풍선·해설·라벨을 추가하지 마세요.\n\n실제 수정 상태는 editorState에 있습니다. proposal은 최초 LLM 제안으로, 수정된 상태와 다를 수 있습니다. Depth PNG는 카메라 공간 선형 깊이이며 가까울수록 밝습니다. 생성기가 해당 조건 입력을 지원할 때 사용하세요. 일반 이미지 참조만으로 구도와 포즈의 완전한 보존을 보장하지 않습니다.`;
+    return `장면: ${document.title}\n원문: ${document.sourceText}\n연출상 추정: ${document.assumptions}\n컷: ${shot.name}\n목적: ${shot.purpose}\n\n첨부 color PNG는 구도·원근·인원·포즈·가림·접지·광원 방향의 기준입니다. 캐릭터 정본 이미지는 얼굴·머리·체형·복식·화풍의 기준입니다. 정본의 정면 조명이나 배경을 장면에 복사하지 마세요. 장면의 명암과 그림자에 맞춰 캐릭터를 적용하세요. 말풍선·해설·라벨을 추가하지 마세요.\n\n실제 수정 상태는 editorState에 있습니다. proposalOrigin=${proposalOrigin}; scene-import는 최초 제안이고 legacy-current-state는 구형 파일을 연 시점의 값입니다. Depth PNG는 카메라 공간 선형 깊이이며 가까울수록 밝습니다. 생성기가 해당 조건 입력을 지원할 때 사용하세요. 일반 이미지 참조만으로 구도와 포즈의 완전한 보존을 보장하지 않습니다.`;
   }
   $('studio-example').onclick=()=>importText(JSON.stringify(EXAMPLE_SCENE,null,2),'예제 장면',true);
   $('studio-check').onclick=()=>importText($('studio-json').value,'붙여넣기',true,false);
@@ -250,7 +254,7 @@ export function initCutsceneStudio(api) {
   $('studio-light').onchange=()=>api.commit();
   $('studio-light-color').onchange=()=>{document.lighting.color=$('studio-light-color').value;rebuildRoom();api.commit();};
   $('studio-ambient').onchange=()=>run(()=>{const v=Number($('studio-ambient').value);if(v<0||v>3||!Number.isFinite(v))throw new Error('주변광은 0~3입니다.');document.lighting.ambient=v;rebuildRoom();api.commit();});
-  $('studio-light-direction').onchange=()=>{document.lighting.position={left:[-3,5,3],right:[3,5,3],back:[0,4,-4],top:[0,6,0]}[$('studio-light-direction').value];rebuildRoom();api.commit();};
+  $('studio-light-direction').onchange=()=>{const position=lightPresets[$('studio-light-direction').value];if(!position)return;document.lighting.position=[...position];rebuildRoom();api.commit();};
   panel.querySelectorAll('[data-prop]').forEach(btn=>btn.onclick=()=>run(()=>{
     const type=btn.dataset.prop;
     const def={id:`prop-${crypto.randomUUID()}`,name:{box:'상자',table:'탁자',chair:'의자',sphere:'구체'}[type],type,position:[0,0,0],size:{box:[0.4,0.4,0.4],table:[1.4,0.75,0.8],chair:[0.5,0.95,0.5],sphere:[0.4,0.4,0.4]}[type],yaw:0,color:'#8c7965'};
@@ -263,7 +267,7 @@ export function initCutsceneStudio(api) {
   $('studio-prompt').onclick=()=>download('cutscene-direction.txt',promptText(),'text/plain;charset=utf-8');
   $('studio-packet').onclick=()=>run(()=>{
     const color=renderPNG(),depth=renderPNG(true);
-    const packet={version:1,proposal:document,editorState:api.getState(),activeShot:currentShot(),render:{aspect,near:shotCamera.near,far:shotCamera.far,depthEncoding:'linear-view-z-near-white-far-black',resolution:[preview.domElement.width,preview.domElement.height]},images:{color,depth},direction:promptText()};
+    const packet={version:1,proposal:structuredClone(initialProposal),proposalOrigin,editorState:api.getState(),activeShot:currentShot(),render:{aspect,near:shotCamera.near,far:shotCamera.far,depthEncoding:'linear-view-z-near-white-far-black',resolution:[preview.domElement.width,preview.domElement.height]},images:{color,depth},direction:promptText()};
     // Actual export size is independent from the on-screen preview dimensions.
     packet.render.resolution=aspect>=1?[1600,Math.round(1600/aspect)]:[Math.round(1600*aspect),1600];
     download('cutscene-handoff.json',JSON.stringify(packet,null,2));status('이미지·카메라·정밀 편집 상태·작화 지시문을 한 파일에 저장했습니다.');
@@ -272,8 +276,8 @@ export function initCutsceneStudio(api) {
   // The third-party library points its favicon at an unbundled asset.
   window.document.querySelectorAll('link[rel="icon"]').forEach(link=>link.href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="%236366f1"/><text x="5" y="23" fill="white" font-size="22">C</text></svg>');
   return {
-    snapshot:()=>structuredClone({document,shots,activeShot,aspect}),
-    restore(state) {if(!state)return;document=validateScene(state.document);shots=structuredClone(state.shots||[]);activeShot=state.activeShot ?? -1;aspect=state.aspect||16/9;rebuildRoom();syncUI();},
+    snapshot:()=>structuredClone({document,initialProposal,proposalOrigin,shots,activeShot,aspect}),
+    restore(state) {if(!state)return;document=validateScene(state.document);initialProposal=validateScene(state.initialProposal||state.document);proposalOrigin=state.initialProposal?(state.proposalOrigin||'scene-import'):'legacy-current-state';shots=structuredClone(state.shots||[]);activeShot=state.activeShot ?? -1;aspect=state.aspect||16/9;rebuildRoom();syncUI();},
     createProp,loadScene,importText,showImportError,
     saveProject(state) {download('cutscene-project.json',JSON.stringify(state,null,2));status('정밀 프로젝트를 저장했습니다. Load로 다시 열 수 있습니다.');},
     tick() {

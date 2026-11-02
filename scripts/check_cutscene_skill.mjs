@@ -8,8 +8,17 @@ const output=path.resolve('validation/skill-'+Date.now());
 await mkdir(output,{recursive:true});
 const script=path.join(skill,'scripts/scene.mjs');
 const fixture=JSON.parse(await readFile('examples/example-scene.json','utf8'));
-const packet=JSON.parse(await readFile('validation/handoff.json','utf8'));
+let packet,packetSource='validation/handoff.json';
+try {packet=JSON.parse(await readFile(packetSource,'utf8'));}
+catch(error){
+  if(error.code!=='ENOENT')throw error;
+  const editorState=JSON.parse(await readFile('scripts/fixtures/native-project.json','utf8'));
+  const png='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=';
+  packet={proposal:structuredClone(fixture),editorState,activeShot:editorState.studio.shots[0],images:{color:png,depth:png},direction:'Fixture extraction check'};
+  packetSource='tracked native-project fixture and synthetic 1px PNG';
+}
 const checks=[];
+const skipped=[];
 function call(args,{ok=true,cwd=root,tool=script}={}){
   const r=spawnSync(process.execPath,[tool,...args],{cwd,encoding:'utf8'});
   if(ok){assert.equal(r.status,0,r.stderr||r.stdout);return JSON.parse(r.stdout);}
@@ -53,12 +62,15 @@ const fallback=call(['validate',path.resolve('examples/example-scene.json')],{cw
 assert.equal(fallback.fallback,true);checks.push('offline bundled schema fallback');
 const catalog={source:'https://ai-pose-gallery.pages.dev/',rows:[{id:'test_pose','系統':'全身1人・標準系','ポーズ番号':'T001','分類':'標準','ポーズ名':'腕組み','アングル':'正面','サムネ':'thumbs/test.jpg','原寸':'img/test.png'}]};
 const cache=path.join(output,'gallery-cache.json');await writeFile(cache,JSON.stringify(catalog));
-const python=path.join(process.env.USERPROFILE,'.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe');
-const gallery=spawnSync(python,['-B','-X','utf8',path.join(skill,'scripts/gallery.py'),'--cache',cache,'search','팔짱','--limit','1'],{encoding:'utf8'});
-assert.equal(gallery.status,0,gallery.stderr);
-assert.ok(gallery.stdout.includes('test_pose'));
-checks.push('optional gallery helper works from local metadata without retired skill paths/network');
-const report={passed:true,checks,output,independentLLMRun:false};
+const pythonCandidates=process.env.PYTHON?[[process.env.PYTHON,[]]]:[['python',[]],['py',['-3']]];
+const python=pythonCandidates.find(([cmd,args])=>spawnSync(cmd,[...args,'--version'],{encoding:'utf8',timeout:5000,windowsHide:true}).status===0);
+if(python){
+  const gallery=spawnSync(python[0],[...python[1],'-B','-X','utf8',path.join(skill,'scripts/gallery.py'),'--cache',cache,'search','팔짱','--limit','1'],{encoding:'utf8',timeout:15000,windowsHide:true});
+  assert.equal(gallery.status,0,gallery.stderr);
+  assert.ok(gallery.stdout.includes('test_pose'));
+  checks.push('optional gallery helper works from local metadata without retired skill paths/network');
+}else skipped.push({check:'optional Python gallery helper',reason:'No Python found; set PYTHON to an executable, or install python/py.'});
+const report={passed:true,checks,skipped,packetSource,output,independentLLMRun:false};
 await writeFile(path.join(output,'report.json'),JSON.stringify(report,null,2));
 await writeFile('validation/skill-integration-latest.json',JSON.stringify(report,null,2));
 console.log(JSON.stringify(report,null,2));

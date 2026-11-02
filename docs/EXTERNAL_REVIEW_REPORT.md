@@ -1,5 +1,79 @@
 # 외부 검증 보고서
 
+## 2026-11-02 후속 수정 및 실제 재검증
+
+이 절은 `ca222a1` 이후 사용자의 수정 요청으로 수행한 결과입니다. 아래 원래 외부 검증 본문은 당시의 발견 기록으로 보존하며, **현재 수정 상태는 이 절을 우선**합니다. 최초 독립 검증과 달리 이 절은 수정 담당 Codex의 재검증입니다.
+
+**판정: 핵심 흐름 사용 가능. 급반전 재현과 보고된 잔여 기능 결함을 수정했으며, 미검증 범위와 의존성 문제는 아래에 남깁니다.**
+
+| 항목 | 현재 조치 | 실제 확인 |
+| --- | --- | --- |
+| F1·F2 From File 입력 우회 | `ca222a1` 수정 유지 | 손상·문법·늘어난 뼈 거부, 기존 상태 보존, 정상 추가/Undo, 재열기 재확인 |
+| F3 IK 급반전 | 큰 쿼터니언 회전 후 클램프 대신 실제 Euler 자유도별 감쇠 CCD. 오차를 줄이는 후보만 채택. 입력 한 단계의 축별 변화 ≤12°, 주요 관절 월드 회전 변화 ≤20° | Head·Neck·Right Wrist·Left Ankle 실제 기즈모 40스텝 드래그. 길이 변화 ≤3.4e-16m, 페이지 오류 0 |
+| F4 수치 패널 | 기존 기즈모 종료 갱신 유지, 별도 IK 핸들 종료에도 패널 갱신 추가 | 기존 회전 기즈모 재현: 표시 오차 약 1.4e-14°, 슬라이더 한 칸 변화 0.5° |
+| F5 컷 삭제 | `ca222a1` 수정 유지 | 앞 컷 삭제 후 활성 컷과 저장 인덱스 유지 |
+| F6 최초 제안 혼합 | `studio.initialProposal`을 분리 보존. 현재 환경은 `studio.document`, 전달 묶음 `proposal`은 불변 초기 사본 | 방·조명 변경과 저장/재열기 후 초기 사본 유지, 실제 변경은 editorState에 존재 |
+| F6 구형 파일 | 원본을 복원할 수 없는 경우 `proposalOrigin: legacy-current-state` 명시. 새 제안은 `scene-import` | 구형 프로젝트 Load 후 전달 묶음 출처 표시 확인 |
+| F7 고정 정보 누락 | bodyProfile이 있고 boneLayout이 없으면 `LEGACY_RIG` 경고 | 적용 가능하되 원래 비율 검증 불가를 UI에 표시. 고정값 동시 변조에 대한 보안 보장은 하지 않음 |
+| F8 조명 UI | 복원값과 프리셋 비교, 불일치 시 사용자 지정 표시 | Load·Undo 및 사용자 지정 위치 모두 확인 |
+| F9 마지막 인물 삭제 | 빈 장면 허용으로 통일 | Delete/휴지통 모두 0명까지 삭제, Undo와 빈 장면 저장/재열기 확인 |
+| F10 경로 의존 | Playwright 공통 탐색기, Python 설정/일반 명령 탐색과 미설치 skip, 촬영물 없는 경우 추적 fixture 사용. 실행기의 Codex 경로 제거 | NODE_PATH 없이 브라우저 검사, 명시 PYTHON으로 갤러리 검사, Python 미설치 skip, 선행 촬영물 없는 별도 사본 검사, Node 없는 PATH에서 실행기 기동 |
+| F11 라이선스 다운로드 | `.txt`에 text/plain MIME 추가 | 실제 HTTP 응답 헤더 확인 |
+| F12 출처 문구 | 배포에 없는 내부 app/.git 대신 upstream 커밋과 현재 Git 이력 안내 | 문서 대조 |
+
+### IK 비교와 사용상 한계
+
+같은 초기 장면과 마우스 경로(`scripts/ik-continuity-check.mjs`)로 이번에 측정한 결과입니다. 원래 보고서의 최대 128°와는 시작 포즈·경로 조건이 다르므로 동일 조건의 아래 전후 값으로 비교합니다.
+
+| Move 부위 | 수정 전 최대 월드 회전/입력 | 수정 후 |
+| --- | --- | --- |
+| Head | 44.88° | 20.00° |
+| Neck | 30.89° | 18.34° |
+| Right Wrist | 8.71° | 9.30° |
+| Left Ankle | 5.71° | 7.22° |
+
+원래 30°를 넘는 재현 사례를 억제했고 모든 측정 부위가 20° 상한을 지켰습니다. 모든 부위의 회전량을 이전보다 작게 만들었다는 의미는 아닙니다. 별도 도달 가능한 목표를 60회 반복하면 오차가 0.31637m에서 약 0.00000398m로 단조 감소했습니다. 한 입력에서 즉시 목표에 닿는 것보다 자세 연속성을 우선하므로 빠른 큰 드래그에서는 목표를 덜 따라갈 수 있습니다. 전역 최적해·물리 속도 제한·접촉/충돌 해결을 보장하지 않습니다.
+
+### 실행 결과와 재현 명령
+
+환경: Windows, Node v24.22.2, Google Chrome/Playwright. 기존 3종은 ANGLE SwiftShader, 새 마우스 회귀 검사는 ANGLE D3D11. 프로젝트 내 `.review-tools`의 Node/Playwright를 사용했습니다.
+
+- 빌드 통과: Vite 5.4.21, 49 모듈. 단일 JS 청크 500kB 초과 경고는 유지.
+- 단위 테스트 **9/9** 통과: 누락된 rig lock 경고와 잘못된 초기 제안 검사 추가.
+- 기존 브라우저 검사 **3종 통과**: 일반 편집, JSON 오류 UI, 체형·80개 포즈·뼈 길이.
+- 새 IK 검사 통과: 4부위 실제 드래그와 반복 목표 수렴.
+- 새 잔여 항목 회귀 검사 **7묶음 통과**, 페이지 오류 0.
+- 기존 외부 검증의 `verify-fixes.mjs` **6/6** 통과.
+- 스킬 검사 **9항목 통과**(PYTHON 실행 파일 지정). Python 없는 별도 사본에서는 핵심 8항목 통과, 선택 갤러리만 skipped. 선행 handoff 파일 없이 추적 fixture/합성 PNG 사용도 확인.
+- Windows 실행기: 시스템 PATH에서 Node를 제외하고 CUTSCENE_NODE 지정, 포트 3013 실제 HTTP 기동 통과.
+- 스크린샷을 실제로 열어 예제 화면·조명 UI·드래그 후 자세를 확인.
+
+```powershell
+# 먼저 빌드, 정적 서버 3001과 Vite 서버 3002 실행(인계 문서 참고)
+node --test scripts/scene-format.test.mjs scripts/scene-feedback.test.mjs
+node scripts/browser-check.mjs
+node scripts/validation-ui-check.mjs
+node scripts/body-rig-check.mjs
+node scripts/ik-continuity-check.mjs
+node scripts/review-regression-check.mjs
+node scripts/check_cutscene_skill.mjs
+node scripts/launcher-check.mjs
+```
+
+`launcher-check.mjs`는 Windows의 빈 포트 3013이 필요합니다. `ik-continuity-check.mjs --baseline`은 비교 자료 생성용이며 이전 구현은 Git에서 별도로 체크아웃해야 합니다. 현재 구현에서 실행하면 현재 구현의 값을 기록합니다.
+
+GitHub에 함께 포함한 근거: [검사 결과 요약 JSON](review-evidence/2026-11-02/summary.json), [편집 화면](review-evidence/2026-11-02/editor.png), [IK Head 조작 후](review-evidence/2026-11-02/ik-head-after.png). 전체 입력·이미지·로그는 로컬 `validation/ik-continuity`, `validation/review-regression`, `validation/post-review`, `validation/external-review/fixes`에 있습니다. 전체 대용량 산출물은 Git에서 제외합니다.
+
+### 여전히 남는 범위
+
+- F13: Vite high 1건/esbuild moderate 1건의 기존 의존성 감사 기록은 해결하지 않았습니다. 메이저 업그레이드와 별도 회귀 검증 대상입니다. 기본 배포 정적 서버와 개발 서버의 영향 범위는 원래 보고서를 참고하세요.
+- GLB 스키닝/모프·외부 자산, 완전 오프라인 첫 기동, 사람 손 조작, 다른 브라우저, 장시간 성능, 실제 생성 모델의 구도 보존은 이번에도 추가 검증하지 않았습니다.
+- IK 입력 변화 상한은 재현된 급반전을 막는 제약이며 모든 자세의 자연스러움이나 정확한 접촉을 증명한 결과는 아닙니다.
+
+---
+
+## 최초 외부 검증 기록(수정 전 상태 포함)
+
 [보고서 양식](EXTERNAL_REVIEW_REPORT_TEMPLATE.md)을 따릅니다. 기존 `docs/VALIDATION.md`와 인계 문서의 통과 기록은 참고만 했고, 아래 판정은 모두 이번 환경에서 직접 실행한 결과입니다. 판정은 **통과 / 기능 실패 / 환경 오류 / 미실행**으로 구분하고, 결함은 **재현됨 / 소스상 의심**으로 구분합니다.
 
 ## 대상과 환경

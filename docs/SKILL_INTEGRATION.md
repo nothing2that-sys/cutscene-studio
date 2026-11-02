@@ -8,7 +8,7 @@ $cutscene-studio 이 소설에서 필요한 컷을 골라 편집기용 장면 JS
 
 $cutscene-studio 이 수정 프로젝트와 캡처를 기준으로 최종 작화 지시를 만들어줘.
 
-설치 위치: C:/Users/USER\.codex\skills\cutscene-studio
+개인 설치 위치: `%USERPROFILE%\.codex\skills\cutscene-studio`. 이 저장소의 원본은 아래 경로이며 앱 실행에 스킬 설치가 필수는 아닙니다. 다른 폴더에서 도구를 실행할 때는 `--app-root D:\github\cutscene-studio`를 지정하세요.
 
 프로젝트 보관본: [SKILL.md](../skills/cutscene-studio/SKILL.md)
 
@@ -19,7 +19,7 @@ $cutscene-studio 이 수정 프로젝트와 캡처를 기준으로 최종 작화
 - fuse-pose-references
 - create-pose-illustration
 
-기존 폴더 전체를 스킬 검색 경로 밖의 C:/Users/USER\.agents\skill-backups\cutscene-studio-20261101-114110 로 이동했습니다. 원본과 백업의 모든 파일 SHA-256을 대조했습니다. cinematic-director와 short-drama-storyboard는 이번 정리 범위에 포함하지 않았습니다.
+개발 당시 기존 폴더 전체를 스킬 검색 경로 밖의 개인 백업으로 이동하고 원본과 백업의 모든 파일 SHA-256을 대조했습니다. 개인 백업은 이 저장소에 포함되지 않으며 새 PC에서 실행할 때 필요하지 않습니다. cinematic-director와 short-drama-storyboard는 이번 정리 범위에 포함하지 않았습니다.
 
 ## 검증
 

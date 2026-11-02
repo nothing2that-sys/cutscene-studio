@@ -540,13 +540,13 @@ function deleteSelected() {
   }
   const mannequinIndex = mannequins.indexOf(activeMannequin);
   if (mannequinIndex !== -1) {
-    if (mannequins.length <= 1) { console.log('Cannot delete the last mannequin'); return; }
     stage.scene.remove(activeMannequin);
     mannequins.splice(mannequinIndex, 1);
     detachGizmo();
     activeMannequin = null;
     clearHighlight();
     updatePropertiesPanel();
+    updateLayerWindow();
     captureState();
     console.log('Deleted mannequin');
   }
@@ -972,7 +972,7 @@ function bindBodyProfile() {
 }
 function showIKResult(result) {
   const message=document.getElementById('body-status');
-  if(message)message.textContent=result.reached?'관절 범위 안에서 이동했습니다.':'도달 가능한 위치까지만 이동했습니다. 뼈 길이는 유지됩니다.';
+  if(message)message.textContent=result.reached?'관절 범위 안에서 이동했습니다.':result.targetClamped?'도달 가능한 위치까지만 이동했습니다. 뼈 길이는 유지됩니다.':'자세가 튀지 않도록 단계적으로 이동합니다. 계속 조정하세요. 뼈 길이는 유지됩니다.';
 }
 function updatePropertiesPanel() {
   const content=document.getElementById('properties-content');
@@ -1148,6 +1148,7 @@ function onMouseUp() {
     isDraggingIK = false;
     activeIKHandle = null;
     updateStageControlsEnabled();
+    updatePropertiesPanel();
     captureState();
   }
 }

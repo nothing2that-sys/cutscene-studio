@@ -71,7 +71,7 @@ npm --prefix app run build
 
 장면 제안은 `version:1`, `units:"meters"`, Y-up 오른손 좌표계입니다. `actors[].height`는 미터, `headUnits`는 등신, `yaw`와 의미상 관절 각도는 도입니다. 인물 위치는 포즈 적용 후 인체 최저점 기준이며 소품 위치는 바닥면 중심입니다. 초기 JSON 최대치는 인물 12명·소품 80개·컷 24개입니다.
 
-정밀 프로젝트의 `mannequins`와 `importedModels`, 전달 묶음의 `editorState`가 **실제 편집 결과**입니다. `studio.document`와 `proposal`은 최초 제안입니다. 최초 제안을 다시 불러와 사용자 수정을 덮어쓰지 마세요. 정밀 리그 변환의 라디안/Euler 순서와 장면 제안의 도 단위를 혼동하지 마세요.
+정밀 프로젝트의 `mannequins`와 `importedModels`, 전달 묶음의 `editorState`가 **실제 편집 결과**입니다. `studio.document`는 현재 환경·제목 등을 담고 인물·소품 정의는 초기 제안이므로 실제 변환은 정밀 배열을 따릅니다. 최초 제안은 별도 `studio.initialProposal`/`proposal`에 보존합니다. `proposalOrigin: legacy-current-state`는 구형 파일을 연 시점의 값으로 최초 원본을 복원한 것이 아닙니다. 정밀 리그 변환의 라디안/Euler 순서와 장면 제안의 도 단위를 혼동하지 마세요.
 
 `bodyProfile`은 키·등신이고 `boneLayout`은 포즈 중 유지할 길이·스케일 기준입니다. 파일의 길이 변조 검사는 이 기준과의 불일치를 검사하는 기능이며, 파일과 기준을 동시에 바꾸는 공격을 막는 보안 기능은 아닙니다.
 
@@ -102,16 +102,15 @@ node skills/cutscene-studio/scripts/scene.mjs info --app-root .
 node skills/cutscene-studio/scripts/scene.mjs validate examples/example-scene.json --app-root .
 ```
 
-기존 개발 환경에서 단위 테스트 8개 통과가 기록되어 있습니다. 새 클론에서도 실행 로그와 실제 개수를 기록하세요.
+현재 단위 테스트는 9개입니다. 새 클론에서도 실행 로그와 실제 개수를 기록하세요.
 
 ### 6.2 브라우저 테스트 준비
 
-기존 스크립트는 `createRequire`를 Node 실행 파일의 상위 경로 기준으로 생성해 Playwright를 찾습니다. 기존 Codex 환경에서는 바로 실행되지만 일반 Node 설치에서는 별도 준비가 필요합니다. 앱의 의존성과 분리해 설치한 뒤, Node 모듈 검색 경로를 지정할 수 있습니다.
+현재 검사 스크립트는 `scripts/playwright-runtime.mjs`에서 일반 모듈 검색 경로와 프로젝트의 `.review-tools`를 탐색합니다. Node 실행 파일의 위치나 Codex 설치 경로에 의존하지 않습니다.
 
 ```powershell
 npm install --prefix .review-tools --no-save playwright
-$env:NODE_PATH = Join-Path (Get-Location).Path '.review-tools\node_modules'
-node -e "console.log(require.resolve('playwright'))"
+node --input-type=module -e "import {loadPlaywright} from './scripts/playwright-runtime.mjs'; console.log(!!loadPlaywright().chromium)"
 ```
 
 Chrome 채널을 사용하므로 Chrome을 설치하세요. 스크립트는 Playwright 기본 Chromium을 선택하지 않습니다. WebGL/SwiftShader 실행 가능 여부도 환경에 따라 확인해야 합니다. 의존성 오류나 브라우저 시작 실패는 앱 기능 실패와 구분하여 보고하세요.
@@ -126,12 +125,14 @@ Chrome 채널을 사용하므로 Chrome을 설치하세요. 스크립트는 Play
 npm --prefix app run dev -- --port 3002
 ```
 
-터미널 C: 위 `NODE_PATH`를 이 터미널에도 설정한 뒤 다음 순서로 실행합니다.
+터미널 C: 저장소 최상위에서 다음 순서로 실행합니다. 별도의 `NODE_PATH` 설정이 필요하지 않습니다.
 
 ```powershell
 node scripts/browser-check.mjs
 node scripts/validation-ui-check.mjs
 node scripts/body-rig-check.mjs
+node scripts/ik-continuity-check.mjs
+node scripts/review-regression-check.mjs
 ```
 
 | 검사 | 핵심 확인 | 생성 근거 |
@@ -146,7 +147,7 @@ node scripts/body-rig-check.mjs
 
 프로젝트 내부의 스킬 도구는 `--app-root .`로 실행하면 기존 PC 경로 없이 검증할 수 있습니다. `skills/cutscene-studio/references/runtime.json`에는 개발 PC의 절대 경로가 남아 있습니다. 앱 탐색 순서는 명시 경로 → 현재 작업 폴더와 상위 → runtime 기록 → 번들 스키마 폴백입니다. 독립 환경에서 실제로 어떤 스키마를 사용했는지 출력으로 확인하세요.
 
-`scripts/check_cutscene_skill.mjs`는 먼저 생성된 `validation/handoff.json`과 기존 Codex의 Python 절대 경로에 의존합니다. 새 PC에서 무조건 실행 가능하다고 보지 말고, Python 경로를 맞춘 뒤 실행하거나 해당 항목을 미실행으로 기록하세요. 갤러리 검색·포즈 검색·최종 이미지 생성은 핵심 앱 검증과 분리합니다. 스킬은 앱 실행에 필수 설치 항목이 아닙니다.
+`scripts/check_cutscene_skill.mjs`는 `validation/handoff.json`이 없으면 추적된 프로젝트 fixture와 합성 1픽셀 PNG로 추출·상태 우선순위를 검사합니다. 보고서의 `packetSource`로 실제 촬영물 검사와 구분하세요. Python은 `PYTHON` 실행 파일 설정 → `python`/`py -3`에서 찾고, 없으면 선택 갤러리 항목만 `skipped`로 보고합니다. 핵심 Node 검사는 계속 실행합니다. 스킬은 앱 실행에 필수 설치 항목이 아닙니다.
 
 ## 7. 수동 검증 체크리스트
 

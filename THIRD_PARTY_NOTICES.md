@@ -1,6 +1,6 @@
 # 재사용 코드와 출처
 
-이 작업은 [fanverseio/pose-toolkit](https://github.com/fanverseio/pose-toolkit)의 커밋 `5ad2d16ae107c8e5ee3304fd30bbadb7ed213e33`을 `app`에 복제해 확장했습니다. 기반의 저작권 고지와 [GPL-3.0 라이선스](app/LICENSE)를 유지합니다. `app`의 새 장면 포맷·스튜디오 UI와 기존 코드 수정은 2026년 11월 1일 추가했으며 GPL-3.0으로 제공합니다. 소스 원본 이력은 `app/.git`에 남아 있습니다.
+이 작업은 [fanverseio/pose-toolkit](https://github.com/fanverseio/pose-toolkit)의 [기반 커밋 5ad2d16](https://github.com/fanverseio/pose-toolkit/commit/5ad2d16ae107c8e5ee3304fd30bbadb7ed213e33)을 `app`에 복제해 확장했습니다. 기반의 저작권 고지와 [GPL-3.0 라이선스](app/LICENSE)를 유지합니다. `app`의 새 장면 포맷·스튜디오 UI와 기존 코드 수정은 2026년 11월 1일 추가했으며 GPL-3.0으로 제공합니다. 기반 이력은 위 upstream 링크에서, 이후 확장·수정은 이 저장소의 Git 이력에서 확인할 수 있습니다. 배포 저장소에는 내부 `app/.git`을 포함하지 않습니다.
 
 | 구성 | 출처 | 라이선스 | 사용 |
 | --- | --- | --- | --- |

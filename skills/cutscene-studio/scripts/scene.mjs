@@ -60,7 +60,7 @@ function inspect(data){
     workingCamera:state.camera,
     shots:studio.shots||[],activeShot:studio.activeShot,
     lighting:studio.document?.lighting,room:studio.document?.room,
-    proposalIsInitial:true,shotsSharePose:true,
+    proposalIsInitial:(data.proposalOrigin||studio.proposalOrigin)==='scene-import',proposalOrigin:data.proposalOrigin||studio.proposalOrigin||'legacy-current-state',shotsSharePose:true,
     images:{color:!!data.images?.color,depth:!!data.images?.depth},
     render:data.render,direction:data.direction,
     visualReview:false,

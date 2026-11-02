@@ -22,6 +22,7 @@ export function analyzeEditorState(data) {
     if(m.bodyProfile!==undefined){
       const b=m.bodyProfile;
       if(!plain(b)||!Number.isFinite(b.height)||b.height<0.5||b.height>3||!Number.isFinite(b.headUnits)||b.headUnits<3||b.headUnits>12)add(p+'.bodyProfile','BODY_PROFILE','체형은 키 0.5~3m, 등신 비율 3~12로 지정하세요.');
+      if(m.boneLayout===undefined)warnings.push({severity:'warning',path:p+'.boneLayout',code:'LEGACY_RIG',message:'체형 정보에 뼈 길이 고정 기준이 없습니다. 불러온 현재 길이를 기준으로 잠그며 원래 비율은 검증할 수 없습니다.'});
     }
     if(m.boneLayout!==undefined){
       const layout=m.boneLayout;
@@ -75,6 +76,7 @@ export function analyzeEditorState(data) {
     else {
       const s=data.studio,r=analyzeScene(s.document);
       errors.push(...r.errors.map(x=>({...x,path:'studio.document.'+x.path})));
+      if(s.initialProposal!==undefined){const initial=analyzeScene(s.initialProposal);errors.push(...initial.errors.map(x=>({...x,path:'studio.initialProposal.'+x.path})));}
       if(!Array.isArray(s.shots)||s.shots.length>24)add('studio.shots','PROJECT_SHOTS','최대 24개의 카메라 컷 배열이 필요합니다.');
       else {
         const shotIds=new Set();

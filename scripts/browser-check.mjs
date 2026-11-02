@@ -1,9 +1,7 @@
-import { createRequire } from 'node:module';
+import { loadPlaywright } from './playwright-runtime.mjs';
 import { mkdir,readFile,writeFile } from 'node:fs/promises';
-import path from 'node:path';
 import assert from 'node:assert/strict';
-const require=createRequire(path.resolve(path.dirname(process.execPath),'../package.json'));
-const {chromium}=require('playwright');
+const {chromium}=loadPlaywright();
 await mkdir('validation',{recursive:true});
 const browser=await chromium.launch({channel:'chrome',headless:true,args:['--enable-webgl','--use-gl=angle','--use-angle=swiftshader']});
 const page=await browser.newPage({viewport:{width:1600,height:1000},acceptDownloads:true});

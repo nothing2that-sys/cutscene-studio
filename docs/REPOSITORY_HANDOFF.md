@@ -2,6 +2,8 @@
 
 준비일: 2026-11-02.
 
+후속 수정과 실제 재검증 결과는 [외부 검증 보고서의 최신 절](EXTERNAL_REVIEW_REPORT.md)을 우선 참고하세요. 현재 단위 테스트는 9개이며 IK 연속성·잔여 결함 회귀 스크립트가 추가되었습니다. 아래 설치 당시 기록의 8개 테스트와 구분합니다.
+
 - 저장소: https://github.com/muzik1014/cutscene-studio
 - 소유자: `muzik1014`
 - 공개 범위: private

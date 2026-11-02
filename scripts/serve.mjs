@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const root=fileURLToPath(new URL('../app/dist/',import.meta.url));
 const port=Number(process.env.CUTSCENE_PORT || 3001);
-const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.json':'application/json; charset=utf-8','.svg':'image/svg+xml'};
+const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.txt':'text/plain; charset=utf-8','.png':'image/png','.json':'application/json; charset=utf-8','.svg':'image/svg+xml'};
 const server=http.createServer(async(req,res)=>{
   try {
     if(req.method!=='GET'&&req.method!=='HEAD'){res.writeHead(405);res.end();return;}

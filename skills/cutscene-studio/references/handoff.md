@@ -6,7 +6,7 @@ scripts/scene.mjs의 inspect 명령으로 종류와 현재 상태를 먼저 확�
 
 1. 전달 묶음의 editorState 또는 Save로 저장한 mannequins/importedModels, studio의 실제 shots와 activeShot.
 2. 내보낸 PNG 및 제공된 캐릭터 정본을 실제로 연 시각 관찰.
-3. studio.document 또는 proposal은 최초 장면 제안이다. 사용자가 옮긴 결과와 다를 수 있다.
+3. studio.initialProposal 또는 proposal은 최초 장면 제안이다. studio.document의 방·조명·제목은 현재 편집값이고 인물·소품 배치는 mannequins/importedModels가 기준이다. proposalOrigin이 legacy-current-state이면 구형 파일을 불러온 시점의 값이며 최초 제안을 복원했다고 해석하지 않는다.
 
 사진·그림은 실제로 보인 정보, JSON은 수치 상태의 근거다. 캡처와 프로젝트가 다른 시점이면 임의로 한쪽을 최종으로 확정하지 말고 차이를 설명하고 어느 파일을 기준으로 할지 필요한 경우만 확인한다. inspect의 root position은 인체 루트이며 초기 제안의 발 기준 position과 다르다. inspect 결과만으로 시선·해부학·접촉을 검증했다고 하지 않는다.
 

@@ -46,3 +46,13 @@ test('height and head units are independent validated actor settings',()=>{
   const scene=structuredClone(EXAMPLE_SCENE);scene.actors[0].headUnits=99;
   assert.ok(analyzeScene(scene).errors.some(x=>x.path==='actors[0].headUnits'));
 });
+
+test('missing rig lock warns and invalid preserved proposal is rejected',()=>{
+  const original=JSON.parse(readFileSync(new URL('./fixtures/native-project.json',import.meta.url),'utf8'));
+  delete original.mannequins[0].boneLayout;
+  const legacy=analyzeInputText(JSON.stringify(original));
+  assert.equal(legacy.valid,true);assert.ok(legacy.warnings.some(x=>x.code==='LEGACY_RIG'));
+  original.studio.initialProposal={...EXAMPLE_SCENE,units:'cm'};
+  const invalid=analyzeInputText(JSON.stringify(original));
+  assert.equal(invalid.valid,false);assert.ok(invalid.errors.some(x=>x.path==='studio.initialProposal.units'));
+});
