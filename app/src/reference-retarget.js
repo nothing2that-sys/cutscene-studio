@@ -15,13 +15,10 @@ function align(m,key,fromA,fromB,toA,toB){
   const delta=Q().setFromRotationMatrix(b).multiply(Q().setFromRotationMatrix(a).invert());
   const joint=m[key],world=joint.getWorldQuaternion(Q());joint.quaternion.copy(joint.parent.getWorldQuaternion(Q()).invert().multiply(delta.multiply(world)));clampJoint(m,key);joint.updateWorldMatrix(true,true);return true;
 }
-export function retargetLandmarks(m,data){
-  if(!Array.isArray(data.keypoints)||data.keypoints.length<17||!Array.isArray(data.scores)||data.scores.slice(0,17).some(v=>!Number.isFinite(v)))throw Error('Invalid inferred landmarks');
-  const originalLengths=boneDistances(m),originalPosition=m.position.toArray();
-  for(const [key,q]of m.userData.bodyBase.rotations)m[key].quaternion.copy(q);
+export function referenceFrame(data){
   // XY is in 288x384 crop pixels, Z is root-relative metres (RTMW3D codec).
   // Unknown intrinsics require an approximate XY/metre scale; this is not calibrated photogrammetry.
-  const points=data.keypoints.map(p=>V(p[0]*1.75/300,-p[1]*1.75/300,-p[2]));
+  const points=data.keypoints.map(p=>V(p[0]*1.75/300,-p[1]*1.75/300,-p[2]*(data.depthScale??1)));
   const lateral=points[11].clone().sub(points[12]);lateral.y=0;
   if(lateral.lengthSq()<1e-6)lateral.copy(points[5]).sub(points[6]).setY(0);
   const yaw=Q().setFromUnitVectors(lateral.normalize(),V(0,0,-1));points.forEach(p=>p.applyQuaternion(yaw));
@@ -29,12 +26,19 @@ export function retargetLandmarks(m,data){
   if(tags.some(t=>/바로눕/.test(t)))groundHint={kind:'supine',axis:V(0,0,1),angle:Math.PI/2};
   else if(tags.some(t=>/엎드/.test(t)))groundHint={kind:'prone',axis:V(0,0,1),angle:-Math.PI/2};
   else if(tags.some(t=>/옆으로눕|옆눕/.test(t)))groundHint={kind:'side-lying',axis:V(1,0,0),angle:Math.PI/2};
-  const previewDirection=V(0,0,1).applyQuaternion(yaw);
+  const previewDirection=V(0,0,1).applyQuaternion(yaw),previewUp=V(0,1,0).applyQuaternion(yaw);
   if(groundHint){
     const up=mid(points[5],points[6]).sub(mid(points[11],points[12])).normalize(),z=points[12].clone().sub(points[11]).normalize(),y=up.clone().addScaledVector(z,-up.dot(z)).normalize(),x=y.clone().cross(z).normalize();
     const estimatedFrame=Q().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x,y,z));
-    const correction=Q().setFromAxisAngle(groundHint.axis,groundHint.angle).multiply(estimatedFrame.invert());points.forEach(p=>p.applyQuaternion(correction));previewDirection.applyQuaternion(correction);
+    const correction=Q().setFromAxisAngle(groundHint.axis,groundHint.angle).multiply(estimatedFrame.invert());points.forEach(p=>p.applyQuaternion(correction));previewDirection.applyQuaternion(correction);previewUp.applyQuaternion(correction);
   }
+  return {points,groundHint,previewDirection,previewUp};
+}
+export function retargetLandmarks(m,data){
+  if(!Array.isArray(data.keypoints)||data.keypoints.length<17||!Array.isArray(data.scores)||data.scores.slice(0,17).some(v=>!Number.isFinite(v)))throw Error('Invalid inferred landmarks');
+  const originalLengths=boneDistances(m),originalPosition=m.position.toArray();
+  for(const [key,q]of m.userData.bodyBase.rotations)m[key].quaternion.copy(q);
+  const {points,groundHint,previewDirection,previewUp}=referenceFrame(data);
   const hips=mid(points[11],points[12]),shoulders=mid(points[5],points[6]),up=shoulders.clone().sub(hips);
   m.updateMatrixWorld(true);
   align(m,'body',at(m,'neck').sub(mid(at(m,'l_leg'),at(m,'r_leg'))),at(m,'l_leg').sub(at(m,'r_leg')),up,points[11].clone().sub(points[12]));
@@ -59,10 +63,10 @@ export function retargetLandmarks(m,data){
     currentU=at(m,hinge).sub(at(m,upper)).normalize();currentV=at(m,end).sub(at(m,hinge)).normalize();
     errors.push({joint:upper,errorDegrees:Math.max(THREE.MathUtils.radToDeg(currentU.angleTo(u)),THREE.MathUtils.radToDeg(currentV.angleTo(v)))});
   }
-  const correction=CORRECTIONS[data.id];
+  const correction=data.disableExampleCorrections?null:CORRECTIONS[data.id];
   if(correction){for(const [key,q]of m.userData.bodyBase.rotations)m[key].quaternion.copy(q);for(const [key,values]of Object.entries(correction))for(const [prop,value]of Object.entries(values))m[key][prop]=value;}
   constrainBody(m);const lengths=boneDistances(m);if(Object.keys(lengths).some(k=>Math.abs(lengths[k]-originalLengths[k])>1e-6)||JSON.stringify(originalPosition)!==JSON.stringify(m.position.toArray()))throw Error('Retarget changed locked bone lengths or root position');
   const weak=data.scores.slice(5,17).filter(v=>v<.45).length,maxError=Math.max(...errors.map(e=>e.errorDegrees));
   const quality={status:weak>2||maxError>35?'needs-correction':'estimated',meanBodyScore:data.scores.slice(0,17).reduce((s,v)=>s+v,0)/17,weakBodyJoints:weak,maxDirectionErrorDegrees:maxError,errors,visualReview:false,exampleCorrection:!!correction,groundOrientationHint:groundHint?.kind||null,notes:['Monocular depth and hidden joints are estimates.','Finger articulation, gaze and contact are not reconstructed.',...(correction?['Reference-specific correction applied; fitting error refers to original model fit, not the corrected output.']:[])]};
-  return {pose:{type:'pose-reference',version:1,name:data.id,rotationUnit:'radians',rotations:Object.fromEntries(Object.entries(snapshotBodyJoints(m)).map(([key,j])=>[key,j.rotation]))},quality,previewDirection:previewDirection.toArray()};
+  return {pose:{type:'pose-reference',version:1,name:data.id,rotationUnit:'radians',rotations:Object.fromEntries(Object.entries(snapshotBodyJoints(m)).map(([key,j])=>[key,j.rotation]))},quality,previewDirection:previewDirection.toArray(),previewUp:previewUp.toArray()};
 }

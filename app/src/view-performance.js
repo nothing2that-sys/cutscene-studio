@@ -12,9 +12,12 @@ export function initViewPerformance(api){
   function invalidate(){dirty=true;revision++;api.invalidatePreview();}
   function cameraState(){return {position:stage.camera.position.toArray(),rotation:stage.camera.rotation.toArray(),target:stage.controls.target.toArray(),fov:stage.camera.fov,up:stage.camera.up.toArray(),zoom:stage.camera.zoom};}
   function restoreCamera(state){stage.camera.position.fromArray(state.position);stage.camera.rotation.fromArray(state.rotation);stage.camera.up.fromArray(state.up||[0,1,0]);stage.camera.fov=state.fov;stage.camera.zoom=state.zoom||1;stage.camera.updateProjectionMatrix();stage.controls.target.fromArray(state.target);stage.controls.update();}
-  function focus(model){
+  function focus(model,view){
     model.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(model),center=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3());center.y+=size.y*0.12;
-    const direction=stage.camera.position.clone().sub(center);if(direction.lengthSq()<1e-8)direction.set(0.5,0.2,1);
+    const valid=a=>Array.isArray(a)&&a.length===3&&a.every(Number.isFinite)&&a.some(n=>Math.abs(n)>1e-8);
+    const direction=valid(view?.direction)?new THREE.Vector3(...view.direction):stage.camera.position.clone().sub(center);
+    if(valid(view?.direction))stage.camera.up.fromArray(valid(view?.up)?view.up:[0,1,0]).normalize();
+    if(direction.lengthSq()<1e-8)direction.set(0.5,0.2,1);
     stage.camera.position.copy(center).addScaledVector(direction.normalize(),Math.max(size.x,size.y,size.z,0.5)*2.5);stage.controls.target.copy(center);stage.controls.update();
   }
   function sync(){
@@ -67,7 +70,7 @@ export function initViewPerformance(api){
   return {
     invalidate,revision:()=>revision,sync,stats,
     isSolo:()=>!!soloModel,
-    refocus(){sync();if(soloModel){focus(soloModel);invalidate();}},
+    refocus(view){sync();if(soloModel){focus(soloModel,view);invalidate();}},
     editingObjects:()=>soloModel?[soloModel]:api.objects(),
     snapshotCamera(){if(!savedCamera)return null;const {up,zoom,...state}=savedCamera;return structuredClone(state);},
     beforeRestore(){restoring=true;if(savedCamera){const original=savedCamera;savedCamera=null;soloModel=null;restoreCamera(original);}},

@@ -1,0 +1,3887 @@
+{
+  "date": "2026-11-02",
+  "reviewer": "Codex original/3D contact-sheet visual comparison",
+  "scope": "장면 배치용 근사 포즈: 몸통과 큰 관절의 동작을 대조. 원본 픽셀 일치·숨은 깊이·미세 접촉·손가락·시선·무게중심 정확성은 보장하지 않음. 미해결은 자동 적용 제외.",
+  "pages": [
+    {
+      "number": 1,
+      "count": 16,
+      "sha256": "9712e5d8e7ff6364b71284a6dd402655e7c998fe11fc62ed306aef53cfd6e3bf"
+    },
+    {
+      "number": 2,
+      "count": 16,
+      "sha256": "08b61c5e6d0418fef97889ce79b900cb083ba6b55edcb1d5026276de5c1a6b19"
+    },
+    {
+      "number": 3,
+      "count": 16,
+      "sha256": "23e4c16b7df9f5bf82bedef135c80f10eae03c6f9a83d1809b528dca9b47e2a9"
+    },
+    {
+      "number": 4,
+      "count": 16,
+      "sha256": "568a8445536cc17d574bd7327ff81c64ddaa50badbdd69525836d67c0afe7082"
+    },
+    {
+      "number": 5,
+      "count": 16,
+      "sha256": "0756aeb800273733fcd45fb625dc83cc7f49e685c678b22d5038924566bf64af"
+    },
+    {
+      "number": 6,
+      "count": 16,
+      "sha256": "a3110f1d65f2c6697f3fb82e412a3b99e51900571c95cc56d62677ef03141da4"
+    },
+    {
+      "number": 7,
+      "count": 16,
+      "sha256": "2995a0637fed255819cb22d2afb2597168c49b2207e77b7535d563172d8a71f2"
+    },
+    {
+      "number": 8,
+      "count": 16,
+      "sha256": "d4bf9c49cf80ff847ca02d94cbdf98a973cd74f2b079679371cfe497019a0aa1"
+    },
+    {
+      "number": 9,
+      "count": 16,
+      "sha256": "e89ec1501a20a14dcbdb8f29673784b68c4f8786ffa2efeaaa49cd43586ff7bb"
+    },
+    {
+      "number": 10,
+      "count": 16,
+      "sha256": "70449d7aeee987a17fdf8e0872995d84508ea5b4ece30df45822cc48b9a0cd4a"
+    },
+    {
+      "number": 11,
+      "count": 16,
+      "sha256": "143d93e8a91111dc275971913a721697fc5244cb5d339e2040866f14f36d3e2c"
+    },
+    {
+      "number": 12,
+      "count": 16,
+      "sha256": "7f5b74d39b035ff4ae0ec31acb097d576e2f7a2c450b7a903365ede40d3e8d3f"
+    },
+    {
+      "number": 13,
+      "count": 16,
+      "sha256": "4fd5cdc97d0f0bd07fb50f9971132d332d2689b5d5e8f660c9a9d80c3aea550c"
+    },
+    {
+      "number": 14,
+      "count": 16,
+      "sha256": "e9a08180b4a4c881ec4baa68ce2cdbbbcd64b0af19cb027446e6796ed9081f39"
+    },
+    {
+      "number": 15,
+      "count": 16,
+      "sha256": "3daf426152718f2ec907c477f67a7e9233036ab3b16a71f0861dafc023b08898"
+    },
+    {
+      "number": 16,
+      "count": 16,
+      "sha256": "5bf84b59e55b56e55e3f88d4a6d8d7c33973534d5133a54a60c7e1c419259918"
+    },
+    {
+      "number": 17,
+      "count": 16,
+      "sha256": "942344d78b58353b32b7d899d70acb7517e5af36d9206f007aac7c0ca980add8"
+    },
+    {
+      "number": 18,
+      "count": 16,
+      "sha256": "b2293eee33352180ce878b5b01403c15a0f709cd89f6aae096afbcd13c0daa9f"
+    },
+    {
+      "number": 19,
+      "count": 16,
+      "sha256": "f6081b83c78ede0de9f756ce9596d7c9948591ea1bbbeee263cb4ef2e6c8270c"
+    },
+    {
+      "number": 20,
+      "count": 16,
+      "sha256": "d2e0933e22f89b3f8f27e52634d253128fa57a41d8c30d6de1675c5432fb9d5d"
+    },
+    {
+      "number": 21,
+      "count": 16,
+      "sha256": "409099885666eb03330fcf70511148f3beb49abfbf9ecb386fc25fc32c750083"
+    },
+    {
+      "number": 22,
+      "count": 16,
+      "sha256": "a8d0346dbc464948551dafb8328b0b362729276f63023d67468d44e5cfecca2c"
+    },
+    {
+      "number": 23,
+      "count": 16,
+      "sha256": "715133e6ab0f54740ce9fcac690f976293e3588d6bf2b4bfb1e0428eefefe45d"
+    },
+    {
+      "number": 24,
+      "count": 16,
+      "sha256": "cbb107ae9dc68e398d7ab2cbbeec52ac08b471bce35c94a46c8418e31b948478"
+    },
+    {
+      "number": 25,
+      "count": 16,
+      "sha256": "3ed248fa8b851ede1bf50fa35644e11bddc6c4945264ac992817567e052a4ad0"
+    },
+    {
+      "number": 26,
+      "count": 16,
+      "sha256": "9325b04afd210da429fa6912bf95d8b29ce247e7d8070c69c2217f80c5b4a65f"
+    },
+    {
+      "number": 27,
+      "count": 16,
+      "sha256": "6e88a70972530461b594e4f57db2637b181237a6c82f6560afa8c5011d014046"
+    },
+    {
+      "number": 28,
+      "count": 16,
+      "sha256": "9cd219f1bb374c39053d358c8c23994462a4375a74121655657357cd6c92dea6"
+    },
+    {
+      "number": 29,
+      "count": 16,
+      "sha256": "5acc386396908056531a5a13a1a5827d91f99cda96b70c467b6e39ae2e23a2d1"
+    },
+    {
+      "number": 30,
+      "count": 2,
+      "sha256": "817cce876d63aa79a32bc9059f5006f01ce4facd183945d65bf4b43da5f5a81e"
+    }
+  ],
+  "poses": [
+    {
+      "id": "POSE-0008",
+      "page": 1,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "42d10daf651644d3e49cb991f63189a879b64df40d7495da0c3fccd591b57bb1",
+      "candidateSha256": "e95605a7ee36cdf8c3da6cba3fe52f9cdafce2d6a4649a28ac95eacfbadeb4f2"
+    },
+    {
+      "id": "POSE-0040",
+      "page": 1,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "16e7ac553545caa9ec8643242abd75d5adfcfa85e60ff391c8b0ff7439fd2115",
+      "candidateSha256": "fefdb832456dc938c4357b67399e1390506170a6565dd9eee2ced83df80bb79c"
+    },
+    {
+      "id": "POSE-0055",
+      "page": 1,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "9baf84d1ba63622344694206c5209156b6d0cffaad981dac3a9111e4b3938b49",
+      "candidateSha256": "6c508b3e106838fcf9bb499dd3edea7a4428b51ed5f070262bc74c70d7092a87"
+    },
+    {
+      "id": "POSE-0072",
+      "page": 1,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "47683614c955b72eb80a54ff4f4f80939b8efe16ae6fe8d62121d0e48c66d58f",
+      "candidateSha256": "6a1b8e05aeccfdf57ad22a9b11d55570a76d80d79516d7be9b053ea28abe7f71"
+    },
+    {
+      "id": "POSE-0081",
+      "page": 1,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "cd2d04b4746d3d492a27846f8891a57508e978c9494aba32367f1b890ad9d59d",
+      "candidateSha256": "31f8e37195288dff0c5ef0a3a4543dc1cd6c1d3111d8dbf4078ec2b685e3f704"
+    },
+    {
+      "id": "POSE-0101",
+      "page": 1,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "2f6a94ba1cabbc8d8261c9bcce1a0383fdf419d9de6ac45ffa60c876bee45095",
+      "candidateSha256": "a9312475b35018804d62017061bb4e19358a2e78fc787d20aa1047a7d30f0f59"
+    },
+    {
+      "id": "POSE-0104",
+      "page": 1,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "ffc8557a95820777729ab1933b94d54d6eaba2a0254f59a4e9153b925fff256c",
+      "candidateSha256": "36402ded980c76b688a5508cddb77a0ec3f2c816b64fb3d6dd712915c02f033a"
+    },
+    {
+      "id": "POSE-0107",
+      "page": 1,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "1870ac9eec3e7780804928f7b7d81b39850339945410928976250a2bd16f054f",
+      "candidateSha256": "dd29b17c4c941e8ab365008866addf4aef34e388443d222a2c1de19a3934e737"
+    },
+    {
+      "id": "POSE-0109",
+      "page": 1,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "2f7ebeba2e2fc64f81ce66049a7fcf409d3a5ab9eb64604388bb9b10973476ea",
+      "candidateSha256": "be6c4838436a6184709d85096ee9244ec94e56c0fc5c87ed95d27cfd1887a97e"
+    },
+    {
+      "id": "POSE-0114",
+      "page": 1,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "1e4b8dd79d2df4697e1383e436771c4264fa8b4e4bd6d0ebf42f817f02fef843",
+      "candidateSha256": "4d4242c17ffdf8a2779ef48dedb2e48678ec231c62f5da126866a0620fc5114e"
+    },
+    {
+      "id": "POSE-0123",
+      "page": 1,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "042635e65eaa12ed9c60ae02c96f841f6223203227cafec4e5394142be0236f0",
+      "candidateSha256": "3375df4da40429941a6f51fb160093dcdae5f071d0c978ad873f9e412152dcd0"
+    },
+    {
+      "id": "POSE-0124",
+      "page": 1,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "6aa5e1dbaefe6fb982929ccc904252e9e6c639e6c42b2fec33189c9fcacb3f7d",
+      "candidateSha256": "f6e531e681e5f5f98603ea9d90fe18d389afdf8ec8b3f660c11ecbf796155700"
+    },
+    {
+      "id": "POSE-0127",
+      "page": 1,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "2034488e6140a170856c2ae3ec22942ba1afdbe9e6bc376b148fa641c657a426",
+      "candidateSha256": "7e9945fc86a4c8c9a10ce1e75811df4d3a339b99f7efeb9fc5834e624a16e596"
+    },
+    {
+      "id": "POSE-0128",
+      "page": 1,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "3d10ae4916ea611f2b07e31a7e8aa5315ca94eba9f3f4fe4e2979d2db76a5f71",
+      "candidateSha256": "d064a38434f07d4a0b2e73d2883cc427a766de000996f4b73e44e1d6786c4589"
+    },
+    {
+      "id": "POSE-0134",
+      "page": 1,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "56851625ddb6bb8cf71a775105e97d4adfb6b44f73502fb34845cd49e9214ece",
+      "candidateSha256": "a6b2667758df15e57d08b295dc40f8cee444d56bdef63967364389333cee0b08"
+    },
+    {
+      "id": "POSE-0138",
+      "page": 1,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "20103aaaef5f4ae01e6caf100dfd662106d293a6f308c15c08174a28509e8c22",
+      "candidateSha256": "26809a2eaea4e13f84b2d5d8a333766e079b0e763404ecca10437082edcaec08"
+    },
+    {
+      "id": "POSE-0146",
+      "page": 2,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "af5a117beeb8fb850e7e88b9b5f7cb49fd8cd8a223a492c45868667e8c13fba5",
+      "candidateSha256": "9d5f2dae909f2c0c02c1d114d8aa593b0a26783198e94502f8097b65b176453b"
+    },
+    {
+      "id": "POSE-0148",
+      "page": 2,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "87603709aef7b2d71eb0f84ccc17700b6d6edc1473564e30429151964ec63811",
+      "candidateSha256": "12b5b9eb99c993fa1fe69c21d3a99b40e1aff4cfa4f1169fb854034c8adeb023"
+    },
+    {
+      "id": "POSE-0149",
+      "page": 2,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "b08cda300b50caa782328137ec06fdbcc45ff5e7f43d2dcbff52909c32848d66",
+      "candidateSha256": "d818756d76be89c20206939b4b35fb8d1715ffa81ed9dc69108575666168705a"
+    },
+    {
+      "id": "POSE-0152",
+      "page": 2,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "9ed894b6f17bba825bf8191e58324b14a89a4154363d923084d38586a9e60049",
+      "candidateSha256": "e4c49b90403fa93f1620929d93c5bd5cab2a099c1d318129ba59eaf36751de91"
+    },
+    {
+      "id": "POSE-0157",
+      "page": 2,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "6fe05b330fa4149ea715590bb4f3bd5f2faf35537a2ac8f92512bcea0e68710b",
+      "candidateSha256": "5e7d56a575caa9283ebe8099e883a8f311483141425347347c8052d5488392b5"
+    },
+    {
+      "id": "POSE-0171",
+      "page": 2,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "72c958b9d0e927cbb0e598e9c64b8b607119102f52044c1416223a519d99da6a",
+      "candidateSha256": "e9b532530c52927964d7a4208fd0ad4dd909ad8a657ceb82cd5ca87183b44640"
+    },
+    {
+      "id": "POSE-0180",
+      "page": 2,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "fde1d40a03136f30faf978c3670f1c12bdcec7bba48b0a134063e082b5e8c297",
+      "candidateSha256": "dd20635563e0860b871e0d6ce49162ea1fc0ce1451614cc57e46759e080857ed"
+    },
+    {
+      "id": "POSE-0200",
+      "page": 2,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "1840095abdc3e651ccbf7c961d088a2057a91c45c486fb41367db302badb52ee",
+      "candidateSha256": "ecf7f47b216fd26b03306146c6db41325a35fb0964ef182cc1e176faeb31adc3"
+    },
+    {
+      "id": "POSE-0201",
+      "page": 2,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "0024bb64918160f7b35c22897bced621bcd91a5460f439fe0ad575972519d4a5",
+      "candidateSha256": "79482aa33ff7d065d7dcfe49ba520fe10807576bac06a482a7e280a7b9f9aca7"
+    },
+    {
+      "id": "POSE-0202",
+      "page": 2,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "08e90a7a457f2af6d7940ba9b7cbfcd9884387ec2bdec300e920727bb8ed7903",
+      "candidateSha256": "f7bc022d98f9876a95f3f79d81dead63b8024027ef9e9d93a5ffffdf664fac34"
+    },
+    {
+      "id": "POSE-0203",
+      "page": 2,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "1f21af1009d8933a0ac5d460ff03195e25ed94a39c78bba431733c8083995ded",
+      "candidateSha256": "f187251ab3c8dcfc4899e7be2306600e0177c806c7b108590723c1883119160e"
+    },
+    {
+      "id": "POSE-0204",
+      "page": 2,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "16f7fd09061dce23fd339e95e6f64af1c1eecb928b06301e8a482fc587710425",
+      "candidateSha256": "c2e2b930ac61b00bfd108d48b984b8da966dbb63c737e891982f9a30a11a6c0a"
+    },
+    {
+      "id": "POSE-0205",
+      "page": 2,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "fa09d002ea513b021990b8a29e606b4492e87191b81cd86d98fe65fbe242677e",
+      "candidateSha256": "cf038ee3cf041f45f40e10f87485bf14f4cc5175aa3ec0a5f7336192cbb40a61"
+    },
+    {
+      "id": "POSE-0207",
+      "page": 2,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "871d88d717580ba8843f032802cb0be0a4f77a8466d757fcfdaa9c51de9a9c8d",
+      "candidateSha256": "aeb40aafe8c37aa394e5c79b350f0b01fc2f888e88a404600c6ffc0f9bd2fd8b"
+    },
+    {
+      "id": "POSE-0208",
+      "page": 2,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "09480c17f585825651d5738c6e043fd1e8db59cbfa98bad8b89be7da216dd782",
+      "candidateSha256": "6d764e3038095d8fcf420e95d35b23ec6ae2f6af7c20582afb1bde232d896536"
+    },
+    {
+      "id": "POSE-0209",
+      "page": 2,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "111c070e347ec30bdccc1e6aecda59bc105fb0696bc77be956539477245ef4b0",
+      "candidateSha256": "f2692a0caddd6736c284829bcd532a09a0dce5e24abca887a25f1237e13c0083"
+    },
+    {
+      "id": "POSE-0210",
+      "page": 3,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "f6b1e6264944dd3531474c0f193175138d4cbf321d5ac8fd522f217814bd6d30",
+      "candidateSha256": "56bf23198b448329ec687ed575c5f3f9a2573968704d590714b4aa6560f60422"
+    },
+    {
+      "id": "POSE-0211",
+      "page": 3,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "7d6dc888f471cd758b86b9c329e5ceb6ea137fc0168da055a36463d6c1d61a07",
+      "candidateSha256": "1b7f740538e3a1d3df58fa6e78162b51f0bbf10873bfaa1aa1b4ea38b0bd1a32"
+    },
+    {
+      "id": "POSE-0213",
+      "page": 3,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "f2ef2ddf64f0ec672511f48710b7b50c75b269e6e37a3e19ff6cfc3bedbf6611",
+      "candidateSha256": "b679fcfacb68c2bf72f298aed6716714f5784e6088223794160f045c8607c977"
+    },
+    {
+      "id": "POSE-0214",
+      "page": 3,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "90307a81995936fcf7ded27989df87d57efb8cac6a5791c24db665a02c91a398",
+      "candidateSha256": "4061ed1d67b1dd245b095277787fa0a7fe8f35cc97b69598ecc292afb671d61f"
+    },
+    {
+      "id": "POSE-0215",
+      "page": 3,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "3e00a08ec4a2066b938a80201e5e758a30fec993058c1efbe8980b553321b327",
+      "candidateSha256": "63f12fbf9d3f14444a1691c7b246340a562f1d2fa419211862c4b8236227c9b8"
+    },
+    {
+      "id": "POSE-0216",
+      "page": 3,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "3507175b6293a9184ad079b9a0121ba6d60079792f4137992f52deabada78213",
+      "candidateSha256": "ca1106883c9b0fc70814b653f8e22b64d90beead8d90d545650f9c2e6b6f4b76"
+    },
+    {
+      "id": "POSE-0217",
+      "page": 3,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "2bb464a4b3c504f1ac31d8d248dff341f3eacbff30d3dcb945407a503f7f74ba",
+      "candidateSha256": "86143d7fdd1976611551171abd4c398bcd44b42f4c3deb31ec5313a9f5c2e0a7"
+    },
+    {
+      "id": "POSE-0218",
+      "page": 3,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "6deabe4754014e3bc4dda1274870ffdc06d86a317f4a642d3f5397260f08b4bc",
+      "candidateSha256": "6551cb2876548e8c8e39c8417fccbf7c17cc4141c71d36b2f9c4a34129101f5a"
+    },
+    {
+      "id": "POSE-0219",
+      "page": 3,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "483282d731693bd3d09a6fab2b62749aca6ed395879da1a621b565b90e1f7f65",
+      "candidateSha256": "a9e1ee5e43abec893d382f36cc2391dc9a5b72099d1170fc00903b8425d768b4"
+    },
+    {
+      "id": "POSE-0220",
+      "page": 3,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "eb1643aee36f62aae2fe33aa262b94596eca8146c611b0fd1186e97acc9e4f60",
+      "candidateSha256": "bf95a6853260e6f2305e769fedbc642baa78151751345fb190ce7f1e0b6ec705"
+    },
+    {
+      "id": "POSE-0221",
+      "page": 3,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "a4a06214a20a77b801cb6ece4507df646a86b4b7a0927c7d465918ec0b111422",
+      "candidateSha256": "6a32b96d792273c41f5beb9d67fb1d9f193dcb0e20ee41f4811e057f72dbef23"
+    },
+    {
+      "id": "POSE-0222",
+      "page": 3,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "fb434c768f4fd8b394e4cc51840afd20d2d051dce118a0f443d0e75d73a0e591",
+      "candidateSha256": "70fc9854dd9083cd1154095152f3520e052cda0af9ab8bf63a1180c5af759582"
+    },
+    {
+      "id": "POSE-0223",
+      "page": 3,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "305efb3b2ab23e89992935ded6dec8439049f8365c4408e9b972212dd3436403",
+      "candidateSha256": "aab01d7eed429753e6bbd6e53f94b650599e092ef875690ad89f227d22fedc9f"
+    },
+    {
+      "id": "POSE-0224",
+      "page": 3,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "d0db84328e50423302dac68aefd9e4182f3721fc46e0d0bd22fed4492817eb24",
+      "candidateSha256": "283298be7302ac156873de4d618c35decc72ea74b64ac248c3be1c2315d27e61"
+    },
+    {
+      "id": "POSE-0225",
+      "page": 3,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "4c5ce28019ee3f91009c7d5e13351eb381288f51807f96d4d1775f1e2abb986f",
+      "candidateSha256": "6dbea8d1bf6f565f8720c0d332f02570c5f6ae555328fbdb890450cc6d3773ba"
+    },
+    {
+      "id": "POSE-0226",
+      "page": 3,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "c99bfa4cef474467d23a185ed589c3f0b7eff067c0fe5f53ba37059d62798c18",
+      "candidateSha256": "6b09ee19620f629578baf0f012c629aa11399335a0296456ad97b2de2517e028"
+    },
+    {
+      "id": "POSE-0227",
+      "page": 4,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "b32d43e1c580d604d006d30953aa4f2fb7669e434ac161b9bb4a84788dbc401a",
+      "candidateSha256": "e015848414e376fd33f07c9e7f8b2e44de7db2f38bde88607fb242d88b731138"
+    },
+    {
+      "id": "POSE-0228",
+      "page": 4,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "61ec13ecdb73fa8bf377241add90c300855760a6b03d985fa132af5e9a0f5a43",
+      "candidateSha256": "fee4e50ae929c9d8b46b8eb899a195add6486b6673160d9b93fa57a4b9ba3234"
+    },
+    {
+      "id": "POSE-0229",
+      "page": 4,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "259ad4f6343b2ea39e715f96fbada0396c2c7d3053a3a4e918c0fffd8d4ddb7a",
+      "candidateSha256": "7e8388172bdfd0b37adaab1386e2d89b4c9003719be85d9d021dc63fcf4244c9"
+    },
+    {
+      "id": "POSE-0230",
+      "page": 4,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "ac77b1f53173286bcec4fd3c39b97b0105d9ac67440ec63916d8b9578dca6a60",
+      "candidateSha256": "db6283ce00b7505fbb1e9581f35076592e063f33a084a037730e6cb64d32bb95"
+    },
+    {
+      "id": "POSE-0231",
+      "page": 4,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "147ff05279e0b5ae0634cd74631944b8d407845eb75440738c3bf6f1e4c6c863",
+      "candidateSha256": "9cc2179dda7aee3f5eacea11992b354c4c1262bb21be2b1604a07d6ca541fa3f"
+    },
+    {
+      "id": "POSE-0232",
+      "page": 4,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "ecf4ed2e4bffd9b967fe75b0fcc1ff13a4c03152c19da4591b914017ea1635a3",
+      "candidateSha256": "757ca19e69a4000624b58dc6519a317bf41af7a209f607ccffc6d364e88a501a"
+    },
+    {
+      "id": "POSE-0233",
+      "page": 4,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "2970a252ab16379c6d313dd22be5ddfc845fe0b23884968e37ceaa5ab644923f",
+      "candidateSha256": "f861c9e447a86f3b0b5733936405fe6620984df11b0639d7549f4c896f5dd465"
+    },
+    {
+      "id": "POSE-0234",
+      "page": 4,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "b941bc746bb28ffeee21c0de041fa41f0fdba58a8471436652bc30062b1201ba",
+      "candidateSha256": "04c3fb95b6d7bf0d342769be76c954f895607bb2d307a3457ac818bab8086271"
+    },
+    {
+      "id": "POSE-0235",
+      "page": 4,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "82dbd09be75cb6551e35cd64ccbd78c666f78f333c4310b881425ff8b6c7556c",
+      "candidateSha256": "d791af955fef52d28ee0fc34727cf240d390c65177a4505922ec72d213413257"
+    },
+    {
+      "id": "POSE-0236",
+      "page": 4,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "c3caa08db7c8dd4b934520f1a8690598e483b7cc0156e9d93f04376450d86a08",
+      "candidateSha256": "fd3f6271eb6b70da34c79f123682bdf7bbe21ac355f9bb04cd7c0f28ae53572f"
+    },
+    {
+      "id": "POSE-0238",
+      "page": 4,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "65bc1139849775740529878fc061340ae8a13f9ac2e01bc6587e3c44024a630b",
+      "candidateSha256": "53fbdcf0abeb89062712bf6db292ddaad78f547601e4fff9dcd59d6bd3e15bc3"
+    },
+    {
+      "id": "POSE-0239",
+      "page": 4,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "fcae13e09a8db8d4f99889ba6af1a02017bd8e6eca65cd24c3713459d27dad74",
+      "candidateSha256": "ef80ad7611ed1b31e1d37f64e91da4dbe77d9e9489a5c1e26df45e477233bfad"
+    },
+    {
+      "id": "POSE-0240",
+      "page": 4,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "85abcfc7721998f79193e997009b995b8c50c8a72f19737c6d15dfa4ce8d13df",
+      "candidateSha256": "8cfbbd97b7828583fcd48fa084b0fb4d23092b7f8ac92e4b60b2d06048e9cd1a"
+    },
+    {
+      "id": "POSE-0242",
+      "page": 4,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "74756eec0e30b50198ad289b0cca7d4f3c4f5c0d8641a4848ec2bf11cd09bc86",
+      "candidateSha256": "6633507c7f8c63b483f6e6a89f8607f2cfee4dcc3b70365581721e8e2257a81e"
+    },
+    {
+      "id": "POSE-0244",
+      "page": 4,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "a67084107a372faeb08274e3349a64bb073db8b906c8b7c91eaecffc605cd26e",
+      "candidateSha256": "bf8e687abec2d0f73c95001f9206958451c352601bf5a76abe6dfac6c916e61b"
+    },
+    {
+      "id": "POSE-0245",
+      "page": 4,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "ece7b08fa7c50bc35e9dc308588ab30eb750aeee214cdc7bea212987cb50727a",
+      "candidateSha256": "f594b47da9b9f8892f5044559554b37c149903cf4d58654931a9987f553b935c"
+    },
+    {
+      "id": "POSE-0246",
+      "page": 5,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "d1cd8eca0decc11c3ca2d2e7f60efdd07b91eb0094badb2fa3f7e05ba4c76ceb",
+      "candidateSha256": "1a8a5e6bda563a2f6591d677f13479dc71fc025650ac880c33fe0c11b5c5272a"
+    },
+    {
+      "id": "POSE-0247",
+      "page": 5,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "6ba014e2d2607bac4c51294e4d8e4f161df99e1d9c6056acab5af3b49c69a551",
+      "candidateSha256": "8f1d4e326dc554cb99fd4aa11ef1d2b63f47d32dbd4b333752df27612cbf4075"
+    },
+    {
+      "id": "POSE-0249",
+      "page": 5,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "8ce64ca346c48391c997a30fbaba598fdf8aace92113e0b0cfb4456a93cc7741",
+      "candidateSha256": "223f84bcec2566712a0988b5554344f79892a9cebab746d6fa210e071630b925"
+    },
+    {
+      "id": "POSE-0250",
+      "page": 5,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "ece7b08fa7c50bc35e9dc308588ab30eb750aeee214cdc7bea212987cb50727a",
+      "candidateSha256": "c72961d215dd6d884902244ab69db2b918a87e66896b1de718707afbe6f9bc8e"
+    },
+    {
+      "id": "POSE-0273",
+      "page": 5,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "25e38e5eee88555d1743c0365a01c2d986c92a29f2657ad342dd94dd6219d9f2",
+      "candidateSha256": "ef6af8ea160cef84e171249d366f7905977c43631edae9bc9747398fe4cccb8f"
+    },
+    {
+      "id": "POSE-0274",
+      "page": 5,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "3efae41ce228eb0763ea6cb36a016944d4a2be362bb99959947c49623d078e09",
+      "candidateSha256": "9c8f1deebda991745166e0f0d978244d5fe89652ab1132d6cf3602d2e7b2710d"
+    },
+    {
+      "id": "POSE-0301",
+      "page": 5,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "98a18d1e6128ef4c0af7734d92b35911fd54a5492cbfcd062fdd8ce188b5be68",
+      "candidateSha256": "21ff51ff907f6b846f98cdae939791f13fe5ad54f5c07fc9c28a610804318dd8"
+    },
+    {
+      "id": "POSE-0302",
+      "page": 5,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "dec7280158b6c09f931322a4c6102e7d6af3513170be52ebecb4833d140f4c63",
+      "candidateSha256": "b1dee0796f1b3cb5cdba3557710abc1706d662067b84b812503e5761e9fdf268"
+    },
+    {
+      "id": "POSE-0303",
+      "page": 5,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "0362325eb5ed0714078f9977c6c593548859546d7e97abce736074ed9bf0586e",
+      "candidateSha256": "5b0cdbb2c4d7e7560f0f23c0e6f0fae92e0458c3f0f395954b24583e0c124f85"
+    },
+    {
+      "id": "POSE-0304",
+      "page": 5,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "481a33bbb79be3fc60723f21d942f7dabfdefa7a7146f0904ae31ce45e368090",
+      "candidateSha256": "5b19317441be3da3333eb27c739f4db7531b9e4924fe25c6a909d6730a21d3a8"
+    },
+    {
+      "id": "POSE-0305",
+      "page": 5,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "2fc6253c3a12f1f545166163860102d2e1cc8955139439a999f207d71cb7e45d",
+      "candidateSha256": "82339ebae2ae90f4191a48a1fcab078b6225d022a22794eae617e08cb64cfe92"
+    },
+    {
+      "id": "POSE-0309",
+      "page": 5,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "674913ec7cafd2a250d0c51ff2010e22e31ceb4b33b7fa5e892e1a68f2121e76",
+      "candidateSha256": "932bda45b347e4aae41a00af16b6dfc170e0a8e07259690e345b12cc055d224f"
+    },
+    {
+      "id": "POSE-0310",
+      "page": 5,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "4b75edc34375dc3d4a72a7e887bce32c1c2d8757b1c409d2a64c15c1bbc3a259",
+      "candidateSha256": "7da70f4569186718d9472fc34cfa05c8ef92a53a23b1aae7f0567aeaebef47ab"
+    },
+    {
+      "id": "POSE-0311",
+      "page": 5,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "cfc69a14da9766fe1de3bea66d5a89a1743fd25b2bc0279baffa14e02afabd4d",
+      "candidateSha256": "f12ca536d7d1f2aedfbc18c575d27fe73d46e8dc2a467b90d7f36168005c4354"
+    },
+    {
+      "id": "POSE-0312",
+      "page": 5,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "e6d8998b287401c110d0389b81c9e32ed883f0f6e14b09c829e644f8f980ada3",
+      "candidateSha256": "6c33c129a05cbbbefd69acd0ec2933f383061e5363a5783daeb7f6ea4e70338e"
+    },
+    {
+      "id": "POSE-0313",
+      "page": 5,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "096be84f5332ebb78624f20364a232c1e922b7578f02eefe597a8393e243fa3d",
+      "candidateSha256": "fe886bf0e0079eafa6b0c685b36282a896e96d156c1d37ab455a3cd94202b4b4"
+    },
+    {
+      "id": "POSE-0314",
+      "page": 6,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "32f5a097ea31df5b7f143b23ad79eab21bc4d8832565c02b3d79d06d4f5bc66f",
+      "candidateSha256": "6bee26f59fbf0db64fef924de93fc04ac7f675c5d33860bb885e93f0fa8d445d"
+    },
+    {
+      "id": "POSE-0315",
+      "page": 6,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "3232076c73ef0c56fb40d3358982d71e6ea27e83e89f13a29c6cc83503e9cac5",
+      "candidateSha256": "13e8398f2f6b809d4c290ede6c492851ca7ce8ff0701184fac91a0efd1021fb5"
+    },
+    {
+      "id": "POSE-0318",
+      "page": 6,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "f2322296d9df839fdfb7e9e2c429e24fb333b7cdba08ae32c27317b48b540511",
+      "candidateSha256": "3ebbc5b6d202d372d91997810420be0f11bf02d0873f7b75f4d41f574b6e1106"
+    },
+    {
+      "id": "POSE-0319",
+      "page": 6,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "f9a5eacb534fbc7f322123689ed9ebc9657b91aea033c56ba286efb749dd27df",
+      "candidateSha256": "e9346f770c94e0a75098e437c2579ae05ffbb33e3fa181fda3820150a8c30759"
+    },
+    {
+      "id": "POSE-0320",
+      "page": 6,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "dac43699871a3809c971fcbf1c7ffbe1e1147301e3b903d60511d3103e81e4e0",
+      "candidateSha256": "2e5a25da47abec5048512aacd1edd645c90957a5d6aa5ae5be30a74d57c49fdf"
+    },
+    {
+      "id": "POSE-0322",
+      "page": 6,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "894e1a02f1f1711ac1032d52f8e5512aa13dec0228fd49a26180960cd82d6661",
+      "candidateSha256": "0055f329ee749998c2318c9ee29428ea595ea3ab3e57cecb537d0ac11116b899"
+    },
+    {
+      "id": "POSE-0323",
+      "page": 6,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "91f54ce572b905a2a7501097fa46badfe44520d6ecbf4b66707839bf07d8dbc8",
+      "candidateSha256": "1bf55675492f6fd1546feaeb8470190cb4f67644fef6334e2199b2b73b7c4915"
+    },
+    {
+      "id": "POSE-0324",
+      "page": 6,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "2cc3702d54e91afe6dc0724657ae5f833681b2384032b2fcf1844d2dae818185",
+      "candidateSha256": "82feb01056cf2782271351ff2dd93bbb510bf6c15b4480a1a49afa73d5857e75"
+    },
+    {
+      "id": "POSE-0325",
+      "page": 6,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "4ac5f2ed2b470ec79fd5067a7291db0fe8cec70e237413a665c08dc1bc519de1",
+      "candidateSha256": "47fbcee2c8ad262f250aa89bbd9e1ccd3b28ba8eb356d6600929659d4e5f11bb"
+    },
+    {
+      "id": "POSE-0327",
+      "page": 6,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "956e182ee538b2f8ec4e86cda55a161b6698466e0e9fcf16822623932852b8d8",
+      "candidateSha256": "ee86fd1fe8e35db4e00454f622db3a31323cc903ac753da7544dadfe1aa164cb"
+    },
+    {
+      "id": "POSE-0328",
+      "page": 6,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "3629b03e89aef9e75b2dfe696c20e6565284be03fcf5bd83eaa2844493237139",
+      "candidateSha256": "6412d00f3827cfeaa93376938293a2dd77ca4d10451a8f5de11a88fc162fed3d"
+    },
+    {
+      "id": "POSE-0331",
+      "page": 6,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "36472db09a883e6b6f8d47e6e2d3446ec04818761817cc1f31edd878515f620d",
+      "candidateSha256": "2c6bba19125ecf7fbc4a2cf54b7f3b03d754869b06870d90d00ccbabb069ba6f"
+    },
+    {
+      "id": "POSE-0332",
+      "page": 6,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "3ef6af163557a6bccda3a2311a980a3dc833c3e0f8924aeab0a04f44f593d3fb",
+      "candidateSha256": "dcdcb977e23c1f55fdeb70296a6e3841242ef2860d9dd412b22054ea6ad6bd05"
+    },
+    {
+      "id": "POSE-0334",
+      "page": 6,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "f00f4b34cdd72e76049fbf123d47b52ca28cb4b5707e96a11674859175c2dc2b",
+      "candidateSha256": "6fb6d30a3c2b0ae3c62b04f09483dbd08f18598298791310fe702c6c6798a533"
+    },
+    {
+      "id": "POSE-0335",
+      "page": 6,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "1ad615714bd6e5bd51ba1fb21aadaaacf17068fe649f4d7bd3c7273da822bf48",
+      "candidateSha256": "bb877a75e4518c30be9168f2c03d4a594663b25c7bd81f358798f93565f43bc8"
+    },
+    {
+      "id": "POSE-0338",
+      "page": 6,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "bbb29cbc87fdfeeb621a886c4e4006451c5ff90e0a70a99355d30fe14d818762",
+      "candidateSha256": "6dcb2b44277d0b15514ccb390c716698634f435b5a4322b2c38b71a5aba6c648"
+    },
+    {
+      "id": "POSE-0340",
+      "page": 7,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "449e21350f03d6670d5e8ebfc8d249585c537d0aa5c33be7c6bcd144f97ac9d4",
+      "candidateSha256": "6035f896680f10728515672c7593cd2345f02cdbd998e0d0696ee5542b3279b8"
+    },
+    {
+      "id": "POSE-0341",
+      "page": 7,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "be2a4ed0517833bd51b0652cdc1615c00b0b450d5d94da93a644fc5f8fe6b6b0",
+      "candidateSha256": "07cfd4925419061a8b769e0746172665e9306aaefefa94ebff12d0b379aef081"
+    },
+    {
+      "id": "POSE-0342",
+      "page": 7,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "93834ccc5610dfcdc46b38eef1c3911ae2fd1ea76fa19e30d485819b00ce6098",
+      "candidateSha256": "8985008db137741b5f1bd033887e8e2ca7041c64dbef252ec3986f6114d9e6ff"
+    },
+    {
+      "id": "POSE-0344",
+      "page": 7,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "640aa019dcd8d9302e5568afeea8f96a674a1b85d7aa038ea4629251998b269d",
+      "candidateSha256": "33c751ab6611287a50fd150db99141ec59eb54980995ac4ff42603b7f3ce8c10"
+    },
+    {
+      "id": "POSE-0347",
+      "page": 7,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "c0602b294737c860652937fbb07bd62325122fb4254d6ad0beeb2f6e864c2933",
+      "candidateSha256": "da247f8b4227b08142dc982891440166a0bfc02fec68997a0020351d04ff1b32"
+    },
+    {
+      "id": "POSE-0348",
+      "page": 7,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "6669413ff894895062ccf238a42bb755e7325133aef5d1b16198541e1806b301",
+      "candidateSha256": "d0218b94dfc10ea0c9986932425daa4a7f55848a3fbed775ddcb9b40e0b6608b"
+    },
+    {
+      "id": "POSE-0349",
+      "page": 7,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "6154d991118f87d2913f96e32dcb5e17f3d4ecbb0e0c579d16efb87313b80d35",
+      "candidateSha256": "823b141f6f0dedf3ed15f6672da3ac337eb9901e9fd993cc177c3dc04f121bc6"
+    },
+    {
+      "id": "POSE-0350",
+      "page": 7,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "29dc7d607dda41da9b19c651af0f72016cb3349f8eef433c7d0116c66bc51ae2",
+      "candidateSha256": "1504de30f503722c602098fcc8109836e7885083b1f877ab41bca4fc7153ed51"
+    },
+    {
+      "id": "POSE-0351",
+      "page": 7,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "84d4f4185c5a214bc5a70fbddcaa4b4f3484dbdb34547f1e062945da218edadd",
+      "candidateSha256": "5b96d85eb47199a633f379fea1ee28a531e1c3417123ddb00c5397fb4a68d7e6"
+    },
+    {
+      "id": "POSE-0352",
+      "page": 7,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "d33c2c610f89d036d41855bb6949b7784c038f24b7d510763ef0a42ae3dbc6a5",
+      "candidateSha256": "7b4df5b5aac5ff35cc08d77f1fb0aaf639199a5c49c54fb0087d66fc82e320c6"
+    },
+    {
+      "id": "POSE-0354",
+      "page": 7,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "8fdc5e1ea78e1de93ccedfc0e720d61e5370580fe690bd4b364357d56816343c",
+      "candidateSha256": "69c2450ac50ea6df240cf23daf1a03a802cc9a1d474449ed3ee705a8b3a6d2ed"
+    },
+    {
+      "id": "POSE-0355",
+      "page": 7,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "beb2d34048e9897d30795d673eaf4aa27a18e662c51b448ee8fdf9f936e18942",
+      "candidateSha256": "83145468467d9bf23e201c7c3db186b1384fcec8c9d5582ad8cb416338595239"
+    },
+    {
+      "id": "POSE-0356",
+      "page": 7,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "c7882bba9e6efe3259cbd4bc18d2202c746893d789156b3efb2de305dc7c6b66",
+      "candidateSha256": "5282e7e88bf2c9271aac1c3c4cdc3962f972466cf29c559d3e365d2dbd61a33c"
+    },
+    {
+      "id": "POSE-0357",
+      "page": 7,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "c35aac964e999e0c4b3c1ef532a1a171bafec912e594607d06dce8ca87208178",
+      "candidateSha256": "ce1974775cce271a5182a7408df60469b32a2991eeabaf43ef530faf901f9644"
+    },
+    {
+      "id": "POSE-0358",
+      "page": 7,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "cdf4fadd60f4c61d22bcc276e61cb22795dcac204621e985c0011782045878ae",
+      "candidateSha256": "ce11604f41121fb74731d4ff94536dd2261990e928071c146a163445a2eb2f84"
+    },
+    {
+      "id": "POSE-0359",
+      "page": 7,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "5c14cdd25ab57c9d1da305c2111d9e03038e1529e529a2098a56523bc98bc0d1",
+      "candidateSha256": "f892e3beab98e57c649c09905096625e4629f0fff8f6089830a35affdf1f7aab"
+    },
+    {
+      "id": "POSE-0360",
+      "page": 8,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "dea55513d16279a8878b40371fdfecf56b2ddc98c122bcff48fa9a5ba0ea8316",
+      "candidateSha256": "0ee3b816901bccc6b3e929821aec041006959bbc5e19dc815652231f79b14d40"
+    },
+    {
+      "id": "POSE-0361",
+      "page": 8,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "0d57af3ae0f262ecc918c317318bf6f258c71cb925a25a5b86abf9eef57005d9",
+      "candidateSha256": "9a4c87daf5ff923fd5ae1f96b41b89f372fce60a4d883b82d775eb500db8a44a"
+    },
+    {
+      "id": "POSE-0362",
+      "page": 8,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "af7ed394e9e2fecbfa294410d71eceaea86792330cc6a9de5247333e613da42d",
+      "candidateSha256": "952abd5a4e61af1046ad47ecd316148fadaaf674fc3e4d473e651e64b09f2c40"
+    },
+    {
+      "id": "POSE-0363",
+      "page": 8,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "c34ce528890fb825cb3cf42d9480618ea5d2c5f2bcc4f8b26f354b646544a227",
+      "candidateSha256": "a6f531e3937a3010c7ae4ea559dc361377eee7bd0047716f31cd964af540d56e"
+    },
+    {
+      "id": "POSE-0364",
+      "page": 8,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "009b9d70f402a156305755bd8cb299b5256829726bb7ec518bdd94e657ace1eb",
+      "candidateSha256": "b11da51fb7a20789e247c8936a06b9b254fa85223451fba03d808c75c844e34d"
+    },
+    {
+      "id": "POSE-0365",
+      "page": 8,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "d40c9425194eb254288a237df86c9b2873fff9e595110e9cb352e54124a0da38",
+      "candidateSha256": "56600fc5740e984925ea4bc90325f7fa13c1e50b1aa18dc97848fc4ee8274ded"
+    },
+    {
+      "id": "POSE-0366",
+      "page": 8,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "058617df0923e7c8e09dc23aef61f2170bc781214a3e1b7f8328127a9e328d91",
+      "candidateSha256": "ce8d936da279cd93c2738c9c6510076cecfe007bb1279bea4bd68578e7dbeb6a"
+    },
+    {
+      "id": "POSE-0367",
+      "page": 8,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "5d023b0aa2f00a006dd7841b32fa934d5582e1883aa5eca76db0cfb0205baa74",
+      "candidateSha256": "9a64d9e918f6fa94cf68b57dfc626bb54a05166b530c618bc8161219b33312ce"
+    },
+    {
+      "id": "POSE-0368",
+      "page": 8,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "0a15cc428d7c8f70ffe464e6966876af3271105ccc38f0fd18754c002ad76b61",
+      "candidateSha256": "9c2a3b7afd6757de43703382e42290e5a604aab4f55bbe19f8870fc80ce7540d"
+    },
+    {
+      "id": "POSE-0369",
+      "page": 8,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "a7b5d4f2e4c293a4777fa3d1cbbee459490e691cc1388a861611594231b1751d",
+      "candidateSha256": "bc5425e2cc643d9eddbed62988c5786e661e1d09da38519be6c31c2139efce4c"
+    },
+    {
+      "id": "POSE-0370",
+      "page": 8,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "8c99573033accae77c37c05b6468845540d118ee53a489e87a99405b4c6fc7e0",
+      "candidateSha256": "caabfdf55fc0b397129aa3127ee56ed4be775d46537ce61adc505fec3fcf07da"
+    },
+    {
+      "id": "POSE-0371",
+      "page": 8,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "79b2e5734f8174705e6c98b428b08bc6eccdba18050811dae3135a9259c3036b",
+      "candidateSha256": "7f5070dac7e94c546a729e3db04c14e62228805b8469cfd2cea13b7ba83eb911"
+    },
+    {
+      "id": "POSE-0372",
+      "page": 8,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "ef832f8d5cf27db66f205ce84669b468e5c93a8f53077f2efe905b9d35a2dc44",
+      "candidateSha256": "6f45733ec52549ccff2cbe61aa741a9fbeb241cce098799ee9fb9c677f949513"
+    },
+    {
+      "id": "POSE-0373",
+      "page": 8,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "472b27bfeb87d6a711810ad734f1fa01c28987a34c850d873d0e7fcdd61c0c25",
+      "candidateSha256": "e31291bef741405d2bdf9b314e9e6107cba6c4d3c8825a39c577dcc1aa7d09c5"
+    },
+    {
+      "id": "POSE-0374",
+      "page": 8,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "ede518b65693e9c80055b767a2ef3195d4729ed9f6d7dd7ba6d566250809c8c7",
+      "candidateSha256": "988f8b55575c2983f39fe2462e7e0ceb6eb4a19719a4509cd568eb6c464aaf1e"
+    },
+    {
+      "id": "POSE-0375",
+      "page": 8,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "c2e25594cc6059406b6008b14d89ec6c53ecc873aa10cf05e4eea21184f16fb0",
+      "candidateSha256": "f5cf9e3bc395d0527518ed946d0a13c075758de9213fec0ac45e0872ca12038f"
+    },
+    {
+      "id": "POSE-0376",
+      "page": 9,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "d7c897716dc0ab36fd030e611794e17f2bdd4bc737cae29cd7f9d59cd963a3f7",
+      "candidateSha256": "5f706ada522d160f4af0f34a9c7042d7168354d0ac05ec0a84a98669ee5999bc"
+    },
+    {
+      "id": "POSE-0377",
+      "page": 9,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "52d3724f0aed47ec0cb445fa0f0cdf773b7883a84ac1a502e1940dc5779d9f22",
+      "candidateSha256": "94ce29296c13fdebc3a9d50418a1a421fc3ec76a559ded30d55c7ce30496b7b6"
+    },
+    {
+      "id": "POSE-0378",
+      "page": 9,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "56426a591d0126bbb14115220816c00befede18fa27658354f101bf26c70c614",
+      "candidateSha256": "1ca41a8d39cc127c9df71ea2e913ea5c2921adc66c40f46a6a8d087b11e907a9"
+    },
+    {
+      "id": "POSE-0379",
+      "page": 9,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "eacff4e615246ba6861cd36434e68a239cbb83a853f3ec62b0ea7fdf8f80bc61",
+      "candidateSha256": "9059fe6b928a942c39181d1ca431210f35f3704f428a7e77801eb413d062df54"
+    },
+    {
+      "id": "POSE-0380",
+      "page": 9,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "eb7179fc214afbcb64040f088fa5219ef56951f6c9f7dbc41b3b1eb3f5e444b3",
+      "candidateSha256": "8334af03481503fdc63160103c2e0c554ac6c23bfc3b825809ed7d8da4fa76a8"
+    },
+    {
+      "id": "POSE-0381",
+      "page": 9,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "43dd6cfc367cfa7762aa1170030cdbb950f5e67819baf1ce41d9c2b14cceeb22",
+      "candidateSha256": "a488ff8d6b75be21ee6c36c1789b0cdaecd4419d4c1d799fdb659169b2e64956"
+    },
+    {
+      "id": "POSE-0382",
+      "page": 9,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "a4ffc55566a7089d9f952197cc5c64584c6c5b71a203cb4ea670c94937c0e272",
+      "candidateSha256": "4328b20725e6a2b24910077d683c404d4339f0376fafffcaeb17baa5ce7ac87b"
+    },
+    {
+      "id": "POSE-0383",
+      "page": 9,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "8ed93104d7ded25cff26aee0900cddd9c8d212e719370230343dc31486f2d275",
+      "candidateSha256": "0b869d80e8d2a239372c8a6100d6ecba0666373aa94ab61adced8ed688a2061b"
+    },
+    {
+      "id": "POSE-0384",
+      "page": 9,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "bb8859c152aa10bd3e15aba0052b26bf015a85489928d8ffc1e31c2e292b3c38",
+      "candidateSha256": "8783b8eeda5e70080710c73794a831394631161728786906d53fd8bc61943519"
+    },
+    {
+      "id": "POSE-0385",
+      "page": 9,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "36068c3a5682a23dd455b119d5503ee8d72d0a7248de3315024b86871bf4696f",
+      "candidateSha256": "197e755c16b96c2354a9a469cb55bfbe7dfa17711694e07cf842238b5c4fee70"
+    },
+    {
+      "id": "POSE-0386",
+      "page": 9,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "02833f6259e56bed2022c6e8c0d2a10eef487c8d6080d63d788534f31a1f2c2e",
+      "candidateSha256": "bebd3c735bc5564a6d4009667c5788d7bc287595499a3eb1eee2782cbe60217c"
+    },
+    {
+      "id": "POSE-0387",
+      "page": 9,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "f13de891e99d1380950b1765928d7b4913782590e0dc441e70883e9f2396fd2c",
+      "candidateSha256": "998f03e32c5a2d518449b0cb61d55b1bf3368a16fb5fc5b329181bf531ec69c3"
+    },
+    {
+      "id": "POSE-0388",
+      "page": 9,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "b03d30354ee8c2140bb2f318c4f1a7e15a91ad4930f3ba64272b27a1d6f88ad9",
+      "candidateSha256": "5c8288e2408ae78b5afdc435feb99960e8e2fab43d91490b44f88cf3f900b3c4"
+    },
+    {
+      "id": "POSE-0389",
+      "page": 9,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "f9dc10ebf03fa4d9da99dc4d5924a2d322510ec26057d2eddb4861c084cdbe02",
+      "candidateSha256": "6be9add8ab4e073d32fc2fe37f68ca3c56e497f9a6ec7e94bcd27315c3cbc802"
+    },
+    {
+      "id": "POSE-0390",
+      "page": 9,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "bdb6d907ec71c0de13a0040724903dc9cf6c4bd075d523249969a82d2808853e",
+      "candidateSha256": "857dca8d9b64953288a4792631577a301f283a2d6b3bde2216c4ab5583ebff13"
+    },
+    {
+      "id": "POSE-0391",
+      "page": 9,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "c6618244db218e9ccb1f5a806b37feb13e1089108f2a21b74b34a157e24fab8e",
+      "candidateSha256": "63edfdd389d510b0b888b7fd3f8c9939e08ccb3f8ed826ed4b52956d250f112e"
+    },
+    {
+      "id": "POSE-0392",
+      "page": 10,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "708a2e8227d39e629af973f268f1e7678bcfe42933a680a1389d0577929c9399",
+      "candidateSha256": "25d544aa43c58cb9e4b3b0061be08146150c4bcf63638601f6c5dfe17a3e821c"
+    },
+    {
+      "id": "POSE-0393",
+      "page": 10,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "ccab384d6466e2131c7df1b9137749907bd628e6d67c149e971518870eeca0f9",
+      "candidateSha256": "5db2541da198c694ee5d6658037c89af908c8638a1c1178010048c457aeb0be6"
+    },
+    {
+      "id": "POSE-0394",
+      "page": 10,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "5199620436aaaf0599d770b3777585d1dbcb3f51e31bceb19bb1432128c7bd70",
+      "candidateSha256": "edf3a53fdc9ff50f2d4bcadad093bd354e3990e1e41358529241abbc87724bfc"
+    },
+    {
+      "id": "POSE-0395",
+      "page": 10,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "e8fa9eed02efc41737ffd61fefd5d9067eddccbbc668259e00d8ce435b7305b2",
+      "candidateSha256": "e4d3d5d95164fc06929c363507c2e224741d9d4718b7e94b90ec5f533c08500f"
+    },
+    {
+      "id": "POSE-0396",
+      "page": 10,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "ba8e276a05c2dc2dc9e6737ec045efd1ed3e4fabaf545b42587df93f17cd8ba0",
+      "candidateSha256": "e46f863dadf29136a9dafb096840580b99c903103951681feef3406ef5531a5b"
+    },
+    {
+      "id": "POSE-0397",
+      "page": 10,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "c276cb9b7ae947a057221780c50b713443db0b8c0363a791c7fed16cdc202682",
+      "candidateSha256": "0b887945fa4f50117ddeaa7e7b326b07aae8d63e05c1f982f69d436c001f3566"
+    },
+    {
+      "id": "POSE-0398",
+      "page": 10,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "6a2344da546794c0c9e653350e59042ab1c8ad5967d807e2210c074f9a5c8f6f",
+      "candidateSha256": "77da2e7cd4fa532be498c29f64b54f0469b00a77f5a2da0b186f4f8063ac8229"
+    },
+    {
+      "id": "POSE-0399",
+      "page": 10,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "ed8ebe97ea2fd652786ad690823bad1c636019867666b5034f85cf8b13ab72d2",
+      "candidateSha256": "172cac00898cbeff64e091ee2df8ece09457c65c0d33ccf5fe1e328350ee69dd"
+    },
+    {
+      "id": "POSE-0400",
+      "page": 10,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "8a83dd8e14b48ab58498d5bb74bd14860e480908a8d14db4a7b72229ad137dd8",
+      "candidateSha256": "fd081da4ebd4ad7b90b40e2784d3fcc4760f8441a75eaf3f08ad1ed9f8e50cda"
+    },
+    {
+      "id": "POSE-0401",
+      "page": 10,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "c9f35a65e2427d3227e0de4d12f4bf2f6d74710f5490f970185318e683cec6fe",
+      "candidateSha256": "d17ebd3e6eeb05ce26f3e4162cac73c58c7e1b6796046ac5b782a8230af9f9c2"
+    },
+    {
+      "id": "POSE-0402",
+      "page": 10,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "1b6f966cd185b47f55940b9845c766e060c2c07557c78246e9f64708f9b4be7b",
+      "candidateSha256": "98532f77465c7c27d24fc5b821f9fdeef39136d2367d986cb8ac6c6d1012945e"
+    },
+    {
+      "id": "POSE-0403",
+      "page": 10,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "e4366f4a643d95b6f4a880ec57304caccb6f091b16bd873f2b6a4e1001f8d693",
+      "candidateSha256": "d0bff3b73949767d23d2f6b5a00978f994d9cc64767380b65b6695399823fb84"
+    },
+    {
+      "id": "POSE-0405",
+      "page": 10,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "e1facd429faa3cd3cf51b703b68b850fd65eccc4775da796a3775c7e844b7923",
+      "candidateSha256": "ffdaba00d221929113073e357df011b55a0812ca5bda71e9fa53b8c38b5faead"
+    },
+    {
+      "id": "POSE-0406",
+      "page": 10,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "ada97c2c140ec79102f72dd4f713632487271b9d469f2f8aef975bce681b18de",
+      "candidateSha256": "440f5f3e9df782b73a47d6ca497dff653c6f45ab337898ce71c11806fdeb951c"
+    },
+    {
+      "id": "POSE-0407",
+      "page": 10,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "08f436514853aa4b2515417f5e18c95940d382acf62cc046f350988073843a1b",
+      "candidateSha256": "e701a9495b24f445604efc2369e0555b84ccd0c3d0f22f02ac490ed9a43d6e2d"
+    },
+    {
+      "id": "POSE-0408",
+      "page": 10,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "86e5c3d761c9b19843aaf98cbfb5199d9277ae874f10cc70f3175c29ce0ec911",
+      "candidateSha256": "dd6341a2d9a9a6a170e70904195c959da9c3ce15baa1fe553bc402789dd119a7"
+    },
+    {
+      "id": "POSE-0409",
+      "page": 11,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "d21ca0a5940fa20fe6aec70cede551dd90a499c0f7d2487795011094e40b0e56",
+      "candidateSha256": "303ba8242e5a25654d7f4e48fd59316efeeb2de6ae24265f88d4d57567e49689"
+    },
+    {
+      "id": "POSE-0410",
+      "page": 11,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "18ad06bc0fd7fbb621e368fef20bde2b8d2385a770474ccf13bb9860a3a62c40",
+      "candidateSha256": "0f6f9df1e8c5b349430404cd982cb31a52296e394be658803672976aa79d5397"
+    },
+    {
+      "id": "POSE-0411",
+      "page": 11,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "ee5f44d41c3de0c92d59d87e980ec58af9db65e0e113ebdab4059fcda839cba3",
+      "candidateSha256": "93c76f30673c7faf395009f978708817dd93f81f494d955c6aa6f71394d7ec09"
+    },
+    {
+      "id": "POSE-0412",
+      "page": 11,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "d6fd062a626683af43ba75a5a2f43879dd9570e924a3ff851e66007b19e163c9",
+      "candidateSha256": "8ae637aacb2f0ceb81d91912e83777025d322f8d863c7f5215937dbcc10c27a9"
+    },
+    {
+      "id": "POSE-0415",
+      "page": 11,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "015f0b710b5aebc24f34787c563384818d350029f64e408f4246338870493fd0",
+      "candidateSha256": "96d1132ba4474b434de96c757aeb460593fa4ca6648c52f1336f0ca02da43b97"
+    },
+    {
+      "id": "POSE-0416",
+      "page": 11,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "9bd8ab8d21c6b30161c96469bd3209a56f8df69a631cb28963195c03a5cde43c",
+      "candidateSha256": "1f147e95d4217dcffbd4f70fdac0e5579a7a4d1a5a51654a7c8d71ec9b92537d"
+    },
+    {
+      "id": "POSE-0417",
+      "page": 11,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "6f7720971ef4cca650b2a2e3c1f9f078eebe5810c784bf2d321a11da9928379b",
+      "candidateSha256": "4f4796f57f073ef4e20933393bf31126ffe867af1625b0a86c8d2fd061ef4ceb"
+    },
+    {
+      "id": "POSE-0418",
+      "page": 11,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "82253aaa9cccd6ef296543909940c2c9ccde7012bf867d988920bae1381a487f",
+      "candidateSha256": "3dd616a594f107a0f88aab3eaf51c6f7ddd48130aa3cf5db2ea4689128538fcc"
+    },
+    {
+      "id": "POSE-0419",
+      "page": 11,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "edde303812e49213fe4a34d9f5d05531f99a388c29fafdc19036afbb3c03311a",
+      "candidateSha256": "19c2ec848391a75b07b31f4c20d51d9b9904e6dad7609884f298adf3b1082d2d"
+    },
+    {
+      "id": "POSE-0420",
+      "page": 11,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "17fc998150b3156095df3bb854cb8f118b97c24041141d299e51638816e16d09",
+      "candidateSha256": "87a1c1b0b3110246c9412e2e61b3227443ec576e93f94971df20db9f1f63b786"
+    },
+    {
+      "id": "POSE-0421",
+      "page": 11,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "a2844764031ba347b3f217e667e706bf97424b15f7c73d878c2f72bf9979db4b",
+      "candidateSha256": "4cb0b0cc231f49cdc5e98fee0138dffed01e61347e93fdad58786427ac84727d"
+    },
+    {
+      "id": "POSE-0422",
+      "page": 11,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "7a9665bec4402dae2c2d3fe23746eb9ce000906033b7a0506364d0e62859f6ad",
+      "candidateSha256": "e4690c35eafc6acaa14224227b23a4c648fd7e9180e5252f485e40bc5cb8d5ee"
+    },
+    {
+      "id": "POSE-0423",
+      "page": 11,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "8bb23f6b0251d2e23d6476f22dd1f6d59ef09e5af460c05c2533d96f8c478677",
+      "candidateSha256": "4f7e9a71895198ab8d2ee9dd507f8e235ee6c9b42e4cb9fddaf5660dee740c71"
+    },
+    {
+      "id": "POSE-0424",
+      "page": 11,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "93e6ec57c59b481c7849bf8f976b98ec98694a6841e465a12d4e5acfdc01fc71",
+      "candidateSha256": "e29d7a70d96af4a76a8a1c73103ab7ec755f5ca66896f90ed34471d97bf39c26"
+    },
+    {
+      "id": "POSE-0426",
+      "page": 11,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "7a447c3330e87a3f524656506e1369043bce3dc5d3d53c28f206ae5f2f67b97a",
+      "candidateSha256": "806d7026218b18cc2da2c2db70748344a72c86e120440fc4091ef14be27a3d23"
+    },
+    {
+      "id": "POSE-0427",
+      "page": 11,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "7e7b52f2918ddd2c56c42a72a7644bcdbc5742939fc430d011bc6b255c69895d",
+      "candidateSha256": "7cba3bd7329f5e583109ef4140cd134b89369fcc42b0f983ef43bcf11370d60f"
+    },
+    {
+      "id": "POSE-0428",
+      "page": 12,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "ecea3d52aa9c9e753a2bdcff2d65030d3fe9755c18ef8ed4e0e653bf31a8e765",
+      "candidateSha256": "4a90eb763af27d27b79f4c3726d53f6c5cc63ef1ad18eb54ed8bfaf5145795e3"
+    },
+    {
+      "id": "POSE-0429",
+      "page": 12,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "f6cb7854b749fe70f83987afa5aaa41dfae781d2f2b12506cadb7423bb34a9e0",
+      "candidateSha256": "682a9260b7504870a345a118fb34addedc8e81d6dbaecbdc5cb3e11487309432"
+    },
+    {
+      "id": "POSE-0430",
+      "page": 12,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "7c776ffd16a283427e7df8ba13bbc63c313ee383e114af402676f18ddf46d504",
+      "candidateSha256": "3619f5680cc24fe073b5dff1a0fbdf3022ee796f2d111f312de655ac19011539"
+    },
+    {
+      "id": "POSE-0431",
+      "page": 12,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "4b94c3780296b9dfdfacdf3a72da32ae1adabdebf79a170ced2f9a94e02fe1ce",
+      "candidateSha256": "d2fce2a5d6c51a42621474ca2ac1f446043155be135deb4f3a0b70df96c29252"
+    },
+    {
+      "id": "POSE-0432",
+      "page": 12,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "fc5a9e27e885eb0bec8a618ff0aa2e4b4b3dedeb6b7359d1b1d470e903287e72",
+      "candidateSha256": "8c480a82d790daf50dacfa060b91a82e153e9f1384ec236dc1dc6528d97d6ab5"
+    },
+    {
+      "id": "POSE-0433",
+      "page": 12,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "5ad186daf1339cff3933f956cbd9da93227ee6a0e34d89dc90281de52be0e6d5",
+      "candidateSha256": "f940b33fea6c668233ecdb7e6d9773fe6f6381fd37253e7d7da118b77e0de12d"
+    },
+    {
+      "id": "POSE-0435",
+      "page": 12,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "4989f6bd14beb4e13034ef7c786aad1890a9f9fdbb61d0f464ac0c4b05e36742",
+      "candidateSha256": "843e67e169a1eea422346e3d6b6a2a4fc9372a79d88b1e2f3f97a730f85873eb"
+    },
+    {
+      "id": "POSE-0436",
+      "page": 12,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "b02b582055a9200e05dcb0d24955e1cec0396ba7c1cbeb703eb1d4df8a1fd8c2",
+      "candidateSha256": "3fc2f2736726f9611cc4f53bf291a8c6885012d473c6bd2dda9edd8e97ae172e"
+    },
+    {
+      "id": "POSE-0437",
+      "page": 12,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "bc338791c2b6efed529baec027677c8bae8aa585a8a304c96717dd987c14a48e",
+      "candidateSha256": "bcfe4a528ad68e02d2391e78543a337a39fcd94036aac4f42c3cb93620aae2d4"
+    },
+    {
+      "id": "POSE-0438",
+      "page": 12,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "42be1fa5b9d633e8bbedf666a0061707553521a5dea4d15afde27c2fcb44489b",
+      "candidateSha256": "a859bd05062cad0c02076b815a61ac2f9eaaf869de5d4c7386932df58ebdca01"
+    },
+    {
+      "id": "POSE-0439",
+      "page": 12,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "9c6a9138bd7d28f4b113b6ab0e70acfb8a8c371a6377f2e1e9cafc58b36332f5",
+      "candidateSha256": "c1cd754ae07536cc4bcb11a2196bb8dcad85895ddd94e5415fda698f7bf0b701"
+    },
+    {
+      "id": "POSE-0441",
+      "page": 12,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "34392b0be66813e92b9da613f1c86a5c7d12ccc59c28d7482ecdc58eef503a7e",
+      "candidateSha256": "50865280906f8306eb0e2a35a0c5640e402d9fbee5cf19fd72b5bd5b571b5430"
+    },
+    {
+      "id": "POSE-0443",
+      "page": 12,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "2cc911f9b92bee610b533bbf04f69048c2344df61d68f1ef31cc05601da50c2f",
+      "candidateSha256": "8781d750ac8b5f108e068564e2673df90927ec92df9d4add06c67aa19cbf8ea6"
+    },
+    {
+      "id": "POSE-0444",
+      "page": 12,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "5599af6f1ba4c805fdf328a1766af700d019880c66b1e286d455590ed7054e12",
+      "candidateSha256": "67a5b767051bc332276ecdaf22308987db1bc0ec255e8a64635dd9323706841f"
+    },
+    {
+      "id": "POSE-0445",
+      "page": 12,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "3d19e7651499657dff852acbcc703c7dc0c9acc43dd254736505eb2d96868a21",
+      "candidateSha256": "cf0b700814851c1ca13163a29bec9e93122f365e0a53f8bd4658ce1d33b16604"
+    },
+    {
+      "id": "POSE-0446",
+      "page": 12,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "74d0fa9dfa7d47617d20c95aa6735571cf1b9a41ca3db9b097f0f8b49d1fe505",
+      "candidateSha256": "ca14e7251ed95370e7425b981e76a6f459b1c5dcb9a1347b2e3438f279766dea"
+    },
+    {
+      "id": "POSE-0447",
+      "page": 13,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "bfc9d4c12ee92373430f9ee5f0c7c44d2897768f2c2f48c5c4bd8e6d0b91060f",
+      "candidateSha256": "b6dd587a26e1129d9be711ccef10e688382f35431c20f463afc205736134f416"
+    },
+    {
+      "id": "POSE-0449",
+      "page": 13,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "12a60cce51ce48216c68f034418e62256c6e2e2207843c557295a25ab2aff94d",
+      "candidateSha256": "a4184bcb7584609ec718acf87dc9ac89cd3e25830efc3f689bd253206f2d686d"
+    },
+    {
+      "id": "POSE-0451",
+      "page": 13,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "837c80d4377ca7704e5731e01c2daa35cef270ee3acc4229e603a56332230024",
+      "candidateSha256": "733e60f1251b4d564c4d40af5b9cd5e7d6cc9dbfc53ed5218fe47971caac9066"
+    },
+    {
+      "id": "POSE-0452",
+      "page": 13,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "9a37d72e4f493636d8d61072528262fdd519bc41b48629bda9a5719ff07f2edd",
+      "candidateSha256": "071702d2f4736311552e3712eb809e5525286500b8541d83ab4d6acfd36f1dd0"
+    },
+    {
+      "id": "POSE-0453",
+      "page": 13,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "d8c3331b3fc724b096b1a7b17924175a3f3d3d8278fb54bf1ae1fd0ec4f73d2f",
+      "candidateSha256": "59c36d3b7a98c02de50d5ad4662cee3d29ea1a828cc1b1919c4e99048bc0b906"
+    },
+    {
+      "id": "POSE-0454",
+      "page": 13,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "e84109c6eb6a45527f506c4437e13fa6a6e7bd6c47147f907e24872b5e7f8deb",
+      "candidateSha256": "5b904f5e6d4c27995b1696bfb686db0b5972aeefd2c9cc6b2118f881bb98fa4c"
+    },
+    {
+      "id": "POSE-0455",
+      "page": 13,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "76d3f915ba14024faa9dcfc93a929843ca520bc58f5b3b88b32b3c1a7c8b6172",
+      "candidateSha256": "26df078a11583660cfbb0ae8034f153069343b027c4c515d0ade06d2f3202b7b"
+    },
+    {
+      "id": "POSE-0456",
+      "page": 13,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "86a41d54de9f785c234babf1c1ced261b52abcb5d93974c1bd69ab28da52795e",
+      "candidateSha256": "42e1b95bbfb5b74858d1921320bfb301020919a798cb4932415bcefeba14d6cc"
+    },
+    {
+      "id": "POSE-0457",
+      "page": 13,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "8b0ead0cff9c91b70729424c86bd893e608d15827b543a3e93a683fcbbe4609b",
+      "candidateSha256": "db2b42b67d47f9b079c4d62f31eb3b11392005a63e7831f58ce4d97e3860bdc8"
+    },
+    {
+      "id": "POSE-0458",
+      "page": 13,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "67250a9ccd2c9a83ea04fe77dc977b79a4009c96dbd2f47411ff3eff9f43d621",
+      "candidateSha256": "8e9cfbbf1a8f6ca6e949a959fcf614f7a5b73bb2b87f2a1521145dea792dca38"
+    },
+    {
+      "id": "POSE-0459",
+      "page": 13,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "34792da281ab67521f2547fa00f37348c54f3b61f9a7890843f4e8b0558cc0c0",
+      "candidateSha256": "23c308bf4f5a45baa7c7564987978571ebc50eb943703943bc3e0be523c905a4"
+    },
+    {
+      "id": "POSE-0460",
+      "page": 13,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "5c9081eaeaf5f779bf6ce5540f2ebf2d5879cf696d89555f1fa8e57a6eb21d5d",
+      "candidateSha256": "9ac01f973810f40a6df4ccb6f019a58e8458af9d52b7b643fcb33710837488ec"
+    },
+    {
+      "id": "POSE-0461",
+      "page": 13,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "1c35f24c8f21ac8bbfad0b5681faccb07bb70afe3c166f5b7bb6651bcc04ba6d",
+      "candidateSha256": "40f64e265586990af8a54aa81315c7c9822db530afac64b6b622a167e9e93d61"
+    },
+    {
+      "id": "POSE-0462",
+      "page": 13,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "45c72193ffde8a68cba0bcda6a0ef6783f63b83a30ae2da3290707d56e77ca97",
+      "candidateSha256": "4a7efcfc38961c0abac9fd33e51f841642b5f60f4545415a3646dd5e6a71b6a9"
+    },
+    {
+      "id": "POSE-0463",
+      "page": 13,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "a0c421542dd746d117d6f162cfdd099a707b31d93def18efdc15df3e6461a72a",
+      "candidateSha256": "62e966c16e7a543cf337fd5eb3f9bc681e313524575d70ea4d21295fa891b95a"
+    },
+    {
+      "id": "POSE-0464",
+      "page": 13,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "e32375abc9acf71c20306eb46da8664ede44085dcffadc697a0865282c703b52",
+      "candidateSha256": "9bbfa61b2a89edad2118f9bf1b54d29af7372a94f396dbba82826e329ba72849"
+    },
+    {
+      "id": "POSE-0465",
+      "page": 14,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "bfd72729777996382ba55610530ab22176b2469fa9b1ff34797ca41373d6a23c",
+      "candidateSha256": "a52516490b646d3945e0228f8a2d4d888f179a55e49174120b86b917dfc278fc"
+    },
+    {
+      "id": "POSE-0466",
+      "page": 14,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "94940df68e9bca3a88cd112317ca56c8197c3ee16ef1b15d40591dcbb7c1be82",
+      "candidateSha256": "2a1f6129d0bf2798193dcd8571f697c3f2a1b6378aa10076d17fe242704f0bf3"
+    },
+    {
+      "id": "POSE-0467",
+      "page": 14,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "f9b3d1a1797fb78df3cdd20f18d3806a9362300c03b9b3638ee1258dc96cbeac",
+      "candidateSha256": "8fae6b1aced95bf63465d1fcc8adc311e99b216e70f4a4711e61d9e96fe7e269"
+    },
+    {
+      "id": "POSE-0468",
+      "page": 14,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "59d3a60e658e9df41bbcb25195e9f8cc6919e05c046f4b408a88f38f343ee07b",
+      "candidateSha256": "b30c8fdb224d09346713636d1d079f0ef7fd02bd8548f58f2e14f09790e4251a"
+    },
+    {
+      "id": "POSE-0469",
+      "page": 14,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "5f2a7c18d9a79743818bffd0fca246a617d562ace5cad28e6acb5b2dad4094f7",
+      "candidateSha256": "9160bcc067fb8708f7b2c0399428c6382846a9636f1ea3da639360568674918d"
+    },
+    {
+      "id": "POSE-0470",
+      "page": 14,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "d1ee7b77d9ddc70fa24445c3890226a8a20d065adf6a97e188768beb9fe1e9e8",
+      "candidateSha256": "a0d9a009a9dfbfb88eb39cf51814aabe9c52d4097eaa2febb780f549f6906f63"
+    },
+    {
+      "id": "POSE-0471",
+      "page": 14,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "8f77a0ab01605f180904e65311d88d6b0bffbdd96577ad270240fb43248dd454",
+      "candidateSha256": "37f79a894c05d85878da72afe3eb5bbc7a8140dbdd35a6cc309ef5a7be6efb37"
+    },
+    {
+      "id": "POSE-0472",
+      "page": 14,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "a4c786a63f7e5862122562094af96a747654c8f2df9fc37b00a9b4753aba638b",
+      "candidateSha256": "f948fec1ae4bdb5640eef1380d3d20243afc7dd17fc8cdf50e460414449415b1"
+    },
+    {
+      "id": "POSE-0473",
+      "page": 14,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "331c61f7d521368cfbd5b35326ad9403688beab39f5ff189a8d490d642c4553c",
+      "candidateSha256": "b1535d3e1c03eabffb5a7e67af0ede44176325f33695d90f8aa942a4b12e58be"
+    },
+    {
+      "id": "POSE-0474",
+      "page": 14,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "8ada229666c4acf0cec194480b46bdc9fb4a7d4cc3b1d12ddc798978056de0e8",
+      "candidateSha256": "cf9e83d40597ffcaa6285241f1ac39cef1f5adae30956630385fd372f8bd97ee"
+    },
+    {
+      "id": "POSE-0475",
+      "page": 14,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "f49eb8b53270a4210d377a3046442083071b288196d273a04d7ae3ff113d280f",
+      "candidateSha256": "f2ee45dcea03963c4544aa785ccd7d355b63dcc17d1c5bc96f444cd3f6e91542"
+    },
+    {
+      "id": "POSE-0476",
+      "page": 14,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "ddba3feba9da1c7e2f2698e59f64f33887668c5d0a752f9fd8f2099a6101db7c",
+      "candidateSha256": "3480f8260a8b037612937792d42e1f1d980bf0704ed517f06d6ff030dd09f936"
+    },
+    {
+      "id": "POSE-0477",
+      "page": 14,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "d4cba7d151dd8c8be93f3f504a8f90caac9833f9b2e969df9c18a0b0bc79c70b",
+      "candidateSha256": "3dc42b08f083d6ef3e99eb38206d8b71bb7e29013df61c6b073fc1de978c8281"
+    },
+    {
+      "id": "POSE-0478",
+      "page": 14,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "00e7ffa70e10e79e68952d79a2a6462e4e2c1397d2659a0aacf40d52513b2999",
+      "candidateSha256": "8da5d90d1b2751088651cc88b152f742b8b6bd7b2172f12837d35af10aae38d8"
+    },
+    {
+      "id": "POSE-0479",
+      "page": 14,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "ff3cb54cd51d0b5d428ec08fb02711658ca2a9b8d7a578f98ff9439439da7000",
+      "candidateSha256": "e1e5350872801ae5e14affadcfd7f6c053d3a9600780834fe4729558f0c2c810"
+    },
+    {
+      "id": "POSE-0480",
+      "page": 14,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "a7753c5fa888ad5043258296fa01691d3cdbb0bcfb47927e2d99142eeabc0e79",
+      "candidateSha256": "cb2624bd91b0e0157779602e12e027e68a7a82182432e3790f7acfc6647be4ad"
+    },
+    {
+      "id": "POSE-0481",
+      "page": 15,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "2c3b5775564bb3bc54fe68ac0bd0b34e6f20f3d94dbf2238a6985f4b02a45f39",
+      "candidateSha256": "5ce5f1bb71477bc4310e548328168724de5a469e2a6797b397576c9f03f88c06"
+    },
+    {
+      "id": "POSE-0482",
+      "page": 15,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "ff86dd4990347b52a8e420547b27f2c2404719a9d6e303e9d4243ccfe624a6a5",
+      "candidateSha256": "3e7341da8901afefe1bd101cec1550b5b18b0fe30bd7d607cf3fd9020946f4b1"
+    },
+    {
+      "id": "POSE-0483",
+      "page": 15,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "59e6cf24359418c183986bdc9a58788ab674f4a257e8f4af6998b9a5d4615cec",
+      "candidateSha256": "167918f9d55c30efbdba8d4f6063fb21cbece60f169dc0dd6bdcc1f9c68a1b2c"
+    },
+    {
+      "id": "POSE-0485",
+      "page": 15,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "5477aa1c406306b5906214007fa78fe97734eccf675a5622a04aafb39f5e55f7",
+      "candidateSha256": "4091214e60c83e04405b90411596928981dd5f78240776bbbe181ba2860506a4"
+    },
+    {
+      "id": "POSE-0486",
+      "page": 15,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "4cb6cb9280bd3525a45f4c3b1e09509d8c08e6f17f0b8ed14048f966acb98d51",
+      "candidateSha256": "70e1c964b7d9bb8c93e372a11e18081c53601207b964e9a83995a6eb470fa485"
+    },
+    {
+      "id": "POSE-0487",
+      "page": 15,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "a6be99e62017f409a49ade016cba4422f44ad93c6be525890c25697b67be25e8",
+      "candidateSha256": "300a110da1d433bee3bb4a550efe09378c134a09a5799f4d372e92b0c0490630"
+    },
+    {
+      "id": "POSE-0488",
+      "page": 15,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "83abdfd6c55b4fcf9f9ad0f484ec6565bf0a4c14ee8a7a37be8409c8d07d87dc",
+      "candidateSha256": "97cde8dc26d8c10edd477096d67524550b72bcebd4435fcdd7294fe513a13351"
+    },
+    {
+      "id": "POSE-0489",
+      "page": 15,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "05b3077fdbdec07866476581c09f45879e1265b2e588a8b756880d1688a89e4d",
+      "candidateSha256": "bcb83ab7c2a24e7a984e419704861ddf1dcbf542aaaa15c95061d7d82f3b961f"
+    },
+    {
+      "id": "POSE-0490",
+      "page": 15,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "9bc2b9ed1124bdf5a6b514b3580e13e97722de6fe7f71d26586e77bd28c5c9b7",
+      "candidateSha256": "0526af9cbd9a1cc996bc49084e331d014238d33947309f6716846d99fc2f1acb"
+    },
+    {
+      "id": "POSE-0491",
+      "page": 15,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "61f064df697d2bb1c071fb1d7da76134ec7cb4a6111f4d154caebaa424bb459d",
+      "candidateSha256": "a15dbdda0f02f5f9e7c8614d6b951e120015a99a276f60419c0cad41693db754"
+    },
+    {
+      "id": "POSE-0492",
+      "page": 15,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "69b31b5de41795ebaee24a3f8c73bae6905bda17eac06360545d9af47d667bde",
+      "candidateSha256": "005099ab738fe5eb22227f00064909f412b98b87aa8bfd7240f831f3990c7090"
+    },
+    {
+      "id": "POSE-0493",
+      "page": 15,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "ea1ed3519e361b2306586a2b21b6fa43360a84d420e87e2c9f5d387739dd49dd",
+      "candidateSha256": "19b55972ca8c7337743178e211ed15efcf4bbd40944609787a0e2a2fe78211d2"
+    },
+    {
+      "id": "POSE-0494",
+      "page": 15,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "642852b1138a07c123d7f83f1c9677a8b2559035a3008cbdf47e11c019eaafd8",
+      "candidateSha256": "0ae971ea8c75e96d1076f4ac1161ccb362857fa63cd3cb81322178793df7aafa"
+    },
+    {
+      "id": "POSE-0495",
+      "page": 15,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "dfd630eb6f565a460819604138cb6bd9a3914a27983dadda1e84a2196d89eed4",
+      "candidateSha256": "dc564fadbb992c0964a1eccf74bf956eaf8b9e7fe973005e6ddab6ef9f70d2e0"
+    },
+    {
+      "id": "POSE-0496",
+      "page": 15,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "6c390e420cc7377eacaa21d3412a78fddad177c27413ee5659b6528705825548",
+      "candidateSha256": "754687634c2357f93f52137e96c4356562a81a259f622160eb6a5a7d4d8d04cd"
+    },
+    {
+      "id": "POSE-0497",
+      "page": 15,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "1aa50f3dca82ce8da3d524ad35b1f63a8c5b545ec900116712f70b68e4c48f14",
+      "candidateSha256": "9fcc576d7ff6e434aadc6a8f74d4cacbdd7f57666bc1853417366b79be4ebdd4"
+    },
+    {
+      "id": "POSE-0498",
+      "page": 16,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "9b2f304471bfb1f32f9c688d1cefebd1774e0ba079da63e6e26a5dfecb8ab5b6",
+      "candidateSha256": "e9d945976770f69b42665af38b9f59e78e44fe4229cb57413f6fa78244c2a27e"
+    },
+    {
+      "id": "POSE-0499",
+      "page": 16,
+      "status": "unresolved",
+      "reason": "눕는 면·무릎의 깊이 또는 얼굴 주변 팔 접촉이 원본과 다름.",
+      "imageSha256": "5293e3d1c19a792f6dc3c350d83bb2189a7c4a2e36b849b12f80b76960730682",
+      "candidateSha256": "02f048874189e1b0f752fea64dc593e71a46751b6059a7abfce123bbc6e6e116"
+    },
+    {
+      "id": "POSE-0500",
+      "page": 16,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "503144f4f9cfd269b32c5dc422603b8955adb359f168ca2bf59eb75bd64b153e",
+      "candidateSha256": "fbc1fdbd070ebe44d32f582e7ad821e1d63168b59c4eeac5ff1f3a844706b586"
+    },
+    {
+      "id": "POSE-0506",
+      "page": 16,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "1544657a4b7b404d5e89bc4300e7d07e03d4cc43b35f7a1f7a3392680956e0bf",
+      "candidateSha256": "99840eef88236a418e87053a15b17f0f05f84cea05af115094c27710ad2e06c3"
+    },
+    {
+      "id": "POSE-0507",
+      "page": 16,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "14fd1405dbac05d2dcf3603ba8ec12a73a51b320b84c2d986039e87c508a3116",
+      "candidateSha256": "04e45282202ed29d61bc6d5c08296deb160a6496ccda7446dfc593e3cd2e28c9"
+    },
+    {
+      "id": "POSE-0508",
+      "page": 16,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "2c3847437a09a5908a10d5728b706f4f3738e33c51146222b2fe5664ce3b31b2",
+      "candidateSha256": "58a9db9335d43a6b8c8222a1f351c519c345c9c25f258b44911d191dcd1bb473"
+    },
+    {
+      "id": "POSE-0509",
+      "page": 16,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "de7a63942f6db63569e39072f3c4367926f7c9475ec39ef5eb7b20a27c84cc22",
+      "candidateSha256": "d0c2e6ed3db701aca043bd143ad3d8e2235f5aa02282afd5d9778ebff57faabc"
+    },
+    {
+      "id": "POSE-0511",
+      "page": 16,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "e3e5b502bb187a627e79ba7a017075ac8902170980d2e932ba952fc9882e028c",
+      "candidateSha256": "5750b0396190a36446b2f85c9c2a48145369381a54e539c86c764b4100594c4a"
+    },
+    {
+      "id": "POSE-0512",
+      "page": 16,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "8e84915f183fb383ea83fc552b4fde7ff82e0ae35eb161bea99ec0f3ae7c3edc",
+      "candidateSha256": "e6c1bb3a24b5fdcc212aeaf5b2e9188db1ad25cabc091d28386fc3c88b25cdee"
+    },
+    {
+      "id": "POSE-0513",
+      "page": 16,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "07fd3498c5fcca12699263fd7da8d165b84366b76fa41a255fe728ac96f66ea6",
+      "candidateSha256": "f1fa312158da65e412fa3c2af6e632439d32f2adbd71a71ecf6481c6d55be250"
+    },
+    {
+      "id": "POSE-0514",
+      "page": 16,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "028a98b56ce825098caec7a62981ca024bbd0d06cbdee77d7bad7d14e210c010",
+      "candidateSha256": "e19ec6e9a63f7b95d6a8f83fbe225f674fe6c270894ff46723daea0402d82b91"
+    },
+    {
+      "id": "POSE-0515",
+      "page": 16,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "828ae39324c14af14cebdf0afb339978d102c516e2ad88a733b704575e6ae6aa",
+      "candidateSha256": "6706aabc904e6f54399b1f80aefe2855b1a0a751b29453e50633c4cb5602e163"
+    },
+    {
+      "id": "POSE-0517",
+      "page": 16,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "31313693768e014b248f991df0906764b6da00d57ddc7d032240cefa7aadaae7",
+      "candidateSha256": "d069c5c3985e9d16c78467f870f89213c91e39e8ad1821762d4dd3285279d817"
+    },
+    {
+      "id": "POSE-0519",
+      "page": 16,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "de91a0c41b59a5930b0d6d994b634d4e00284d6023a814974ddb11ead7094b87",
+      "candidateSha256": "4e3cb229b2cbd26ee764d6b6b6f40589b61912812bc4155e36c9ec061d299719"
+    },
+    {
+      "id": "POSE-0520",
+      "page": 16,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "fb4cabf32cf999185895f48cfdc9632420aa373ccc7925a259adc845cbcb6b6e",
+      "candidateSha256": "2a1024e417d3cb5d38e1eb1545106a9aa6203ede0e4e9aec5a37c79443b56483"
+    },
+    {
+      "id": "POSE-0525",
+      "page": 16,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "5c8598fee6460125794311b8669fe4be56e8ed775444539b008d2b867b692e0b",
+      "candidateSha256": "9ea4d5491180f9eb3b29346e6734c25718a442275e0e9b44842d12e2e3460442"
+    },
+    {
+      "id": "POSE-0526",
+      "page": 17,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "49378d8c1a667f69de012349f8e4a256e2e300cabc9f2a97a68d38ec8d462e50",
+      "candidateSha256": "91b582b578b5e0837782bc02c1157a0f3ba820201c896bd2253dbc46ffb9eb4c"
+    },
+    {
+      "id": "POSE-0527",
+      "page": 17,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "cead4e58fb673456113f1ae65171a2986efb72db099428af124bbbd57ed416c1",
+      "candidateSha256": "7ed60523ed10022b819b7680933b43bf2c494c0519f40530f33b81f1e3ed063c"
+    },
+    {
+      "id": "POSE-0528",
+      "page": 17,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "712b3eee10cd570ccd009ef6860bf1482f8ae9487066da4180559dbe721740ac",
+      "candidateSha256": "68c8f08b0d59324e595b5bafbf5b6eb633ec46811b366b29947c7fc9f6cb2e3e"
+    },
+    {
+      "id": "POSE-0529",
+      "page": 17,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "a3b087ea5d1614bbdb4c1379d08629e181024903133c1b3082f637ca4f636d4c",
+      "candidateSha256": "289c5111aff851243383832c828acb69c4a709d819faa4bb4606df087a4b26ff"
+    },
+    {
+      "id": "POSE-0530",
+      "page": 17,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "24d7443cd681146d8e16aff91a7505e3b03a2b03f6af34144c9ba8f93f164527",
+      "candidateSha256": "500bb0973268f7f10d1181c87bf8be68d85d6f5d0790de9f67a4a178ccbde8ac"
+    },
+    {
+      "id": "POSE-0533",
+      "page": 17,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "4c7b10a9a40967282218f8064753e8b5d70451d7a6be715e4b44f4f874e358f7",
+      "candidateSha256": "2b65487a3aa6b73677d9a37bc579a7ce7072e64fbeb698002d317093932a480b"
+    },
+    {
+      "id": "POSE-0534",
+      "page": 17,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "3cd1281385857983084873ac28590147bfd8ab907ec2ebca027e42ad98b0ddac",
+      "candidateSha256": "3f84fcb23ef34e4ef227a6d266a2989f5936079a884de9cd4750c2255f7e1247"
+    },
+    {
+      "id": "POSE-0536",
+      "page": 17,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "cff9522775ff7085b63a7e13a80df859eecea550aac8756885950b4ab277db21",
+      "candidateSha256": "1af3078836319596e3b2a6244a4ec6433d190facb2a46a9373d1d0689c4b438c"
+    },
+    {
+      "id": "POSE-0537",
+      "page": 17,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "5afbf6e83489dd570d1d666e57ed94843e19e0c4552ace10e41250734553883a",
+      "candidateSha256": "eb714f54a6dd0aa42fbf6d6520d0eaf3d24dc83e913d5d95e6f13cedf68ad46b"
+    },
+    {
+      "id": "POSE-0538",
+      "page": 17,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "35b57b16c7702ae1f8abc725bbc6fde98ce4a895f4e49aca36b8b8932c22f034",
+      "candidateSha256": "1d4c3edaec2b99ed7fdfa58c3a972750126762b4d5f243d815a33c2282ce18b1"
+    },
+    {
+      "id": "POSE-0539",
+      "page": 17,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "663b74ff2661449b8bb1b49efbae4be1345c4420e927d902733fdc86fa742154",
+      "candidateSha256": "dbd322500c9967f0cdc89eff8b9b8fa3976a3999e4c5f83c74ed487cdd991fe0"
+    },
+    {
+      "id": "POSE-0540",
+      "page": 17,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "61aa4f61e6d7ec1619c5bbbc64e0578c0015e13fabc9b6f3b709067560ba0d83",
+      "candidateSha256": "c9358e7af846cb43cb3e9c99c7d220cd692495ec063a23ebf03b647ff329ad09"
+    },
+    {
+      "id": "POSE-0542",
+      "page": 17,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "f404308a7fab39eaeae84da721a37139c3e20b6065961d2236dec45a1aebda10",
+      "candidateSha256": "c7a47e89ea36eb545871814f387861f659ac64114097bc68a015385e3bbebb0b"
+    },
+    {
+      "id": "POSE-0543",
+      "page": 17,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "cd97633ff138d897c5d9fa6f496a8614cd7cf1f7d2da8c2983f69738b02d6267",
+      "candidateSha256": "9e39338b9ae4a7c2c2fe62b15d240fd20563210bdc1375decadcbcb7f498fc7a"
+    },
+    {
+      "id": "POSE-0546",
+      "page": 17,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "56658bf318eb0a328e7f8ba2e8cbabb486cefebca1776d01ef415b6f1b54f56e",
+      "candidateSha256": "eff2a5bf5f4e8c7881f96727fa31195c6b4b0dd870a2e2b412ec3e2c208ac01c"
+    },
+    {
+      "id": "POSE-0547",
+      "page": 17,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "3b0615a2c0328950cd0561aa9b7bef9acd68e633a0742f20e906af52c7296a82",
+      "candidateSha256": "51cd0fa10a528a51656f77d859aded39b50c51255bf600cbe3bc73b536d24824"
+    },
+    {
+      "id": "POSE-0548",
+      "page": 18,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "c81f937d86430db920dabe112e24a0405f1f9e22b01763c171c0a5709b5303ae",
+      "candidateSha256": "c8393f40820ebc6a71eeefbf17ac482866aecdd8c39ca193324dc1fb9e253ee9"
+    },
+    {
+      "id": "POSE-0549",
+      "page": 18,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "c37be4c55d241c17b07608449fb29e6f847c46ea5b15296663d5dca2d776a7e7",
+      "candidateSha256": "a92ca67231967b490faa2a7ef7e60ae65d117959c9b51fe36308d8d317cd7967"
+    },
+    {
+      "id": "POSE-0555",
+      "page": 18,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "5309ad60ac0ebb935287b24623aaeee7e5eca5149f6e7860273e9a2cf6d38d84",
+      "candidateSha256": "1b8705ee75adfc100451633a73889648f09572690767c85ca34e474699f274c7"
+    },
+    {
+      "id": "POSE-0559",
+      "page": 18,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "f48f3987034914ea11938e4071b4a1587bfa704925167267b0bfa1f8708ecd31",
+      "candidateSha256": "b8685dfd68990c5a77aee9c6ac7c0783690deab3440bbbe65596ab2d41c94f38"
+    },
+    {
+      "id": "POSE-0560",
+      "page": 18,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "1a5f4647105ab36934045e915a0dc6153c9ef4f0be5a37dec14bf171a707d50a",
+      "candidateSha256": "c54f4bb6846d23965f4246d1bae001afc74191392610ae517cde3edf17f3175f"
+    },
+    {
+      "id": "POSE-0567",
+      "page": 18,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "c98d220c831c453970287133e73f2ed14320d1d5ad4bff90ee4900fa290d0967",
+      "candidateSha256": "03d8e43496f26f5843993a2bb028fa25d81588ae71a575c33b93149553291ce3"
+    },
+    {
+      "id": "POSE-0568",
+      "page": 18,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "0a52000bd335e8695dfad0ba3c065dbd6b2fbd1bf785f296b6a682b500571b35",
+      "candidateSha256": "637752c60d0d0f559b63fedcd65970c571d208e73f066126cd329f6f73a3536a"
+    },
+    {
+      "id": "POSE-0571",
+      "page": 18,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "dbaac4bf3ac48b6b2207fad9f1aacdd78bd642dac44138f31366ff710d085438",
+      "candidateSha256": "5bd204da53c9649aaa04cba646b73ab5c464d46f142202b5661cefa8b4a1fb8b"
+    },
+    {
+      "id": "POSE-0572",
+      "page": 18,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "2e2006bb5987c8fd7f3a3b421d1f753080ec5632286e432036688ad83cabf531",
+      "candidateSha256": "e914d0839f9578c8d1c5206f26ce61562e70743a99e3e56d387e5aa31992915c"
+    },
+    {
+      "id": "POSE-0585",
+      "page": 18,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "d0df97ffab05a5443e3406725087bd633ad3adc8869f999996aad5608bcf5d5c",
+      "candidateSha256": "1083ad59e0df857c177a04467bc2ac826e2ccd39b8f08c1cddfa5cf11c1b9f5d"
+    },
+    {
+      "id": "POSE-0590",
+      "page": 18,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "2b2b963eb7595927c47c703132d55baf7bbd9fb49b418f067b6af0f422af69bf",
+      "candidateSha256": "4d7c6cc599b00fe32d49d2ca2f55eaaf5a371458fd7824b6e15b35d4ec0ff32e"
+    },
+    {
+      "id": "POSE-0593",
+      "page": 18,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "b9817cb4fd7cf9c9d5d7e8cd2866958268a944ec0311370470fca7df687a2ff9",
+      "candidateSha256": "8e4a0271d2ac0e0691837b79cc84cf1c64e83df3a031aa9f3f8ebbcc32eea8bf"
+    },
+    {
+      "id": "POSE-0596",
+      "page": 18,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "1ddaa6906dad2b8a46de27b97b39d951506c21e8235505106123d148d89e9831",
+      "candidateSha256": "a83cda1920f5ac6e7d1a8b7129a64a68bc2eec560aa08914c22992458945c43b"
+    },
+    {
+      "id": "POSE-0598",
+      "page": 18,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "5a17595442efa5a07eee4e6bbf21df7fafed3f76db465058f138a4f9410ee67f",
+      "candidateSha256": "9b025a123e5b68abdeaebee90253775aa396ec6eaefe51ad164c471630d94d28"
+    },
+    {
+      "id": "POSE-0599",
+      "page": 18,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "6dafb941fb2e34500d5657d597fde5f0832a15f69833da95b29e153e52cc5f7e",
+      "candidateSha256": "305d3092c23597487db4a0b5feb1f95f949e2cb7db8f2b50ec7f9bedabeec839"
+    },
+    {
+      "id": "POSE-0603",
+      "page": 18,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "b83beef8c9744683242524e5c03fb53d642dfa6428257d4e20a1b666cec21829",
+      "candidateSha256": "8952a96c17472cb62be8c51321405abaa7763d6dd5299c4a68ca9fcb8984a67f"
+    },
+    {
+      "id": "POSE-0609",
+      "page": 19,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "e42cf78ac6cf2bf7894663af66c6d0fef69d8a339e490f09137bc8023f534670",
+      "candidateSha256": "b3bc887f72863d27b32b202792c733e958abc030314388c1be3f9d5c257e5d13"
+    },
+    {
+      "id": "POSE-0613",
+      "page": 19,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "daba53972fb7f56a9029ed91fe37d2257e64a77d3c11e098b2e42ff37b5e3b49",
+      "candidateSha256": "83a317566ee651df274d1db830276b38ef399dbbcc74b27fd867d781093af505"
+    },
+    {
+      "id": "POSE-0615",
+      "page": 19,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "f0d20109f3e1bde94d015b5bfc4059bc1feff1dafb3c019d1a7d05b9eac6498a",
+      "candidateSha256": "391ce7a5c4403a48ae46856aec4860d07127ed706a9a921a98567b09b187f6a9"
+    },
+    {
+      "id": "POSE-0626",
+      "page": 19,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "880591e6fd820c06435f686874200b135ed601bccb2fad3d357e987cab9de7a5",
+      "candidateSha256": "bbb1ffaf4ad86e71aca22a53769d3c6e3e3d0e2a3b7182d8d5094d57f5e07885"
+    },
+    {
+      "id": "POSE-0628",
+      "page": 19,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "db9c031f573b3cd55d4d2c7dd3ce72765d86a9657ffb02e97c4ac557c4a4b3b0",
+      "candidateSha256": "b468b6cf1a3fd869070259f256d7efff09cd3e5b43846c2c928f9ee49c39cf08"
+    },
+    {
+      "id": "POSE-0629",
+      "page": 19,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "354066706a59f0ebc1fc1480b4d35478d3e3ce0f0b61f794ba0b91d007bebf38",
+      "candidateSha256": "cd68132761e106142cd87f94ac24ad58619105e00070dc9a0d65f48cca0901d5"
+    },
+    {
+      "id": "POSE-0633",
+      "page": 19,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "deedb0d7db6ade5c67f16c9676f5b9a950fe444be54abdfc0198e6752468bb00",
+      "candidateSha256": "94954c64b052c808577cdd8b6314cd1341e3ac6482e57481c6222004311e431e"
+    },
+    {
+      "id": "POSE-0638",
+      "page": 19,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "35662bdc853203aaf72b35b3b064ebddd516928ef80032a61820516fde1dc181",
+      "candidateSha256": "ebb34d2820492db122d1af4ded598c0cd6dda080936650e50f52249dd978cc9d"
+    },
+    {
+      "id": "POSE-0650",
+      "page": 19,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "69985f28f7def56b3f266e7f4b34d681254a120466c0a7be07158111f827fc26",
+      "candidateSha256": "27cd1fbe114291134e159ffe427b1e39e87883a48b9883c971b27edcca1dce7a"
+    },
+    {
+      "id": "POSE-0656",
+      "page": 19,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "6240374cbaa3272e9ac7bacb075ee9c8f7d328ff26c104f45f806d5bad0261ed",
+      "candidateSha256": "e2bf925e4a8d83aabd60a28491d9fb6df98b36adfe89afa667188a23dbcfe70f"
+    },
+    {
+      "id": "POSE-0659",
+      "page": 19,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "5a56f03a0d422ddc7e6ac746373e9b4aff4b28311b291a2396d61639dafb8a7b",
+      "candidateSha256": "e0e58d6fbc6ee6d54258817a58b2e0ab5b96492213ad5ccc892b713a8f5450e1"
+    },
+    {
+      "id": "POSE-0663",
+      "page": 19,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "58d4403a085cf244bee7d66f2aa1f43c47398f7b556b966b5662de641ea7899e",
+      "candidateSha256": "a8c3d835acc810f211e51f7d7932fdabb3770397f50207ec57a3bc5b8f23939b"
+    },
+    {
+      "id": "POSE-0669",
+      "page": 19,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "e35d55758943dc9e6316dd0814dc34138a8edd322a42632effc24a0e37fac8f3",
+      "candidateSha256": "b2fa546588958aefa2ca6ca8b245e8dd9492ebf6c912c885a39cf02067da967e"
+    },
+    {
+      "id": "POSE-0673",
+      "page": 19,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "0283a046443aec3655e259b9a51d814a10817b8c43cf7855ed388b9ca4970cb5",
+      "candidateSha256": "c86e1cd4e9d08e82b7567ae34b5e587b4bfbb6722504ff8fa5df0515d01eec17"
+    },
+    {
+      "id": "POSE-0698",
+      "page": 19,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "d8dd02593bc612ebaa434e3304096fa4ad6a8f3574c6d14de9dc1d79701f1bd3",
+      "candidateSha256": "1b4832f53c9807774ce4f5032842abda38edde1a858a2134b313012adf54e71a"
+    },
+    {
+      "id": "POSE-0703",
+      "page": 19,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "3a60a9c235f757c1ec7e8d9a4a036ceccb326f1da33ef03b53cf6bd0572d744f",
+      "candidateSha256": "f32ec47c56438718735d4b7f0de754330bfe460cd7310041301633b122ffce3b"
+    },
+    {
+      "id": "POSE-0714",
+      "page": 20,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "74f442d2c63e7af9c50ba7d652450eac0981ac5bee706ca60ec2bea1415a9b53",
+      "candidateSha256": "d53e659fc5a75ae746b4c4390c4467ed41513ca659d12157d507632dfcd9dcf8"
+    },
+    {
+      "id": "POSE-0715",
+      "page": 20,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "786e90272332c5eab70795aedbbd6deb2068fa2620a859cddc6ece6874819fda",
+      "candidateSha256": "857fa8f5917c84f31ba1aaae443436086777e158deb35cc13a811834087b4e51"
+    },
+    {
+      "id": "POSE-0717",
+      "page": 20,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "e81c7acaf5688a78a3104e60d0315339ea6fff2ee836abc16717ed3fe4585175",
+      "candidateSha256": "cac5af4154caf7a9e92944b3a530b03b3b4cddc2be02d9c924d4c836d5cda239"
+    },
+    {
+      "id": "POSE-0718",
+      "page": 20,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "87a5d7e601c72f50d2332c536ec1e8802c9557afc463af086339e98a68682ff6",
+      "candidateSha256": "cc4ad6200fad96506416441784c802a21f90c8474b4d771e97d77ab8e081f9d3"
+    },
+    {
+      "id": "POSE-0719",
+      "page": 20,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "31c5c2736ec5f6d731e5c8d0b0e3f0ef34db2e945190f425d2224cb226e4d67e",
+      "candidateSha256": "bdca5424436dded36e4f91b6abc08b776db7990e1ea041d40eee10fb81e36f55"
+    },
+    {
+      "id": "POSE-0721",
+      "page": 20,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "7c7245bb071c7120f65c5540860d43b25aed4430b4275d9063096d0ca0f51440",
+      "candidateSha256": "05aa3c01ebb1c66bfc0ec91089f46e6736002acefd8631d9cc005f1e1baa218c"
+    },
+    {
+      "id": "POSE-0726",
+      "page": 20,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "2b4a4df2cc226633655066f3f58efc039e990daecd0e0a2ee60332c2aac8c535",
+      "candidateSha256": "38ad6b44abc19d625f579486e74b300a0f0f36931aab717ca76e6b798126625c"
+    },
+    {
+      "id": "POSE-0733",
+      "page": 20,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "a478046c16091a5b8983fafa202164ccfdcdf92cf0ece6f4b13ce1ede89b73e1",
+      "candidateSha256": "9d03e51a37a5b4b60663f495f13d077007e8faf92ca2924a109aa51b7eac6782"
+    },
+    {
+      "id": "POSE-0736",
+      "page": 20,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "87c5f0daade84376df4fe24a69f55fe2c082bad7193b1a02f769c3830654b1a7",
+      "candidateSha256": "f1e0c6e790969b3def83ad81658e31487c1402163eb81c57dac200dae9aedc00"
+    },
+    {
+      "id": "POSE-0739",
+      "page": 20,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "3891dd9fb9fc469d90b196e8d580d030ab26148dc0f455920df880fb7f19c0c1",
+      "candidateSha256": "194bedb0a9fbe84861c12ac80e105b5fe9f3435b16904fb69dd1746feecbed80"
+    },
+    {
+      "id": "POSE-0742",
+      "page": 20,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "e5e8ed28e2df94aed4aeaf485d93b43c35c2ce750526c304394cb94aef14f70e",
+      "candidateSha256": "5e7140852272d0ba0486d08ce0b116ec0300b390fa971ca1dd73fe39902b5b09"
+    },
+    {
+      "id": "POSE-0744",
+      "page": 20,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "7e09680631c5f46629e2db1bf48cc1b914a069d4edbb11470cc30023da5e1ae4",
+      "candidateSha256": "3e6a4eb3b7aa09b8255325309398baa004be1e511c69c7103300694d1f7bc28b"
+    },
+    {
+      "id": "POSE-0746",
+      "page": 20,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "3416c1656fb034336b29ea20174980085ed95890f5fd6d24ec97707a66024c7e",
+      "candidateSha256": "0dda864c47666d674bcf6b1bd8731ca5c4d44c2d326c7c2524f75eb05cb18ef2"
+    },
+    {
+      "id": "POSE-0747",
+      "page": 20,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "219ac907cb6a315e5d043fac2e56e814eb7e3311d0b8e8647504bb6ea31dfed0",
+      "candidateSha256": "590d49d03ab098d401734b7635c8a866560ce6ed6ff8cd3d2c7a6df669eb0e43"
+    },
+    {
+      "id": "POSE-0750",
+      "page": 20,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "3a1c3b6df88d4b896efa77357268717ca589ff8b1abd2970f28a5f66a2882bd5",
+      "candidateSha256": "f96a794edf64dc735fb77ec0fe3ebcba53b75185121fa0af45746b41ff2570fe"
+    },
+    {
+      "id": "POSE-0753",
+      "page": 20,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "7c79a2634447f1c1eff79c1d15ed2d06e526d8e5643ee5c1480eef59c3934bac",
+      "candidateSha256": "ad9145e14602d6ae362ddafc79e606e94bf7475bd0c256326425724e815b1e50"
+    },
+    {
+      "id": "POSE-0754",
+      "page": 21,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "cf4aab73f3e1f92320ec1791b8fb4d85b8735cd8a4493366be68471bbc090e6f",
+      "candidateSha256": "974c943ba5980d3039a2aebcbd564439a5e14961c61a14d15278a09d2cda80b5"
+    },
+    {
+      "id": "POSE-0758",
+      "page": 21,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "a8c22dccde9693dcd35bb87398c46db8b9a89615653845b75614c31377260793",
+      "candidateSha256": "3e9f22e9fbe82f46a7a1bdc1f8e5490d97dbf8b5dfa59c849437a4fc734f0bb6"
+    },
+    {
+      "id": "POSE-0759",
+      "page": 21,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "b74766f5d5f5d722606037b6da063bf5358c4b05205d91e863183dc262ccf1aa",
+      "candidateSha256": "8be073ecd1714211f2b21a9f61633c8bb9a8cfc14a55137c80ab25e61a8983b3"
+    },
+    {
+      "id": "POSE-0761",
+      "page": 21,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "fb5f2cf8dbe5624e304b79adc6068aadd2df456b19f9e561bc1020cb9989295b",
+      "candidateSha256": "caac636ebd18d2b329a05229edb72078831a670d75fd91455f70b62333942ba1"
+    },
+    {
+      "id": "POSE-0762",
+      "page": 21,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "7478e4d503303d8005685968392532c114eb20860fdec814b3c3fad30d065253",
+      "candidateSha256": "73c0375077904d8ace58b1bb0dceb531d242c0d022716ad747639c09d63ea142"
+    },
+    {
+      "id": "POSE-0764",
+      "page": 21,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "3129c86a7362158ad6e2df308edf88525bf0daa7ac79ac9f8ffb27029e27221c",
+      "candidateSha256": "8e17922ba0e405e00a0f218d9f000a4694116e50b7c6b4cf1dd467814a1327b2"
+    },
+    {
+      "id": "POSE-0765",
+      "page": 21,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "2d9747bf65bf93177680588e8890d94f1a6cd6831b828dae8e35acef8b3bca52",
+      "candidateSha256": "c455ff419fe6cb7357581a9cdf9be4921e03422c9a34523fd4f13e1d5427ebbe"
+    },
+    {
+      "id": "POSE-0766",
+      "page": 21,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "c398c701dbea940b81c4587ed177f42a64a569f1da68f599054e95303313c9ca",
+      "candidateSha256": "a0acea2073bcaa7d9ab0d81c6f9561af1f9e84944917b84a2feee4acf5561321"
+    },
+    {
+      "id": "POSE-0768",
+      "page": 21,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "fa5fdfaee7e4065558397ce589f4320fb14d75be76da1aed17011b5210b26442",
+      "candidateSha256": "31427ca3a0c2726da26d27a19bd4661419b63ab594e9f58fa2149b9c4ff51135"
+    },
+    {
+      "id": "POSE-0769",
+      "page": 21,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "db5afc797016358badb8991b48b339a4543b7e7aef61a180fbc1e9a6c8829906",
+      "candidateSha256": "86932418ef7ddab758cfca08a2ae7454404de8841ec577ad691022b1dbec39f7"
+    },
+    {
+      "id": "POSE-0771",
+      "page": 21,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "8c9f86a8953933221a3c404f5b7a91695589c0ddeab9a60c28571d5c6a51e05f",
+      "candidateSha256": "7f81f79c7ae6bde375c85819c1429717db44b587c9ef57ef35ee5c0803d9b0de"
+    },
+    {
+      "id": "POSE-0774",
+      "page": 21,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "20b32d17900f03ee21ce70564893d8e0a584c76b9eb9ba247fcc457bc726e8ea",
+      "candidateSha256": "e217303ea7a3ceb8845aedbfcf99b9da74b0d669e09b0b780432916342587390"
+    },
+    {
+      "id": "POSE-0775",
+      "page": 21,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "03d652df9a2861929af6ad52215d2efba811a2afaa5c0c1d1b0a6b6177de9530",
+      "candidateSha256": "99885fd5073cbf05d78d278f0a2c6051f9385c7a73df7d019634c2a167be5d76"
+    },
+    {
+      "id": "POSE-0777",
+      "page": 21,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "42b6a2919b33b413f334076d6d1bcd60fa70711c20b2743701a36b6c2c7ac05e",
+      "candidateSha256": "f77b5048c0a735651d654b6ef46c73d8ffba3bc8f5ddde2cd099af547626eabd"
+    },
+    {
+      "id": "POSE-0778",
+      "page": 21,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "bdda8d4167f378e28cbfc79cdfc8e4394b7741656a284e3a8a071451134a601c",
+      "candidateSha256": "b4798b50b032e89d180e9c117a96d5c9559ee7f4daa1229fa32570c22dca2f88"
+    },
+    {
+      "id": "POSE-0780",
+      "page": 21,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "c0421d30344144928484344319a16f56b46bf3f9c42b3aad2ffc75ca85ec6b98",
+      "candidateSha256": "719bd582e59d05db6dc591eb4782f4ff3f49907da0068113af83df7693103e20"
+    },
+    {
+      "id": "POSE-0781",
+      "page": 22,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "27b44ac558aec8a3b74bea8e7f0f43a67ae41cd22295ba03d8ad55368414cab9",
+      "candidateSha256": "29ab15db73c43ba2d23d4b94da7e55bd6d23e8898092c57375f28fa1f80bfb6b"
+    },
+    {
+      "id": "POSE-0782",
+      "page": 22,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "10edd44a603331a55c2d4e6e2530df541a2e297c3ea04bbbe9151674973f5495",
+      "candidateSha256": "bdd19cfe5c2630a9da6f5644359a02b0f5f3ee893649d3728204eec7ad64617e"
+    },
+    {
+      "id": "POSE-0784",
+      "page": 22,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "8f530dfe76bf6e1550d2a3471b3354d9a224bf31153a19e8f6609d66283a1731",
+      "candidateSha256": "36e19c2fab32d9a662a4cf5b5823191fd822492946b0f0be46294989c8fb01e2"
+    },
+    {
+      "id": "POSE-0786",
+      "page": 22,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "d2c6b6d89f82de01e74bf25fbb6ff881518787e8ac5ed7d8611339a0a48b90a5",
+      "candidateSha256": "cf3b7e292a76f1e9e418ec8be9398e86a64adfe98793496507f41471668e6de6"
+    },
+    {
+      "id": "POSE-0787",
+      "page": 22,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "e11f63608088f70a60c061cc990a5de4c24416d14645d386a88dfe4411e6e3b3",
+      "candidateSha256": "7665d2b4d982abab6db9cd4be9b725a91f838b552067f66f2e0e805d4f3015b5"
+    },
+    {
+      "id": "POSE-0789",
+      "page": 22,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "2ac03a5bd3bf5213d923568e1906ce06568d4e0fcfef9523c51db90f57caa443",
+      "candidateSha256": "42ab163c4f6332af223370edd087bacf81a5c29686fa449e73009937bce810ba"
+    },
+    {
+      "id": "POSE-0792",
+      "page": 22,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "89c12abd4c56a2831ee404e3d3f7c0dbfe802f2bab8a0e06b4ebdc6739d4feaa",
+      "candidateSha256": "79ab5d1c3027536f971f01029cf79e530ab0a3116419b9d90d2f15bc6e911569"
+    },
+    {
+      "id": "POSE-0793",
+      "page": 22,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "1f2f73f93a147e390121694a5afea5a4e337c19be1d32e07d6a8760335aa0b86",
+      "candidateSha256": "8da115cc58af2ad2ad37b3193077858a4b105b2c0b1237915499bfc6ca315d3a"
+    },
+    {
+      "id": "POSE-0795",
+      "page": 22,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "4e1c67699099602297c4449e8a19cce972a377cbe02a51bcf7a65fec7889b5d0",
+      "candidateSha256": "b7b8443b4b9fdb2e05c04390e1fcc8e069c21667a2ad69ed7fc41470826bdf7f"
+    },
+    {
+      "id": "POSE-0796",
+      "page": 22,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "e994b7a628943225cefc696d2fa46b5c8ba3c4ee66327bd21e8757313bf8e381",
+      "candidateSha256": "d08e05bfdda93797897a240e8320582106f5d2bafd8dd00b83d2909ee1ea9784"
+    },
+    {
+      "id": "POSE-0798",
+      "page": 22,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "3ca1a5540000c6181b17b901fa365412fac3c8a2435a348e2d24de3e76381ded",
+      "candidateSha256": "1096fb22fb4381387ced2ea3cc918e56c44441cbd395ccf1bfb12288d334628e"
+    },
+    {
+      "id": "POSE-0801",
+      "page": 22,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "d3402515f8e3d215fda3334b9e876792a451ec54040172cd87e00e8868e05cb2",
+      "candidateSha256": "198578f6d9bf314d61e4f168afa79d33783f1c9dac7c391ad65c28da5b7556dd"
+    },
+    {
+      "id": "POSE-0802",
+      "page": 22,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "8128d5530fc659b27bb2bc2c807c9d99764d7a7e084ee3543f7ffe24fc05af34",
+      "candidateSha256": "fb7ed288ad19d946edf0acd32e3eb8f200cc2ee575bdd0020cad4709c5199e47"
+    },
+    {
+      "id": "POSE-0803",
+      "page": 22,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "1fbd604b4c387a2b22cb8e21ab63200d53e8fb9966566a960d7231c70532a136",
+      "candidateSha256": "1aac4e0d4ad6934c2f8227213ffcde1b756549fbf00f8bdb618b667ac7b449a4"
+    },
+    {
+      "id": "POSE-0805",
+      "page": 22,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "2056c65166bd19c669ecd12ffb16278366314dad77b0e858210515a43e290a65",
+      "candidateSha256": "8aa8c2d7aeffbc19383d07dc3230e0509f12fb89fbd4ab1dbbb1131cadad9869"
+    },
+    {
+      "id": "POSE-0806",
+      "page": 22,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "b85f9fcd24ac69c8114ff5c52e1fe74c7683edceaccab8ce5e4fdddc9403f965",
+      "candidateSha256": "5e4fb9d6892248714fb75635a977d912e3cfcec4fb2133aaaec781e09cc6a55b"
+    },
+    {
+      "id": "POSE-0807",
+      "page": 23,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "113d41181d88701302174052fb93150b2d2ef86fdf1e88b941bafa1bf82f7aae",
+      "candidateSha256": "1f4d5d2dd27da0c93e043447d94a4ea4c74f4bc90135d04b994859191dd3c584"
+    },
+    {
+      "id": "POSE-0809",
+      "page": 23,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "1f4fdea7f5dd5b1f226c37b916d10587407757dd6cc428f8d4988ee3688dacd0",
+      "candidateSha256": "2831581d8b0993a866f8ca4c9d755f42e04f2124a05656988305356310d9fdc6"
+    },
+    {
+      "id": "POSE-0810",
+      "page": 23,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "11aa77c20dd31e5262ad3307e2b2d4256b435ace53ba2090561bb8222509d700",
+      "candidateSha256": "d92a2af586e89c6a8be6d87f60fbeb38d7d7db71e6ff76918eefeeb6e68fda95"
+    },
+    {
+      "id": "POSE-0811",
+      "page": 23,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "13d61b8ed9d7ec7d60f0addd4ffd8d21fbb0064e05fca246e2f1899fd9b4bcda",
+      "candidateSha256": "6830330ea6b24645793d0640b29d3e2c83bc00d7c5dfcca92c25d61ba1bb5efd"
+    },
+    {
+      "id": "POSE-0812",
+      "page": 23,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "0681c1cbf7c7e79a16801fc766dae7fd5c71efcecb7afa1c16ded2f996796214",
+      "candidateSha256": "80710495fafdcd2ab460dc05297591f8a703f9ce8078b44941e7c2c5d784548b"
+    },
+    {
+      "id": "POSE-0813",
+      "page": 23,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "e8cdcded9d90aac6eac15c7482f4288f8dcd2d9065feaa1ca8f2890817894096",
+      "candidateSha256": "8e008ad4a20f1a3de64a1b25997caff9f38fb739dcedacbbfccf792d22587a63"
+    },
+    {
+      "id": "POSE-0814",
+      "page": 23,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "b564cfc021e5a7d63e4fc1c7799188140ca79c7e671b959300dd2edadd462547",
+      "candidateSha256": "a2d8e8580ce866f5945d447419c037e52be90ac2029a9e3e79f780c0224b9def"
+    },
+    {
+      "id": "POSE-0815",
+      "page": 23,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "0904da3c53f40cb5ce8d01bd39099f9157f32ff95976e6292088e74964ea780b",
+      "candidateSha256": "bbcec875201a5e61cf36236956da01c53873ecbb7b7646325b426e9ca8430dfb"
+    },
+    {
+      "id": "POSE-0817",
+      "page": 23,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "4119065cdc8a39eae2d27e5498a7e427e4ba95afb98937951ae99ed0a8ce012e",
+      "candidateSha256": "5a60bc3269e9df89d0785d06670fb047331c9dd97a9d9c37b7444c0a349339a6"
+    },
+    {
+      "id": "POSE-0818",
+      "page": 23,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "e16d4dca4dc57a2ab780e99bcc276798e4e7d9daf4a49a4e6da97be9e6b17299",
+      "candidateSha256": "8937bcbf887c5be3bd63035397d5ab594257fe9aa065b3fa5f2f26d867036d85"
+    },
+    {
+      "id": "POSE-0820",
+      "page": 23,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "4b4a6feff48abb70306f5a64ffacc42e2c170fd53ef8c2ff240430b25085592b",
+      "candidateSha256": "15a579ab0049b3a10bbf5e890c17030ecd3aabfcacc91b0638ad353b81295ff1"
+    },
+    {
+      "id": "POSE-0821",
+      "page": 23,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "e0f80f66b608a09087c74e546b4317f7cafb2ae8960142afb230532034bcd7e8",
+      "candidateSha256": "2e1a994650707ccbf0fc6469a3f943a1f846cbbb91e69c94686892c8f7720900"
+    },
+    {
+      "id": "POSE-0822",
+      "page": 23,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "9aefce17c2d03d49666984c3ccf4b4ba63766a77a167b37e34eaf03e7424408c",
+      "candidateSha256": "3626c032512d584f3a0beccb0a0afb26414c74937a3508da839d95bfdc23ba0e"
+    },
+    {
+      "id": "POSE-0825",
+      "page": 23,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "334b1462f065d0bceadb085a390ad0357a18fa48614a044d8ce6e561219c5a75",
+      "candidateSha256": "1506061082217463e8bcdfd249c1d81c13c0ac3a5f05b7612097259c3a7d7d47"
+    },
+    {
+      "id": "POSE-0827",
+      "page": 23,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "d7281f4381695a28a38ce9db13120bbc5a0c1adaaac69793fcec3033753497b9",
+      "candidateSha256": "399fb70b024c505a58219a1280ad490e865c489ffc84673a80b2df36db5143be"
+    },
+    {
+      "id": "POSE-0829",
+      "page": 23,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "2ed49ca97525028cf076a9fedfc654a581d222e380d0a59d4da5750415e75402",
+      "candidateSha256": "4598e7994dd9e18d1c84d2e66cd42fffaad603c85c6925561a018819b845eb47"
+    },
+    {
+      "id": "POSE-0830",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "50835446e3438caa741a1f1420c767e7f8e46367ec26e5ecaf34e8ae3a7055dd",
+      "candidateSha256": "b0cd2584b7cb1b25b99f2c9c37a866d46a8e2d54605887d2a6676bbc1d3d1771"
+    },
+    {
+      "id": "POSE-0831",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "7331b437d1842d081eff3c162b7cc2a6f63ffacfa438ccf71a40db279fb44a11",
+      "candidateSha256": "42781b6beb3d850bb73eb83bcad1645f695d4363170532a5e75c10e519ba8347"
+    },
+    {
+      "id": "POSE-0832",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "ccbdd2a72a7dfd759b1ac16c73e7eb296e7d82e39d4ebe05d7d8b9fd14095509",
+      "candidateSha256": "94380b3efd0e675b33fab6265ad25537282f7678104a1a25e622e4c3f20024a4"
+    },
+    {
+      "id": "POSE-0834",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "0f0634a238f34d234f88cd7d5137ef567522cca8eb50fba46a525b0a8e25204c",
+      "candidateSha256": "b5c62f519f9e0194f27d81d815d8e0ec138feab2972f69ec0c2122f4507858b8"
+    },
+    {
+      "id": "POSE-0836",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "f36e9bf1c500a70205b9b7cd7cdd5a607b5b96748440d1a79a79679b4be8e92b",
+      "candidateSha256": "4f44039b22761701b5c3e45c1838aec9583bf43889ace34fb8e7ce66e432f63c"
+    },
+    {
+      "id": "POSE-0837",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "e4320e99e2bcc47a9953b4f130a7754bad7b4cfb0865d85310ef87a8973fb4bb",
+      "candidateSha256": "1fa409b1f829187beb997ebfd5bc6a64af1f7bdbbe5b1da5eced18c7b2846fb2"
+    },
+    {
+      "id": "POSE-0838",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "2da15d58cfd46ac4483e56d31562fc432550c20cba7ce520385a8d43dca5d723",
+      "candidateSha256": "9a0f06968dd6edb6be7e1d4767148bcbdb21f0aeaec2a5348555a3499ac9ed08"
+    },
+    {
+      "id": "POSE-0840",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "a182b141f56cf31d422203d5d829f8c65058f04d7a20c7f34da846ce3771dd91",
+      "candidateSha256": "fe30228284611952760911789725d796958a62d3ef2304199b83369dd7359661"
+    },
+    {
+      "id": "POSE-0841",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "6111c36da919fa76bfd573881855b7928d2392c487634b315091e7b77144a794",
+      "candidateSha256": "25ce7c5218af2e07f456296ee7fd03c6759dd1850528c05895e80e0ddf5213d8"
+    },
+    {
+      "id": "POSE-0842",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "67a87a9c78f61a04d558f72520fe6958172f6f344fdf11e0e3c46a5425f4266d",
+      "candidateSha256": "469bd8d30bf091776e6abb56e62f20b81e296fc8979500ff0da41e4d28614d3d"
+    },
+    {
+      "id": "POSE-0844",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "b7694a74b5563bb7d6eed95e915b9c295a9bd41a5bd5d13202b6c7e63ff3ee23",
+      "candidateSha256": "d4a84b6384cd336334cfa6e039bbab08158f513af4e14c4b148ca28469827f2f"
+    },
+    {
+      "id": "POSE-0845",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "e22ebf3a3c3a44c9b7f7b7fa0ee244a532de2e3f32fe5dc00608678cd4f67e49",
+      "candidateSha256": "a08fc7e25406ab0ad3f123c1ea5eb7720d8bdacd69d478575ec5bca53ea47d7b"
+    },
+    {
+      "id": "POSE-0846",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "a2edf08b983a2566f8e8e3a5c7b65e46f487022d82f866ef6d9c655e60e681e0",
+      "candidateSha256": "8abba87797f7e4a4fa8fc0ffef5139115a37e4d2a7576c4ae427807a932dba8c"
+    },
+    {
+      "id": "POSE-0847",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "5f7720a24beb83a974e5718e6465a22f2770deaf45c62ea7d1f5702d1d67edaf",
+      "candidateSha256": "ae44008658b744ce3d92c05e36ebc1c79480a47779000b1275b1b6cbf0b89e53"
+    },
+    {
+      "id": "POSE-0848",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "95ba55a01b6437f3783727b8e3e2ea0de276c1d3ed64245196d41243569b688b",
+      "candidateSha256": "4b68538579e896bd518813da91c9d44486219ab5b1f4f0f5b5c497e86442d4d3"
+    },
+    {
+      "id": "POSE-0849",
+      "page": 24,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "81a8a67a1efe30e4db212ad07dcb933dcd82ce09c88fdf6c59dd59600105b967",
+      "candidateSha256": "79fc81c2285fb4e03eace780b805eba75d81f0e9bc6353fea0fd18f0af8069ea"
+    },
+    {
+      "id": "POSE-0850",
+      "page": 25,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "0c17378c52b1a4ea017b6ad83957f25340ce6b0a95e04cd160fd213cc2128926",
+      "candidateSha256": "68729f46e5a9449f2efd751708c33b96d2272a6e1e57ad8b343c833434c58fc1"
+    },
+    {
+      "id": "POSE-0851",
+      "page": 25,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "e788b05b566b20f4a4cf036f71bde2480426853cbdeec7c9d0d82b205e1896f6",
+      "candidateSha256": "d5e934f4bf96e2d2cce646b17acd4d3b7a49f0386ac7d5d3ff96e6ba4d2b063b"
+    },
+    {
+      "id": "POSE-0852",
+      "page": 25,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "7c2f7e9a830ce0c70ef29af5fb864f69c219b9f1b43041bccff7cff3a7724efa",
+      "candidateSha256": "5959c9fcdf1462e5107185dea67c3c817a538d2ef8d6a942fd416b2f8f13beaf"
+    },
+    {
+      "id": "POSE-0854",
+      "page": 25,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "1a3821dbb899467a9629a1fd3f06f34ccf602727a462b1cc16afc0de6d58948b",
+      "candidateSha256": "aef1133a5b01ec94b927dd70cbac16aa2ee636426b815371548c887c834e2b0e"
+    },
+    {
+      "id": "POSE-0856",
+      "page": 25,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "0534554e2839b98ac3d2629dd242a7ff48b763b8dc2982a04150bd35919b5980",
+      "candidateSha256": "701abc834fe5232c8fae13ca390a385faa4dccd3c081eac5af6e07b881a1f69e"
+    },
+    {
+      "id": "POSE-0857",
+      "page": 25,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "c2597ae7afd2195e89213c7298e3a9742002aa26694a9155e831fc1eb3204361",
+      "candidateSha256": "bcbb389df5d19dd2f3277afbe86137ce6e4eae39a0f464b7d10a5defd61c6732"
+    },
+    {
+      "id": "POSE-0859",
+      "page": 25,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "ab0ea5af882b60c821727f6af7234c8feaf2c82a6f3a998f13a90dfcd70f85e3",
+      "candidateSha256": "2939ea3dd2f12099c84dbf20401eb1c4062061228a9a94b3e91689655fb6e7ad"
+    },
+    {
+      "id": "POSE-0860",
+      "page": 25,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "d84a34bd7c4ea4bd50a92ac74cdb5a6b4848269aba1a4befaf8561d74d0b86d6",
+      "candidateSha256": "984234113601511015d0a726915eef85dccd3c8158a7f758e0b131914d5833ea"
+    },
+    {
+      "id": "POSE-0861",
+      "page": 25,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "5c5d940be3fd19414015824ad99944478e2ddc4b3666019b6ca34ee9fbb2577d",
+      "candidateSha256": "5efb1cb6ddb9ebcdad707b7720491c22a6a772287773fe4af115fa84dad33621"
+    },
+    {
+      "id": "POSE-0865",
+      "page": 25,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "7c86729ab62263ec6d7045d31fa7d8508c7cd4a5ff6c69c42ac2542f96468cf9",
+      "candidateSha256": "f24b36c4fda4e648fd8bc61f65dd4d820a7ec3eb8d964ed0eac869c1dd04b94c"
+    },
+    {
+      "id": "POSE-0867",
+      "page": 25,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "19417462dccbce25f9037051676f603569969190dc068b6ef61ef68bd59b14df",
+      "candidateSha256": "01135e22876aba64f6945ff027a64a7c2c3df63ccb4d9f0b71b55c6bf957088a"
+    },
+    {
+      "id": "POSE-0868",
+      "page": 25,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "685a75913a454b52c4e785bc39fa1b750e23df7ef5cf075163347bb9720c7e22",
+      "candidateSha256": "124cb75d590a8c8958af7a9ac7bb7f89d8825d3acfdd7aab591f664e0fd6b143"
+    },
+    {
+      "id": "POSE-0869",
+      "page": 25,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "f0e852e58f962e27d69b768b6f2882a363ab0babecf4618e6f0e39b0c2565872",
+      "candidateSha256": "32cbe9ddd8ecfe65a3a185f573773640e7ce1810a1d6bb35be2039288d597dc9"
+    },
+    {
+      "id": "POSE-0870",
+      "page": 25,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "afdecdb42834403e4585ef534fb2c8972ad00d2705307b486ba145a16e83f11c",
+      "candidateSha256": "67318e79685d9a06950f7b9f55828492c398a6eae38e2e6fc1144f2779f8f778"
+    },
+    {
+      "id": "POSE-0871",
+      "page": 25,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "0a9657b5cd574eb22f596c619740e461f8b129262906a86a835d72336375d14f",
+      "candidateSha256": "59e757157a2e14be0df98202206194a4d646720a71295fd34c6e7576de54cfc6"
+    },
+    {
+      "id": "POSE-0873",
+      "page": 25,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "94acc47f7e7fa58e7309708c03fbefae35d29779c5e7f44986e273580f061fe9",
+      "candidateSha256": "bb8afac5054207bdfdc74b25b84d8d1a1caae3a988cda1c18d27251a939e2272"
+    },
+    {
+      "id": "POSE-0874",
+      "page": 26,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "66511c24dfd2d709e8d8ac208efa7f5f349e1a72fc27845d145e3272cad290bf",
+      "candidateSha256": "e8bd0795591fd27b014d2751042795a12fac9da1db3962838d76ab9952a53f69"
+    },
+    {
+      "id": "POSE-0876",
+      "page": 26,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "ae9ddd70e4bdd3312309c4375427ee5612f14410126f884b58bf6acb8e2395d4",
+      "candidateSha256": "aeb6047065842945057d2cc9564518cce5f6a2f22d4ef6f30db8aa4e2615f40f"
+    },
+    {
+      "id": "POSE-0878",
+      "page": 26,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "c098f5a7d931ee7bc64b3048a1ed898dc72fee8bbd69d258092355d5efee3e38",
+      "candidateSha256": "64d6f2b404f0ad424b08622cbf94ca6ebb9c9a3695b6a6648376861216241d6c"
+    },
+    {
+      "id": "POSE-0879",
+      "page": 26,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "007da06415fe8757411e6a4eed624ae5b62c354bd3610ee9f0bcdc330214350e",
+      "candidateSha256": "ae43db2b3387fdc910b6e6f974a392a7b757065088092dc33a63d50644beedf7"
+    },
+    {
+      "id": "POSE-0880",
+      "page": 26,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "fb389c59f8b4beb54f566b1502e2cc7684e92144d94b63578adf8e9400e523c5",
+      "candidateSha256": "6e0d3dfed9d666feab99ac82090cad5b572addc17329e10600616d6e070463bd"
+    },
+    {
+      "id": "POSE-0881",
+      "page": 26,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "be12b9e4c62f91fa0483a98c58a16fef8960dd52ac1e14a40cb68904e93e3bf5",
+      "candidateSha256": "e269056ea84743db1e9db3cf029debb22bbc625d82ee76ab6a5dfb240fbc8a5b"
+    },
+    {
+      "id": "POSE-0883",
+      "page": 26,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "5ca0a7ee889ccae11f06afd9be6238b2c45683052d738339a60235e454763afa",
+      "candidateSha256": "b87b7ba99157b693a356da38bead0a457e5b67014ab0926d1f72431ac4b077ce"
+    },
+    {
+      "id": "POSE-0884",
+      "page": 26,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "ef70b3dbf2963d75e9436f7892ec04886370cca2e8db33ce19ccfe381fab85e8",
+      "candidateSha256": "9f519a87bad44038bee2f9d9355731c9fb9ecd3bc6d75b65bcaea5608baf2e50"
+    },
+    {
+      "id": "POSE-0886",
+      "page": 26,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "27c822ce433789147cff914f2cb8a6f951cde2c689039c4e275ce4b271967136",
+      "candidateSha256": "f001da91e239d2651f27451f93dcf4467a00a1ecc434e0530e686ec525d2461d"
+    },
+    {
+      "id": "POSE-0887",
+      "page": 26,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "5ea8ec457f172a81cf10e79a6b58a236291d93fb4dce9917cd449f74b976add2",
+      "candidateSha256": "6812341a8aba36566574c2d95d8406f26cc396c02a76a22e17e5c91ab772a4d0"
+    },
+    {
+      "id": "POSE-0889",
+      "page": 26,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "a58b170db28491753cebd578d1459e9dd9b46bc1a4d1e5bfd82304c2e2a05b99",
+      "candidateSha256": "13613fa465f2919fe45d344163cd279d0e0d4872b06a138d65f59837491355b2"
+    },
+    {
+      "id": "POSE-0890",
+      "page": 26,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "59aad7355a9c62dda186a6b3f1767804cd180f3cdbbf8a16f526d4a79b8071aa",
+      "candidateSha256": "9853b3d86af571c7e4abacd511638660ce5889370f819aec931618d94e780aa5"
+    },
+    {
+      "id": "POSE-0891",
+      "page": 26,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "b596fc125f0f2593a6fa519a4ef918dd5683add6be470da5bdfe900752a2808e",
+      "candidateSha256": "76e114dab916882ee6fdb001ba560880e820f089789b09f29a324f14d2229eed"
+    },
+    {
+      "id": "POSE-0894",
+      "page": 26,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "a8891b0aae73d54540fcf41445e51d2465e2dc4a5955d58b4f32f1ae0c799166",
+      "candidateSha256": "1626c994503477e86ac2b82cdeb0a36c4437549c7aedd8bee1ad66c8d83dba7f"
+    },
+    {
+      "id": "POSE-0895",
+      "page": 26,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "a5e5fd91dd724b4eec579e7bb87239518a23e13cfca84e1e343d4578da7945b7",
+      "candidateSha256": "eb96d315503d9adefe448a555459bdf8426dc31794574c354d3499e13e9e7cfa"
+    },
+    {
+      "id": "POSE-0896",
+      "page": 26,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "f1cc8d5e2388722bbc3d758735d5f01d2b776bafb7670dda7bb797151e0dd8fc",
+      "candidateSha256": "c15c70cbb86791f7a16b9683abdfef5c085468918a2603ddb800d821204b2a46"
+    },
+    {
+      "id": "POSE-0898",
+      "page": 27,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "25578c26fc7bc23e1b0cf60a231584e7387ba20ff855a077298ccaf9cbb6dd8c",
+      "candidateSha256": "24239b281b49412a81987af3d531d432b463259990ab56b5f7f0127bea28fe85"
+    },
+    {
+      "id": "POSE-0899",
+      "page": 27,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "c56e901d049188d3ca7fb011811d34bdb398a9e51805d7d8d506f93e7e9c3d91",
+      "candidateSha256": "246fb3684750acbd0c233ecf360a1f867eeab8a69a509476fc98ef2a9065ea4f"
+    },
+    {
+      "id": "POSE-0900",
+      "page": 27,
+      "status": "unresolved",
+      "reason": "강한 부감·앙각 원근에서 팔·다리의 깊이 또는 지지 위치가 원본과 다름. 참조 카메라도 근사값임.",
+      "imageSha256": "7cc65cd1f4bbfb8efbe26b5b7dff75ef06e89fc3f99c8c6217e7a00776302a43",
+      "candidateSha256": "c3bdc8116f106b1609c82fadcc1eada4cadc062f90853e5ec07148ae77e67a1a"
+    },
+    {
+      "id": "POSE-0905",
+      "page": 27,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "8ee5520900aa13530295499bdb5d6dafebe959c5044f70d12b028cb8c962d54a",
+      "candidateSha256": "91655b8e225ad88d6ab570bb8625bfa4aff51c68aaca2c6d880211f8f8acc932"
+    },
+    {
+      "id": "POSE-0906",
+      "page": 27,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "a9bbe441634014c2c7cfc2148d34014e977a9da315aa364af656ff64cc08b983",
+      "candidateSha256": "7df0c05b06ad4dd88184438905c4fdcd0132ed86a5fe29c895ceabd09ab213e2"
+    },
+    {
+      "id": "POSE-0910",
+      "page": 27,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "df3339b1018847805e9d7204c765afb6a08be619f0597e7a792b219b169bd1a7",
+      "candidateSha256": "a0c12b449a902447adc9d6700d5bbeb437be872c92224f8cdc4a75fa73b14235"
+    },
+    {
+      "id": "POSE-0911",
+      "page": 27,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "672cdde27f08607d4a38614178a2d1b0a57014008fbd5eacfa0a03a1fe94acb5",
+      "candidateSha256": "845fb17a3b2400ec49cbfb20915a27eeddeb00f1ffb47a8bc3b249c17762686c"
+    },
+    {
+      "id": "POSE-0912",
+      "page": 27,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "6081d3c1441e909cff15b74bcdfb347459f4b39871286fa09295f53597b0ee00",
+      "candidateSha256": "dbc650c25fd2f9c2d100fbd0d33ab070644eb7ff4b986763cd74ea304d306ee5"
+    },
+    {
+      "id": "POSE-0913",
+      "page": 27,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "95c960a7e9ceff95c38eea65c346cc4384b564447f9cb59614d8621fcca44332",
+      "candidateSha256": "4a5f416c35a5371ac5168c0cddaa7e7ab3282012bc40682de64aa502dba3bf89"
+    },
+    {
+      "id": "POSE-0914",
+      "page": 27,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "51d11564e9127c5f4762a219a0598083f6a1df75ca3bc01304cc5c6c8f4d0bcc",
+      "candidateSha256": "e17bfd08cf922010f4fb4ed866967e3d60b576803fad764fdd28a2fff9b2dc81"
+    },
+    {
+      "id": "POSE-0918",
+      "page": 27,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "40eb6fd477e8b7ed329a42e38a665d4ff9b99312a477e55962eb3515032151f4",
+      "candidateSha256": "be416ae69f75656382aa56ff8102a0e6e0ee6818ac32272a7498331b616bc4f9"
+    },
+    {
+      "id": "POSE-0919",
+      "page": 27,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "ecd9c9141f03e67cc324978039b42fe4f909dab867cb1e6c292f5b46480934a5",
+      "candidateSha256": "8aabb51d8db05edff9ee2e28795d7a7c047effa9acd26fd1f94316d84606115f"
+    },
+    {
+      "id": "POSE-0920",
+      "page": 27,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "67a9b43ed913da438812142303ec325c4a810559925c35f955d4260c35f5ce10",
+      "candidateSha256": "86e343f2199a0475be7b02b1c8368249a0404cf8b5778a93f54e2e8396b001b2"
+    },
+    {
+      "id": "POSE-0923",
+      "page": 27,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "bf76ae34aaa07d9ee52af215877e851ac156a01eedebf22314d1bd98d119415c",
+      "candidateSha256": "47d00ec9e50c2b13ac6e6cfcf89cbbb8027223a25947bec7d37bad8b396cad09"
+    },
+    {
+      "id": "POSE-0925",
+      "page": 27,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "7201380bab73960117e74d5840d8c443de5aea341e562a938fdf039da29a43ca",
+      "candidateSha256": "bea6428d06e2f71cb440954f8b64149ad5299b0b395df58e2fc2a7dcd34c1aa3"
+    },
+    {
+      "id": "POSE-0926",
+      "page": 27,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "fd3539c3330d9dcb7a57e41eab4c86b6495452c171202d4f5e1aca284c663dd8",
+      "candidateSha256": "f23da365770f06c82b83f82b53f6783280d62b0bfcab9965fffb34b068ed1475"
+    },
+    {
+      "id": "POSE-0928",
+      "page": 28,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "7ac4179528a6ba96b01b2ec5b688a694b56ce2699f6b0b9bcdf3020b01e1d00f",
+      "candidateSha256": "d98d2c20067d3abe0b53549b15693b70942c1d93cc33e36939c709c947e6534b"
+    },
+    {
+      "id": "POSE-0929",
+      "page": 28,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "5bf7cccb0f5861736cc39bf1179a3d2724c3f6f09cfa334cc506a6363b93ddd9",
+      "candidateSha256": "f79348cef307b7acae043a05d40422d4a68c6319e0daf1cd96243e095f45d5fa"
+    },
+    {
+      "id": "POSE-0932",
+      "page": 28,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "922fb0e15d8dc7315ab60ce80a0058dfaf0ae9abf67babd50baef2261d013247",
+      "candidateSha256": "075a59812fc1e09ee45d30c453ae9b5c450bac9feec4899cf5e81dd8eb3de0cc"
+    },
+    {
+      "id": "POSE-0933",
+      "page": 28,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "90ccdc8b586ba564c18c344d52a8762ad4ca33cb15df837f3b77ae692e5c19e1",
+      "candidateSha256": "954f41b2ef518a050e0f94267d2c316e3858fc54513f07de63c58eb359f6be9c"
+    },
+    {
+      "id": "POSE-0934",
+      "page": 28,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "5315a0e3aa8beb7784d4787a706844aa9e6029797d0e0d8ae54079e180e5b55b",
+      "candidateSha256": "e04d2083d71d4103cca416d72212c43b942cad547f7fac1c348886f934e30374"
+    },
+    {
+      "id": "POSE-0935",
+      "page": 28,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "801b8006ff964b4753cadeda02c3474bf650bfe170e3fd00c9a0fe5929534510",
+      "candidateSha256": "fff71c5057b9e48557567890da69f5019e812e46057d4c5151a2199f3b3b164a"
+    },
+    {
+      "id": "POSE-0936",
+      "page": 28,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "2951e47cfde3f8702a45ea2ac91f86a8148f079699a1a1473291244e550d4a9b",
+      "candidateSha256": "dd06c37475df365191aa1552e61dc863d24598dd6f98963bb09de239188c45a9"
+    },
+    {
+      "id": "POSE-0938",
+      "page": 28,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "f5c7207f3003c6ab7f1b8b11e5ce2c080855275393bc1dbd09b8d05c0e803e2a",
+      "candidateSha256": "387c2a76f872e32619a0838a4f7765cef00a261d4bae400e8fd95f4e82cf2f76"
+    },
+    {
+      "id": "POSE-0939",
+      "page": 28,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "e8ec0ebcd40860a63e13606f6ebbe0684447446d086eba6700820afad70c1ac3",
+      "candidateSha256": "5f0e576631bf5326902a22337ff35247aa866b00649c5886279d9aa18173e88b"
+    },
+    {
+      "id": "POSE-0941",
+      "page": 28,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "f6734052396077758efc48fa4b87e075799d03fc581eb6dc1f6bf852ad22dd2a",
+      "candidateSha256": "8213e32c3b8ca183517df4fe373496d63fee522123dcff41a78900029bdd5231"
+    },
+    {
+      "id": "POSE-0942",
+      "page": 28,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "6891a3c73cae3576bd0fe3a30053a8f8bf5a92bbc7f54ecb193be742df5cb090",
+      "candidateSha256": "4fd9acce2878aafd18c01f5f2c6f25e6f04c22b4dc933cdc9afd2c1869f8f11f"
+    },
+    {
+      "id": "POSE-0943",
+      "page": 28,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "d9fbf6c9ce83c931205a9468a68ab0598919ba0087f835ee3c2ac7962f6657b7",
+      "candidateSha256": "4e9020243b9ea274247c30c4ad1875ab83a610045fe4d2d37abd5a866e5eeb01"
+    },
+    {
+      "id": "POSE-0944",
+      "page": 28,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "d4f7bf905aff293404da9e8f835fbdfe009ebd3096120830b306e68c5753ccef",
+      "candidateSha256": "3992c29ee029b6efbf67bfaf00ef2ac8ba09edb94b83f21fa4d97826c09ba6ca"
+    },
+    {
+      "id": "POSE-0945",
+      "page": 28,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "430de27cc87b3c827d8e97e494812b428dcdec8f4ba07f714b58992793580eb6",
+      "candidateSha256": "948b4f3c57c6ddbc74fb81b3637fcb85e1bd732dc5423d359d065524940328e3"
+    },
+    {
+      "id": "POSE-0946",
+      "page": 28,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "0a9ba1b5c33173759704b23b6846b82c0dd2968a4f4303918924596128a3b34e",
+      "candidateSha256": "8250912324bde708ace85d810d4b932020c260937be89e838e2b8e129e4ec987"
+    },
+    {
+      "id": "POSE-0947",
+      "page": 28,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "c0fbf307176f6d372373f45d479fb5e78b98aceb5154dbbb8371944423d1768d",
+      "candidateSha256": "6406ed4a4d34d5bd8620e09d2e1fe01b777fb44ca256839562b69da66784ef5b"
+    },
+    {
+      "id": "POSE-0948",
+      "page": 29,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "f5d23d232f1b23966e43c22d35adef8cfcbbee71a6cd0326445ab58749045f51",
+      "candidateSha256": "2dcd90d330a1c1927691f16cca145137d30941f749be44d3342b6397b68350c8"
+    },
+    {
+      "id": "POSE-0949",
+      "page": 29,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "539eeeca63cb6594bf2c7a33a189cc4f2af01188c136435e99dccf99e27ac5e0",
+      "candidateSha256": "d011b3c7f611652ba11cd0389956935c57ddabc15aad08b7d5742b588d70fb4b"
+    },
+    {
+      "id": "POSE-0950",
+      "page": 29,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "204565ce76776ee2405237dc0917b9685c4b052ffc7e006410e8770090b9d882",
+      "candidateSha256": "4a1e138327b9318705e302debf51949af087b8d49d7cd9916a988818778111e1"
+    },
+    {
+      "id": "POSE-0954",
+      "page": 29,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "315d0fb7dcf4cf8f176ee8ca3f61e7a8eeda2014a1ef863fc1363ee92fbd8be1",
+      "candidateSha256": "1ac821dbd4c0d340bb2f6f3f32bd38f7cf667515c04c09fe3c684cfc02ae4c75"
+    },
+    {
+      "id": "POSE-0962",
+      "page": 29,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "770d5dda80033a126d6014a23837528cf2c394dfbefd4c194b85035e0b167aa6",
+      "candidateSha256": "1befa2e6e8c424a39ca31e44f61e6e8c1fb8d4463bc46a1dd68559e6a47ef5fc"
+    },
+    {
+      "id": "POSE-0968",
+      "page": 29,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "70faf76b4f8ca803d2a54ed64f45c46040d1652098d43b23eca1287d7a0075f2",
+      "candidateSha256": "e1a0d2bbd02280c5e1b65c4d1ab8c2f7a2a45f4dabe048156c2042ab0af470ee"
+    },
+    {
+      "id": "POSE-0969",
+      "page": 29,
+      "status": "unresolved",
+      "reason": "원본의 팔꿈치 방향과 손·머리/상체 접촉이 아직 맞지 않음.",
+      "imageSha256": "72aea6c9f1cba3b5fca784002305d3b4126d6a0b0820a10d1a1e8fa867a0e0b5",
+      "candidateSha256": "14a2eb76e3c9aed440808dc8d5da8078a327113e1725227542e48e725be5128d"
+    },
+    {
+      "id": "POSE-0971",
+      "page": 29,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "cdf33763ce17e01cd38734c175b50ed11bf8dd1d9b8044f912c7fe4a3f8348e3",
+      "candidateSha256": "92ca78ef20f618ef7ab3b234ab240faebfbd4d0e2c801d1faa000dd3eb65899c"
+    },
+    {
+      "id": "POSE-0973",
+      "page": 29,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "8a211c50717564193e76645fa04261cd487c012027cf26300e088e57b9fc3420",
+      "candidateSha256": "c6d44f04946555f3d11bfe425eab31a9dbcef16dbd888700cd6192a427c60ac5"
+    },
+    {
+      "id": "POSE-0977",
+      "page": 29,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "ca4339ecd25bb4dfde8096867d21acad3ce5ca03872784b75f89361b5fa89f55",
+      "candidateSha256": "e827578e48cbe4d144b667253696e4c166a4314b7911439a42022868f48053cb"
+    },
+    {
+      "id": "POSE-0978",
+      "page": 29,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "81618b483734e6861ddce4e490578d40d1ba831be30bf7116e23ffbdb56d02c8",
+      "candidateSha256": "09fad5697b4d03e633631956afa79343c5e0b994a3d2aa8a3cc84d78639544dd"
+    },
+    {
+      "id": "POSE-0983",
+      "page": 29,
+      "status": "unresolved",
+      "reason": "손발 지지·관절 접힘·몸통 기울기 중 큰 차이가 남아 직접 조정이 필요함.",
+      "imageSha256": "435f84e99816386cc6aa8b39b5872ab0de0161cb2285caee2acbf68074f7e2a2",
+      "candidateSha256": "d4216a07dce85079d8307f1d7eedf6eeb6a935688ead3f2d9c4aa97dee2a1c3a"
+    },
+    {
+      "id": "POSE-0984",
+      "page": 29,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "1e027f1fb545f9a461651f43c17b7488afef8a2b7b5be643514827a72cb9c956",
+      "candidateSha256": "ac9d04d4779b1e9aaf45d3826b7a549f0c0cfaccde957ea58e364760dfb3f8b6"
+    },
+    {
+      "id": "POSE-0991",
+      "page": 29,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "ad6f0746c09da3c6ff36fc14dbe5a50f52a02ef7871100fb4394cef367588dbf",
+      "candidateSha256": "e1b98dc746709844304be9b2308a9c821685cd643c3359f068ac604096b37371"
+    },
+    {
+      "id": "POSE-0994",
+      "page": 29,
+      "status": "unresolved",
+      "reason": "골반·다리 접힘 또는 손 접촉이 원본과 다름.",
+      "imageSha256": "7a49704792e0cdcbce3a64ec81352292844ea6f7468a3f4c158e71399b65ca02",
+      "candidateSha256": "99eea11124456b2382943eaf77fbc682960199e14c64075acfc776010f55c1bb"
+    },
+    {
+      "id": "POSE-0996",
+      "page": 29,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "662e550a5adb5739ff4e0e7cdcb37355392b9ca999c8a2a28599a7c37134f0c9",
+      "candidateSha256": "1ac01cf1a0a85d39f5dabf7a3292e823130dbf6eccd12bc3ef0fb99f5a928457"
+    },
+    {
+      "id": "POSE-0998",
+      "page": 30,
+      "status": "reviewed",
+      "reason": "장면 배치용 큰 관절 동작을 원본과 대조. 숨은 깊이·미세 접촉·손가락·시선은 근사.",
+      "imageSha256": "460849611d473ea0e6ec6782bccc217228a7071eeb3f70ba2bda29380157fc4e",
+      "candidateSha256": "4a39e555742347892aace8140a2a632f5c7a67cdbc3425d56029ba2ef62c221c"
+    },
+    {
+      "id": "POSE-0999",
+      "page": 30,
+      "status": "unresolved",
+      "reason": "원본의 주요 팔다리 방향 또는 접촉 관계에 큰 차이가 남음.",
+      "imageSha256": "7ccaacc6b0e97fa34ee84dafde85bd208f6edd52cc5b5a2d7cc8fc84876342cd",
+      "candidateSha256": "3d39cea733701b798df35ba2760dc1de9f25a53bddfa0a3257ca4d642eaeacb9"
+    }
+  ]
+}

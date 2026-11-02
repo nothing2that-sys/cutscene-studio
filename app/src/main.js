@@ -1349,7 +1349,7 @@ function init() {
     select(object,part){activeMannequin=object;selectedBodyPart=part;clearHighlight();updatePropertiesPanel();updateLayerWindow();},
     modeChanged(mode){interactionMode=mode;isDraggingIK=false;activeIKHandle=null;Object.keys(ikEnabled).forEach(key=>ikEnabled[key]=false);if(mode==='move')selectedBodyPart='Root';updateStageControlsEnabled();updatePropertiesPanel();viewPerformance?.sync();viewPerformance?.invalidate();}
   });
-  poseLibrary=installPoseLibrary(directEditor,{getSelection:()=>activeMannequin,refresh:updatePropertiesPanel,commit:captureState,thumbnail:()=>studio.poseThumbnail(activeMannequin),afterApply:()=>viewPerformance?.refocus()});
+  poseLibrary=installPoseLibrary(directEditor,{getSelection:()=>activeMannequin,refresh:updatePropertiesPanel,commit:captureState,thumbnail:()=>studio.poseThumbnail(activeMannequin),afterApply:view=>viewPerformance?.refocus(view)});
   viewPerformance=initViewPerformance({stage,getSelection:()=>activeMannequin,getMode:()=>interactionMode,objects:()=>[...mannequins,...importedModels],isDragging:()=>directDragging||isDraggingIK||!!transformControl.dragging,
     invalidatePreview:()=>studio.invalidatePreview(),tickPreview:paused=>studio.tick({paused}),updateWalls:()=>studio.updateEditingWalls()});
   captureState();
