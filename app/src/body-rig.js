@@ -142,8 +142,8 @@ export function manipulationChain(part) {
   const map={torso:['body','torso'],neck:['torso','neck'],head:['torso','neck','head']};
   if(map[part])return map[part];
   const side=part.slice(0,2);
-  if(/_(arm|elbow|wrist)$/.test(part))return part.endsWith('_arm')?[side+'arm',side+'elbow']:[side+'arm',side+'elbow',side+'wrist'];
-  if(/_(leg|knee|ankle)$/.test(part))return part.endsWith('_leg')?[side+'leg',side+'knee']:[side+'leg',side+'knee',side+'ankle'];
+  if(/_(arm|elbow|wrist)$/.test(part))return part.endsWith('_wrist')?[side+'arm',side+'elbow',side+'wrist']:[side+'arm',side+'elbow'];
+  if(/_(leg|knee|ankle)$/.test(part))return part.endsWith('_ankle')?[side+'leg',side+'knee',side+'ankle']:[side+'leg',side+'knee'];
   return null;
 }
 export function solveConstrainedIK(m,keys,requested) {
@@ -163,6 +163,27 @@ export function solveConstrainedIK(m,keys,requested) {
   const maxWorldStep=20*RAD,maxLocalStep=12*RAD;
   const jp=new THREE.Vector3(),ep=new THREE.Vector3(),toE=new THREE.Vector3(),toT=new THREE.Vector3(),axis=new THREE.Vector3(),cross=new THREE.Vector3(),parent=new THREE.Quaternion(),q=new THREE.Quaternion();
   let bestError=end.getWorldPosition(ep).distanceToSquared(target),continuityLimited=false;
+  // At a straight knee/elbow, a shorter collinear target has zero CCD gradient.
+  // Seed the hinge from the two-bone solution and align the resulting limb, then
+  // accept only a legal, continuous improvement before the ordinary refinement.
+  if(chain.length===3&&/_(knee|elbow)$/.test(keys[1])){
+    const saved=rigRotations(m),a=positions[0].distanceTo(positions[1]),b=positions[1].distanceTo(positions[2]),d=base.distanceTo(target);
+    if(a*b>1e-12&&d>1e-8){
+      const desired=Math.acos(THREE.MathUtils.clamp((d*d-a*a-b*b)/(2*a*b),-1,1));
+      chain[1].rotation.z+=THREE.MathUtils.clamp(desired-chain[1].rotation.z,-maxLocalStep,maxLocalStep);
+      clampJoint(m,keys[1]);m.updateMatrixWorld(true);
+      toE.subVectors(end.getWorldPosition(ep),base);toT.subVectors(target,base);
+      if(toE.lengthSq()>1e-12){
+        q.setFromUnitVectors(toE.normalize(),toT.normalize());chain[0].getWorldQuaternion(parent);parent.premultiply(q);
+        if(chain[0].parent)parent.premultiply(chain[0].parent.getWorldQuaternion(new THREE.Quaternion()).invert());
+        chain[0].quaternion.copy(parent);clampJoint(m,keys[0]);
+        for(const component of ['x','y','z'])chain[0].rotation[component]=THREE.MathUtils.clamp(chain[0].rotation[component],startLocal[0][component]-maxLocalStep,startLocal[0][component]+maxLocalStep);
+        constrainBody(m);
+        const error=end.getWorldPosition(ep).distanceToSquared(target),continuous=watched.every((k,n)=>startWorld[n].angleTo(m[k].getWorldQuaternion(q))<=maxWorldStep+1e-10);
+        if(continuous&&error<bestError-1e-12)bestError=error;else {restoreRotations(m,saved);constrainBody(m);}
+      }else {restoreRotations(m,saved);constrainBody(m);}
+    }
+  }
   for(let iteration=0;iteration<24;iteration++){
     let improved=false;
     for(let i=chain.length-2;i>=0;i--){

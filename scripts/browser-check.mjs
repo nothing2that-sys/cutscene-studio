@@ -16,6 +16,7 @@ await page.route('**/*',route=>{
 async function download(selector,name){const pending=page.waitForEvent('download');await page.locator(selector).click();const d=await pending;await d.saveAs(`validation/${name}`);return readFile(`validation/${name}`);}
 try {
   await page.goto('http://127.0.0.1:3001');
+  await page.locator('[data-edit-mode="advanced"]').click();
   await page.locator('#studio-example').click();
   await page.waitForFunction(()=>document.querySelector('#studio-status')?.textContent.includes('인물 2명'));
   const first=JSON.parse(await download('#btn-save','project-initial.json'));

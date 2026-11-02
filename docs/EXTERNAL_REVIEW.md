@@ -133,6 +133,7 @@ node scripts/validation-ui-check.mjs
 node scripts/body-rig-check.mjs
 node scripts/ik-continuity-check.mjs
 node scripts/review-regression-check.mjs
+node scripts/direct-editor-check.mjs
 ```
 
 | 검사 | 핵심 확인 | 생성 근거 |

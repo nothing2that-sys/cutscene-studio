@@ -4,6 +4,8 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { initExportSystem } from './exportSystem.js';
 import { initCutsceneStudio } from './studio.js';
+import { initDirectEditor } from './direct-editor.js';
+import { installPoseLibrary, poseFingerprint } from './pose-library.js';
 import { analyzeEditorState } from './scene-feedback.js';
 import { SceneValidationError, JOINTS } from './scene-format.js';
 import { createCharacter, configureBody, captureBoneLayout, lockBoneLayout, enforceBoneLengths, constrainBody, clampJoint, manipulationChain, solveConstrainedIK, snapshotBodyJoints } from './body-rig.js';
@@ -65,11 +67,12 @@ let historyIndex = -1;
 let studio = null;
 let restoreGeneration = 0;
 let restoringState = false;
+let interactionMode='move',directEditor=null,directDragging=false,poseLibrary=null;
 
 function updateStageControlsEnabled() {
   if (!stage || !stage.controls) return;
   const isTransformDragging = !!(transformControl && transformControl.dragging);
-  stage.controls.enabled = !isDraggingIK && !isTransformDragging;
+  stage.controls.enabled = !isDraggingIK && !isTransformDragging && !directDragging;
 }
 
 // ─── History ──────────────────────────────────────────────────────────────────
@@ -119,6 +122,7 @@ function captureState() {
   if (restoringState) return;
   mannequins.forEach(constrainBody);
   const state = snapshotState();
+  const previous=historyIndex>=0?JSON.parse(historyStack[historyIndex]):null;
   const json = JSON.stringify(state);
   const comparable = value => JSON.stringify(value, (_key, v) => typeof v === 'number' ? Math.round(v * 1e8) / 1e8 : v);
   if (historyIndex >= 0 && comparable(JSON.parse(historyStack[historyIndex])) === comparable(state)) return;
@@ -127,6 +131,9 @@ function captureState() {
   if (historyStack.length > 30) historyStack.shift();
   else historyIndex++;
   updateHistoryButtons();
+  const actor=state.mannequins[state.activeIndex],prior=actor?.studioId?previous?.mannequins.find(m=>m.studioId===actor.studioId):previous?.mannequins[state.activeIndex];
+  const poseOnly=m=>m&&poseFingerprint({rotations:Object.fromEntries(Object.entries(m.joints).map(([key,j])=>[key,j.rotation]))});
+  if(actor&&poseOnly(actor)!==poseOnly(prior))poseLibrary?.recordCurrent();
 }
 
 function applyState(json) {
@@ -329,6 +336,7 @@ function tickIKHandles() {
 const GIZMO_OFFSET = new THREE.Vector3(0, 0, -1); // 1 unit behind mannequin
 
 function attachGizmo(mannequin) {
+  if(interactionMode!=='advanced'){transformControl.detach();connectionLine.visible=false;updateLayerWindow();return;}
   const cfg=poseConfig[selectedBodyPart]||poseConfig.Root;
   gizmoJoint=mannequin.torso&&cfg.target!=='self'?cfg.target:null;
   gizmoChain=gizmoJoint?manipulationChain(gizmoJoint):null;
@@ -983,7 +991,7 @@ function updatePropertiesPanel() {
   if(!activeMannequin){content.innerHTML='<p>인물 또는 소품을 선택하세요.</p>';return;}
   const parts=Object.keys(poseConfig).filter(key=>activeMannequin.torso||key==='Root');
   if(!parts.includes(selectedBodyPart))selectedBodyPart='Root';
-  content.innerHTML=bodyProfilePanel()+'<select id="body-part-select" aria-label="조작할 관절">'+parts.map(k=>'<option value="'+k+'" '+(k===selectedBodyPart?'selected':'')+'>'+k.replaceAll('_',' ')+'</option>').join('')+'</select>'+renderSliders();
+  content.innerHTML=bodyProfilePanel()+'<div class="advanced-pose-controls"><select id="body-part-select" aria-label="조작할 관절">'+parts.map(k=>'<option value="'+k+'" '+(k===selectedBodyPart?'selected':'')+'>'+k.replaceAll('_',' ')+'</option>').join('')+'</select>'+renderSliders()+'</div>';
   document.getElementById('body-part-select').onchange=e=>{
     selectedBodyPart=e.target.value;
     const cfg=poseConfig[selectedBodyPart];
@@ -997,6 +1005,7 @@ function updatePropertiesPanel() {
 function setupKeyboardShortcuts() {
   window.addEventListener('keydown', e => {
     if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName) || e.target.isContentEditable) return;
+    if(e.target.closest?.('#pose-library-panel,#pose-source-dialog'))return;
     if ((e.metaKey || e.ctrlKey) && e.key === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); }
     if ((e.metaKey || e.ctrlKey) && e.key === 'y') { e.preventDefault(); redo(); }
     if (e.key === 'Delete' || e.key === 'Backspace') {
@@ -1234,12 +1243,14 @@ function init() {
   
   if (btnTranslate && btnRotate) {
     btnTranslate.addEventListener('click', () => {
+      directEditor?.setMode('advanced');
       transformControl.setMode('translate');
       if(activeMannequin)attachGizmo(activeMannequin);
       btnTranslate.style.background = 'rgba(255,255,255,0.15)';
       btnRotate.style.background = 'transparent';
     });
     btnRotate.addEventListener('click', () => {
+      directEditor?.setMode('advanced');
       transformControl.setMode('rotate');
       if(activeMannequin)attachGizmo(activeMannequin);
       btnRotate.style.background = 'rgba(255,255,255,0.15)';
@@ -1324,6 +1335,12 @@ function init() {
     clean() { clearHighlight(); },
   });
   stage.controls.addEventListener('end', () => captureState());
+  directEditor=initDirectEditor({stage,getSelection:()=>activeMannequin,objects:()=>[...mannequins,...importedModels],commit:captureState,refresh:updatePropertiesPanel,
+    setDragging(value){directDragging=value;updateStageControlsEnabled();},
+    select(object,part){activeMannequin=object;selectedBodyPart=part;clearHighlight();updatePropertiesPanel();updateLayerWindow();},
+    modeChanged(mode){interactionMode=mode;isDraggingIK=false;activeIKHandle=null;Object.keys(ikEnabled).forEach(key=>ikEnabled[key]=false);if(mode==='move')selectedBodyPart='Root';updateStageControlsEnabled();updatePropertiesPanel();}
+  });
+  poseLibrary=installPoseLibrary(directEditor,{getSelection:()=>activeMannequin,refresh:updatePropertiesPanel,commit:captureState,thumbnail:()=>studio.poseThumbnail(activeMannequin)});
   captureState();
 }
 

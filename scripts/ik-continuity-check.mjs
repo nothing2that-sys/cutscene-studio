@@ -13,6 +13,7 @@ let convergence;
 try {
   for(const [part,chain]of [['Head',['torso','neck','head']],['Neck',['torso','neck']],['Right_Wrist',['r_arm','r_elbow','r_wrist']],['Left_Ankle',['l_leg','l_knee','l_ankle']]]){
     await page.goto('http://127.0.0.1:3002');
+    await page.locator('[data-edit-mode="advanced"]').click();
     await page.locator('#studio-example').click();
     await page.locator('#studio-shots button').first().click();
     await page.locator('.layer-item[data-imported="false"][data-idx="0"] span').first().click();
@@ -31,7 +32,7 @@ try {
     });
     const sample=()=>page.evaluate(chain=>{
       const {THREE,m,rig}=window.__ikCheck;
-      return {q:chain.map(k=>m[k].getWorldQuaternion(new THREE.Quaternion()).toArray()),lengths:rig.boneDistances(m)};
+    return {q:chain.map(k=>m[k].getWorldQuaternion(new THREE.Quaternion()).toArray()),root:m.position.toArray(),lengths:rig.boneDistances(m)};
     },chain);
     let previous=await sample(),worst=0,boneDrift=0;
     const lengths=previous.lengths;
@@ -42,6 +43,7 @@ try {
     for(let step=1;step<=40;step++){
       await page.mouse.move(start[0]+600*step/40,start[1]+300*step/40);
       const current=await sample();
+      assert.ok(Math.hypot(...current.root.map((v,i)=>v-previous.root[i]))<1e-8,part+' drag moved root instead of joint');
       for(let j=0;j<chain.length;j++){
         const dot=Math.abs(current.q[j].reduce((s,v,i)=>s+v*previous.q[j][i],0));
         worst=Math.max(worst,2*Math.acos(Math.min(1,dot))*180/Math.PI);
@@ -70,6 +72,6 @@ try {
     if(previous>=0.015||previous>=initial)throw new Error('Continuous IK stalled: '+JSON.stringify({initial,final:previous}));
     return {initialError:initial,finalError:previous,iterations:60,monotone:true};
   });
-  if(!baseline)for(const r of results){assert.ok(r.worstWorldStepDegrees<=20.0001,JSON.stringify(r));assert.ok(r.boneDrift<1e-6);}
+  if(!baseline)for(const r of results){assert.ok(r.worstWorldStepDegrees>0.01,'Joint did not respond: '+JSON.stringify(r));assert.ok(r.worstWorldStepDegrees<=20.0001,JSON.stringify(r));assert.ok(r.boneDrift<1e-6);}
   await writeFile(`${out}/report.json`,JSON.stringify({baseline,passed:baseline?null:true,results,convergence,pageErrors:errors},null,2));
 }finally{await browser.close();}

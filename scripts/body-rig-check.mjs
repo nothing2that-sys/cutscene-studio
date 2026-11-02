@@ -57,6 +57,7 @@ try{
     return {measured,randomPoses:80,reachable,far,boneLengthPreserved:true};
   });
   await page.goto('http://127.0.0.1:3001');
+  await page.locator('[data-edit-mode="advanced"]').click();
   await page.locator('#studio-example').click();
   await page.waitForFunction(()=>document.querySelector('#studio-status').textContent.includes('인물 2명'));
   await page.locator('#body-height').fill('180');await page.locator('[data-head-units="5"]').click();await page.locator('#body-apply').click();

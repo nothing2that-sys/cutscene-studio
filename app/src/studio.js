@@ -83,6 +83,7 @@ export function initCutsceneStudio(api) {
   function cleanRender(fn) {
     const hidden=[];
     stage.scene.traverse(n=>{
+      if(n.userData.editingWall&&!n.visible){hidden.push([n,false]);n.visible=true;}
       if(n.userData.exportHideWhenGizmoDisabled||n.userData.ikLimbKey||n.type==='GridHelper'||n.type==='AxesHelper') {hidden.push([n,n.visible]);n.visible=false;}
     });
     // Hide selection tint during capture without changing the selected part.
@@ -124,6 +125,15 @@ export function initCutsceneStudio(api) {
     a.download=`cutscene-${depth?'depth':'color'}.png`; a.href=url; a.click();
     status(depth?'선형 카메라 거리값을 담은 Depth PNG를 저장했습니다.':'촬영 카메라의 PNG를 저장했습니다.');
   }
+  function poseThumbnail(model){
+    if(!model)return '';
+    const size=preview.getSize(new THREE.Vector2()),hidden=[];
+    const box=new THREE.Box3().setFromObject(model),center=box.getCenter(new THREE.Vector3()),height=Math.max(0.5,box.getSize(new THREE.Vector3()).length());
+    const camera=new THREE.PerspectiveCamera(35,0.75,0.01,50);camera.position.copy(center).add(new THREE.Vector3(0.55,0.2,1).normalize().multiplyScalar(height*1.8));camera.lookAt(center);
+    for(const object of [...api.mannequins,...api.importedModels,environment,stage.ground])if(object!==model){hidden.push([object,object.visible]);object.visible=false;}
+    try{preview.setSize(180,240,false);cleanRender(()=>preview.render(stage.scene,camera));return preview.domElement.toDataURL('image/png');}
+    finally{hidden.forEach(([object,visible])=>object.visible=visible);preview.setSize(size.x,size.y,false);}
+  }
   function clearEnvironment() {
     for(const child of [...environment.children]) {
       environment.remove(child);
@@ -134,9 +144,9 @@ export function initCutsceneStudio(api) {
     clearEnvironment();
     const [w,h,d]=document.room.size;
     const material=new THREE.MeshStandardMaterial({color:document.room.color,roughness:0.9,side:THREE.DoubleSide});
-    const add=(size,position)=> {const m=new THREE.Mesh(new THREE.BoxGeometry(...size),material.clone());m.position.set(...position);m.receiveShadow=true;environment.add(m);};
+    const add=(size,position,wall)=> {const m=new THREE.Mesh(new THREE.BoxGeometry(...size),material.clone());m.position.set(...position);m.receiveShadow=true;if(wall)m.userData.editingWall=wall;environment.add(m);};
     add([w,0.08,d],[0,-0.04,0]);
-    if(document.room.walls) {add([w,h,0.08],[0,h/2,-d/2]);add([0.08,h,d],[-w/2,h/2,0]);}
+    if(document.room.walls) {add([w,h,0.08],[0,h/2,-d/2],'back');add([0.08,h,d],[-w/2,h/2,0],'left');}
     material.dispose();
     stage.scene.background=new THREE.Color('#252b34');
     stage.ground.visible=false;
@@ -283,10 +293,11 @@ export function initCutsceneStudio(api) {
   return {
     snapshot:()=>structuredClone({document,initialProposal,proposalOrigin,shots,activeShot,aspect}),
     restore(state) {if(!state)return;document=validateScene(state.document);initialProposal=validateScene(state.initialProposal||state.document);proposalOrigin=state.initialProposal?(state.proposalOrigin||'scene-import'):'legacy-current-state';shots=structuredClone(state.shots||[]);activeShot=state.activeShot ?? -1;aspect=state.aspect||16/9;rebuildRoom();syncUI();},
-    createProp,loadScene,importText,showImportError,
+    createProp,loadScene,importText,showImportError,poseThumbnail,
     saveProject(state) {download('cutscene-project.json',JSON.stringify(state,null,2));status('정밀 프로젝트를 저장했습니다. Load로 다시 열 수 있습니다.');},
     tick() {
       if(performance.now()-lastFrame<120)return;lastFrame=performance.now();
+      for(const wall of environment.children)if(wall.userData.editingWall)wall.visible=wall.userData.editingWall==='left'?stage.camera.position.x>=-document.room.size[0]/2:stage.camera.position.z>=-document.room.size[2]/2;
       const w=288,h=Math.round(w/aspect);if(preview.domElement.width!==w||preview.domElement.height!==h)preview.setSize(w,h,false);
       updateShotCamera();cleanRender(()=>preview.render(stage.scene,shotCamera));
     },

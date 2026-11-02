@@ -42,6 +42,7 @@ async function save(file,data){
   await writeFile(file,data,{flag:overwrite?'w':'wx'});
 }
 function inspect(data){
+  if(data.type==='pose-reference')return {kind:'pose-reference',name:data.name,version:data.version,rotationUnit:data.rotationUnit,rotations:data.rotations,visualReview:false};
   if(data.reportVersion===1&&typeof data.originalJSON==='string'&&Array.isArray(data.errors))return {...data,kind:'validation-report',visualReview:false};
   if(data.version===1&&data.units==='meters'&&!data.editorState&&!data.mannequins)
     return {kind:'scene-proposal',title:data.title,actors:data.actors,props:data.props,camera:data.camera,shots:data.shots,visualReview:false};
