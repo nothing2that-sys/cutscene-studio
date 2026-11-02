@@ -15,7 +15,7 @@ export function describeObjects(objects,scene){
 function meshBoxes(object){
  const boxes=[];object.updateWorldMatrix(true,true);
  object.traverse(mesh=>{
-  if(!mesh.isMesh||!mesh.geometry?.attributes.position)return;
+  if(!mesh.isMesh||mesh.userData.bodyOutline||!mesh.geometry?.attributes.position)return;
   for(let node=mesh;node&&node!==object;node=node.parent)if(!node.visible)return;
   if(mesh.isSkinnedMesh){
    const parts=mesh.skeleton.bones.map(()=>new THREE.Box3()),inverse=mesh.skeleton.bones.map(b=>b.matrixWorld.clone().invert()),point=new THREE.Vector3(),weights=mesh.geometry.attributes.skinWeight,indices=mesh.geometry.attributes.skinIndex;

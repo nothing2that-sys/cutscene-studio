@@ -19,3 +19,5 @@ A3D·Storyboarder·StoryBlender·CineVision·OpenPose Editor·Fullik·three-vrm�
 2026-11-02 선택적 오프라인 변환 도구: [rtmlib 0.0.16](https://github.com/Tau-J/rtmlib)(Apache-2.0)의 RTMPose3d API, [RTMW3D-X ONNX](https://huggingface.co/Soykaf/RTMW3D-x)(해당 모델 카드 Apache-2.0), ONNX Runtime(CPU), NumPy·OpenCV를 사용합니다. Python과 모델은 `.review-tools/`에 별도 설치하며 앱 JS 번들에 포함하지 않습니다. 모델 출처·SHA-256을 추정 및 변환 결과에 기록합니다. 사용자 제공 Drive 원본·원시 추론은 개인 로컬 폴더에서 Git 제외합니다. 2026-11-02 검토한 466개 파생 관절 JSON은 비공개 저장소 data/pose-corrections에 보관하며 공개 데이터셋으로 재배포하지 않습니다.
 
 2026-11-02 선택적 2D 재추정: [rtmlib 공식 Body 구성](https://github.com/Tau-J/rtmlib/blob/main/rtmlib/tools/solution/body.py)의 RTMPose-X body7 모델과 [MMPose HumanArt 설정](https://github.com/open-mmlab/mmpose/blob/main/configs/body_2d_keypoint/rtmpose/humanart/rtmpose_humanart.yml)을 참조했습니다. 모델 SHA-256 `df0c0fa91e9870b1515dcaff741fd76cc753dcfb12786862f61b243bae81cd52`. Python/ONNX는 오프라인 준비 전용이며 앱 JS 번들에 포함하지 않습니다.
+
+2026-11-02 작화용 인체: 기본 머리·몸통·팔다리는 저장소의 `illustration-body.js`에서 생성하며, 기존 CC0 가공 데이터에서는 손·발 표면을 사용합니다. [현행 모형·제한](docs/ILLUSTRATION_BODY.md). 사용자 첨부 레퍼런스 이미지는 배포 자료에 포함하지 않습니다.

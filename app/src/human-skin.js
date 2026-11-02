@@ -1,12 +1,13 @@
 import * as THREE from 'three';
 import asset from './assets/reference-human.json';
+import {illustrationBody} from './illustration-body.js';
 
 const V=(a=[])=>new THREE.Vector3(...a),Z=new THREE.Vector3(0,0,1);
 const neighbors=Array.from({length:asset.positions.length/3},()=>new Set());for(let i=0;i<asset.indices.length;i+=3)for(let j=0;j<3;j++){const a=asset.indices[i+j],b=asset.indices[i+(j+1)%3];neighbors[a].add(b);neighbors[b].add(a);}const adjacency=neighbors.map(set=>[...set]);
 function smoothSurface(positions){for(const amount of [.25,-.26]){const next=[...positions];for(let i=0;i<adjacency.length;i++)for(let axis=0;axis<3;axis++){const mean=adjacency[i].reduce((sum,j)=>sum+positions[j*3+axis],0)/adjacency[i].length;next[i*3+axis]+=amount*(mean-positions[i*3+axis]);}for(let i=0;i<positions.length;i++)positions[i]=next[i];}}
 export const HUMAN_SKIN_STATS={vertices:asset.positions.length/3,triangles:asset.indices.length/3,bones:asset.keys.length};
 export const skinJoint=(m,key)=>key.split('.').reduce((node,name)=>node[name],m);
-export function skinPartBounds(mesh,key){const box=new THREE.Box3(),index=asset.keys.indexOf(key),point=new THREE.Vector3();for(let i=0;i<asset.positions.length/3;i++){let weight=0;for(let j=0;j<4;j++)if(asset.skinIndex[i*4+j]===index)weight+=asset.skinWeight[i*4+j];if(weight>.2)box.expandByPoint(mesh.getVertexPosition(i,point).applyMatrix4(mesh.matrixWorld));}return box;}
+export function skinPartBounds(mesh,key){const box=new THREE.Box3(),index=asset.keys.indexOf(key),point=new THREE.Vector3(),weights=mesh.geometry.attributes.skinWeight,ids=mesh.geometry.attributes.skinIndex;for(let i=0;i<mesh.geometry.attributes.position.count;i++){let weight=0;for(let j=0;j<4;j++)if(ids.array[i*4+j]===index)weight+=weights.array[i*4+j];if(weight>.2)box.expandByPoint(mesh.getVertexPosition(i,point).applyMatrix4(mesh.matrixWorld));}return box;}
 function frame(a,b){const y=b.clone().sub(a).normalize(),x=new THREE.Vector3(1,0,0).addScaledVector(y,-y.x);if(x.lengthSq()<1e-5)x.copy(Z).addScaledVector(y,-y.z);x.normalize();return new THREE.Matrix4().makeBasis(x,y,x.clone().cross(y).normalize()).setPosition(a);}
 function fit(a,b,c,d,crossScale){return frame(c,d).multiply(new THREE.Matrix4().makeScale(crossScale,c.distanceTo(d)/b.distanceTo(a),crossScale)).multiply(frame(a,b).invert());}
 function localBox(node,rootInverse){const result=new THREE.Box3();node.traverse(mesh=>{if(!mesh.isMesh||!mesh.geometry?.attributes.position?.count)return;mesh.geometry.computeBoundingBox();result.union(mesh.geometry.boundingBox.clone().applyMatrix4(new THREE.Matrix4().multiplyMatrices(rootInverse,mesh.matrixWorld)));});return result;}
@@ -45,11 +46,15 @@ export function buildHumanSkin(m,material,bones){
    p.applyMatrix4(forward);positions[i]=p.x;positions[i+1]=p.y;positions[i+2]=p.z;
   }
   smoothSurface(positions);minY=Infinity;maxY=-Infinity;for(let i=1;i<positions.length;i+=3){minY=Math.min(minY,positions[i]);maxY=Math.max(maxY,positions[i]);}for(let i=1;i<positions.length;i+=3)positions[i]=whole.min.y+(positions[i]-minY)/(maxY-minY)*(whole.max.y-whole.min.y);
-  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setIndex(asset.indices);geometry.setAttribute('skinIndex',new THREE.Uint16BufferAttribute(asset.skinIndex,4));geometry.setAttribute('skinWeight',new THREE.Float32BufferAttribute(asset.skinWeight,4));geometry.computeVertexNormals();
+  const geometry=illustrationBody(m,asset.keys,rootInverse,headBox,whole,{positions,indices:asset.indices,skinIndex:asset.skinIndex,skinWeight:asset.skinWeight});
+  Object.assign(HUMAN_SKIN_STATS,{vertices:geometry.attributes.position.count,triangles:geometry.index.count/3,bones:asset.keys.length});
   if(!bones)bones=asset.keys.map(key=>{const bone=new THREE.Bone();bone.name='Skin '+key;skinJoint(m,key).add(bone);return bone;});
-  m.updateWorldMatrix(true,true);const mesh=new THREE.SkinnedMesh(geometry,material),skeleton=new THREE.Skeleton(bones);mesh.name='Continuous human skin';mesh.frustumCulled=false;mesh.castShadow=true;mesh.receiveShadow=true;m.add(mesh);mesh.bind(skeleton,m.matrixWorld.clone());mesh.normalizeSkinWeights();
-  const boxes=asset.keys.map(()=>new THREE.Box3()),inverses=bones.map(b=>b.matrixWorld.clone().invert().multiply(m.matrixWorld));for(let i=0;i<positions.length/3;i++){let index=0;for(let j=1;j<4;j++)if(asset.skinWeight[i*4+j]>asset.skinWeight[i*4+index])index=j;const bone=asset.skinIndex[i*4+index];boxes[bone].expandByPoint(V(positions.slice(i*3,i*3+3)).applyMatrix4(inverses[bone]));}
+  m.updateWorldMatrix(true,true);const mesh=new THREE.SkinnedMesh(geometry,material),skeleton=new THREE.Skeleton(bones);mesh.name='Drawing mannequin';mesh.frustumCulled=false;mesh.castShadow=true;mesh.receiveShadow=true;m.add(mesh);mesh.bind(skeleton,m.matrixWorld.clone());mesh.normalizeSkinWeights();
+  const boxes=asset.keys.map(()=>new THREE.Box3()),inverses=bones.map(b=>b.matrixWorld.clone().invert().multiply(m.matrixWorld)),drawPositions=geometry.attributes.position.array,drawWeights=geometry.attributes.skinWeight.array,drawIds=geometry.attributes.skinIndex.array;for(let i=0;i<geometry.attributes.position.count;i++){let index=0;for(let j=1;j<4;j++)if(drawWeights[i*4+j]>drawWeights[i*4+index])index=j;const bone=drawIds[i*4+index];boxes[bone].expandByPoint(V(drawPositions.slice(i*3,i*3+3)).applyMatrix4(inverses[bone]));}
   mesh.raycast=(raycaster,hits)=>{for(let i=0;i<bones.length;i++){if(boxes[i].isEmpty())continue;const ray=raycaster.ray.clone().applyMatrix4(bones[i].matrixWorld.clone().invert()),hit=ray.intersectBox(boxes[i],new THREE.Vector3());if(!hit)continue;hit.applyMatrix4(bones[i].matrixWorld);const distance=hit.distanceTo(raycaster.ray.origin);if(distance<raycaster.near||distance>raycaster.far)continue;let key=asset.keys[i];if(key.includes('finger'))key=key.slice(0,2)+'wrist';hits.push({distance,point:hit,object:skinJoint(m,key).image,face:null});}};
-  mesh.userData.skinAsset='makehuman-cc0-6000';return {mesh,bones};
+  const outlineMaterial=new THREE.MeshBasicMaterial({color:'#454954',side:THREE.BackSide});
+  outlineMaterial.onBeforeCompile=shader=>{shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\ntransformed += normal * 0.055;');};
+  const outline=new THREE.SkinnedMesh(geometry,outlineMaterial);outline.name='Drawing contour';outline.userData.bodyOutline=true;outline.frustumCulled=false;outline.raycast=()=>{};mesh.add(outline);outline.bind(skeleton,m.matrixWorld.clone());
+  mesh.userData.skinAsset='illustration-mannequin-v1';return {mesh,bones};
  }finally{for(const [joint,r]of saved)joint.rotation.fromArray(r);m.updateWorldMatrix(true,true);}
 }

@@ -378,7 +378,7 @@ function setHighlight(node) {
   selectedPartGroup = node;
   const targetToHighlight = node.image ? node.image : node;
   targetToHighlight.traverse(nc => {
-    if (nc.isMesh && nc.material) {
+    if (nc.isMesh && nc.material && !nc.userData.bodyOutline) {
       if (Array.isArray(nc.material)) {
         if (!nc.userData.origEmissive) nc.userData.origEmissive = nc.material.map(m => m.emissive.clone());
         nc.material.forEach(m => m.emissive.setHex(0xbc4e4e));
@@ -983,11 +983,12 @@ function bodyProfilePanel() {
   const height=p?.height||1.75,heads=p?.headUnits||8;
   const chest=p?.chest||{height:0.65,spacing:0.46,projection:1};
   const chestUI='<details class="body-chest"><summary>가슴 형태 참조</summary><label class="studio-check"><input id="body-chest-enabled" type="checkbox" '+(p?.chest?'checked':'')+'> 가슴 형태 표시</label><div id="body-chest-options" '+(p?.chest?'':'hidden')+'><label>흉곽 높이 % <input id="body-chest-height" type="number" min="55" max="78" step="1" value="'+Math.round(chest.height*100)+'"></label><label>좌우 간격 % <input id="body-chest-spacing" type="number" min="30" max="60" step="1" value="'+Math.round(chest.spacing*100)+'"></label><label>돌출 배율 <input id="body-chest-projection" type="number" min="0.4" max="1.6" step="0.1" value="'+chest.projection+'"></label><p class="body-hint">흉곽에 붙은 입체 참조입니다. 포즈와 함께 움직이며 컬러·깊이 캡처에 포함됩니다.</p></div></details>';
-  return '<section class="body-profile"><h3>인물 체형 설정</h3><div class="studio-row"><label>키 cm <input id="body-height" type="number" min="50" max="300" step="0.1" value="'+(height*100).toFixed(1)+'"></label><label>등신 <input id="body-head-units" type="number" min="3" max="12" step="0.5" value="'+heads+'"></label></div><div class="studio-row"><button class="btn" data-head-units="5">5등신</button><button class="btn" data-head-units="8">8등신</button><button class="btn" data-head-units="9.5">9.5등신</button><button class="btn primary" id="body-apply">체형 적용</button></div>'+chestUI+'<p class="body-hint">'+(p?'설정: '+(p.height*100).toFixed(1)+'cm / '+p.headUnits+'등신 · 머리 '+(p.height/p.headUnits*100).toFixed(2)+'cm':'기존 인체 유지 중 · 적용 버튼으로 체형을 설정하세요.')+'</p><p class="body-hint">포즈 조작 중 뼈 길이와 크기 고정. 관절 이동은 끝점 IK, 회전은 관절 회전입니다.</p><output id="body-status"></output></section>';
+  return '<section class="body-profile"><h3>인물 체형 설정</h3><div class="studio-row"><label>키 cm <input id="body-height" type="number" min="50" max="300" step="0.1" value="'+(height*100).toFixed(1)+'"></label><label>등신 <input id="body-head-units" type="number" min="3" max="12" step="0.5" value="'+heads+'"></label></div><div class="studio-row"><button class="btn" data-head-units="5">5등신</button><button class="btn" data-head-units="8">8등신</button><button class="btn" data-head-units="9.5">9.5등신</button><button class="btn primary" id="body-apply">체형 적용</button></div><div class="studio-row"><button class="btn" data-body-preset="neutral">기본 작화 체형</button><button class="btn" data-body-preset="feminine">여성형 작화 체형</button></div>'+chestUI+'<p class="body-hint">'+(p?'설정: '+(p.height*100).toFixed(1)+'cm / '+p.headUnits+'등신 · 머리 '+(p.height/p.headUnits*100).toFixed(2)+'cm':'기존 인체 유지 중 · 적용 버튼으로 체형을 설정하세요.')+'</p><p class="body-hint">포즈 조작 중 뼈 길이와 크기 고정. 관절 이동은 끝점 IK, 회전은 관절 회전입니다.</p><output id="body-status"></output></section>';
 }
 function bindBodyProfile() {
   if(!activeMannequin?.torso)return;
   document.querySelectorAll('[data-head-units]').forEach(button=>button.onclick=()=>{document.getElementById('body-head-units').value=button.dataset.headUnits;});
+  document.querySelectorAll('[data-body-preset]').forEach(button=>button.onclick=()=>{const enabled=button.dataset.bodyPreset==='feminine';document.getElementById('body-chest-enabled').checked=enabled;if(enabled){document.getElementById('body-chest-height').value=67;document.getElementById('body-chest-spacing').value=46;document.getElementById('body-chest-projection').value=1;}document.getElementById('body-apply').click();});
   document.getElementById('body-chest-enabled').onchange=e=>{document.getElementById('body-chest-options').hidden=!e.target.checked;};
   document.getElementById('body-apply').onclick=()=>{
     const message=document.getElementById('body-status');

@@ -9,7 +9,7 @@ export function initViewPerformance(api){
   options.innerHTML='<label><input id="pose-solo" type="checkbox" checked> 포즈는 선택 인물만</label><label><input id="edit-lightweight" type="checkbox"> 가벼운 화면</label><details id="render-info"><summary>렌더링 정보</summary><pre id="render-info-text"></pre></details>';
   document.querySelector('#direct-editor').appendChild(options);
   const surfaceLabel=document.createElement('label');surfaceLabel.textContent='인체 표시 ';
-  const surfaceSelect=document.createElement('select');surfaceSelect.id='body-surface-mode';surfaceSelect.setAttribute('aria-label','인체 표시 방식');surfaceSelect.innerHTML='<option value="human">인체형 · 무채색</option><option value="rig">기존 관절 마네킹</option>';surfaceSelect.value=bodySurfaceMode();surfaceLabel.appendChild(surfaceSelect);options.prepend(surfaceLabel);
+  const surfaceSelect=document.createElement('select');surfaceSelect.id='body-surface-mode';surfaceSelect.setAttribute('aria-label','인체 표시 방식');surfaceSelect.innerHTML='<option value="human">작화용 인체 · 윤곽선</option><option value="rig">기존 관절 마네킹</option>';surfaceSelect.value=bodySurfaceMode();surfaceLabel.appendChild(surfaceSelect);options.prepend(surfaceLabel);
   surfaceSelect.onchange=()=>{setBodySurfaceMode(surfaceSelect.value,api.objects());invalidate();};
   const soloInput=options.querySelector('#pose-solo'),lightInput=options.querySelector('#edit-lightweight');lightInput.checked=lightweight;
   const originalDamping=stage.controls.enableDamping,stats={renders:0,lastDrawCalls:0,lastTriangles:0,lastVisibleActors:0};
