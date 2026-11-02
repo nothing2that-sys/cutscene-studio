@@ -12,3 +12,5 @@
 정확한 설치 버전은 `app/package-lock.json`, 각 의존성의 고지는 설치된 패키지의 LICENSE 파일을 참조합니다. 배포용 빌드에는 [의존성 라이선스 모음](app/public/THIRD_PARTY_LICENSES.txt)을 함께 제공합니다.
 
 A3D·Storyboarder·StoryBlender·CineVision·OpenPose Editor·Fullik·three-vrm은 조사와 설계 참고 대상입니다. 이들 프로젝트의 구현 코드를 이번 확장에 복사하지 않았습니다. README 스냅샷은 `research/upstream`에 출처 기록용으로 보관합니다. 외부 포즈 이미지나 캐릭터·가구 모델 라이브러리는 일괄 수집하거나 배포하지 않습니다.
+
+2026-11-02 선택적 오프라인 변환 도구: [rtmlib 0.0.16](https://github.com/Tau-J/rtmlib)(Apache-2.0)의 RTMPose3d API, [RTMW3D-X ONNX](https://huggingface.co/Soykaf/RTMW3D-x)(해당 모델 카드 Apache-2.0), ONNX Runtime(CPU), NumPy·OpenCV를 사용합니다. Python과 모델은 `.review-tools/`에 별도 설치하며 앱 JS 번들에 포함하지 않습니다. 모델 출처·SHA-256을 추정 및 변환 결과에 기록합니다. 사용자 제공 Drive 원본과 파생 포즈는 개인 로컬 폴더에서 Git 제외하며 공개 데이터셋으로 재배포하지 않습니다.

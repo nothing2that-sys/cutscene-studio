@@ -1,0 +1,215 @@
+[
+  {
+    "id": "POSE-0001",
+    "category": "기본서기",
+    "quality": {
+      "status": "estimated",
+      "meanBodyScore": 0.8449227073613335,
+      "weakBodyJoints": 0,
+      "maxDirectionErrorDegrees": 0,
+      "errors": [
+        {
+          "joint": "l_arm",
+          "errorDegrees": 0
+        },
+        {
+          "joint": "r_arm",
+          "errorDegrees": 0
+        },
+        {
+          "joint": "l_leg",
+          "errorDegrees": 0
+        },
+        {
+          "joint": "r_leg",
+          "errorDegrees": 0
+        }
+      ],
+      "visualReview": false,
+      "exampleCorrection": false,
+      "groundOrientationHint": null,
+      "notes": [
+        "Monocular depth and hidden joints are estimates.",
+        "Finger articulation, gaze and contact are not reconstructed."
+      ]
+    }
+  },
+  {
+    "id": "POSE-0251",
+    "category": "의자앉기",
+    "quality": {
+      "status": "estimated",
+      "meanBodyScore": 0.6865428721203524,
+      "weakBodyJoints": 1,
+      "maxDirectionErrorDegrees": 1.1705073056695112,
+      "errors": [
+        {
+          "joint": "l_arm",
+          "errorDegrees": 0
+        },
+        {
+          "joint": "r_arm",
+          "errorDegrees": 0
+        },
+        {
+          "joint": "l_leg",
+          "errorDegrees": 0
+        },
+        {
+          "joint": "r_leg",
+          "errorDegrees": 1.1705073056695112
+        }
+      ],
+      "visualReview": false,
+      "exampleCorrection": false,
+      "groundOrientationHint": null,
+      "notes": [
+        "Monocular depth and hidden joints are estimates.",
+        "Finger articulation, gaze and contact are not reconstructed."
+      ]
+    }
+  },
+  {
+    "id": "POSE-0301",
+    "category": "무릎꿇기",
+    "quality": {
+      "status": "needs-correction",
+      "meanBodyScore": 0.633619619642987,
+      "weakBodyJoints": 3,
+      "maxDirectionErrorDegrees": 12.002051793800444,
+      "errors": [
+        {
+          "joint": "l_arm",
+          "errorDegrees": 0
+        },
+        {
+          "joint": "r_arm",
+          "errorDegrees": 0
+        },
+        {
+          "joint": "l_leg",
+          "errorDegrees": 9.32723594433506
+        },
+        {
+          "joint": "r_leg",
+          "errorDegrees": 12.002051793800444
+        }
+      ],
+      "visualReview": false,
+      "exampleCorrection": true,
+      "groundOrientationHint": null,
+      "notes": [
+        "Monocular depth and hidden joints are estimates.",
+        "Finger articulation, gaze and contact are not reconstructed.",
+        "Reference-specific correction applied; fitting error refers to original model fit, not the corrected output."
+      ]
+    }
+  },
+  {
+    "id": "POSE-0401",
+    "category": "눕기와기대기",
+    "quality": {
+      "status": "needs-correction",
+      "meanBodyScore": 0.7225590488489937,
+      "weakBodyJoints": 0,
+      "maxDirectionErrorDegrees": 50.06491703869442,
+      "errors": [
+        {
+          "joint": "l_arm",
+          "errorDegrees": 0
+        },
+        {
+          "joint": "r_arm",
+          "errorDegrees": 0
+        },
+        {
+          "joint": "l_leg",
+          "errorDegrees": 50.06491703869442
+        },
+        {
+          "joint": "r_leg",
+          "errorDegrees": 0
+        }
+      ],
+      "visualReview": false,
+      "exampleCorrection": true,
+      "groundOrientationHint": "supine",
+      "notes": [
+        "Monocular depth and hidden joints are estimates.",
+        "Finger articulation, gaze and contact are not reconstructed.",
+        "Reference-specific correction applied; fitting error refers to original model fit, not the corrected output."
+      ]
+    }
+  },
+  {
+    "id": "POSE-0451",
+    "category": "엎드리기와웅크리기",
+    "quality": {
+      "status": "needs-correction",
+      "meanBodyScore": 0.41984940714695873,
+      "weakBodyJoints": 10,
+      "maxDirectionErrorDegrees": 30.038314622723423,
+      "errors": [
+        {
+          "joint": "l_arm",
+          "errorDegrees": 0
+        },
+        {
+          "joint": "r_arm",
+          "errorDegrees": 0.6492751382219712
+        },
+        {
+          "joint": "l_leg",
+          "errorDegrees": 30.038314622723423
+        },
+        {
+          "joint": "r_leg",
+          "errorDegrees": 18.37772304848601
+        }
+      ],
+      "visualReview": false,
+      "exampleCorrection": true,
+      "groundOrientationHint": "prone",
+      "notes": [
+        "Monocular depth and hidden joints are estimates.",
+        "Finger articulation, gaze and contact are not reconstructed.",
+        "Reference-specific correction applied; fitting error refers to original model fit, not the corrected output."
+      ]
+    }
+  },
+  {
+    "id": "POSE-0601",
+    "category": "춤과무용",
+    "quality": {
+      "status": "estimated",
+      "meanBodyScore": 0.6876657429863425,
+      "weakBodyJoints": 0,
+      "maxDirectionErrorDegrees": 0,
+      "errors": [
+        {
+          "joint": "l_arm",
+          "errorDegrees": 0
+        },
+        {
+          "joint": "r_arm",
+          "errorDegrees": 0
+        },
+        {
+          "joint": "l_leg",
+          "errorDegrees": 0
+        },
+        {
+          "joint": "r_leg",
+          "errorDegrees": 0
+        }
+      ],
+      "visualReview": false,
+      "exampleCorrection": false,
+      "groundOrientationHint": null,
+      "notes": [
+        "Monocular depth and hidden joints are estimates.",
+        "Finger articulation, gaze and contact are not reconstructed."
+      ]
+    }
+  }
+]

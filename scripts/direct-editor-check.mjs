@@ -31,7 +31,7 @@ try{
   assert.ok(distance(before.mannequins[0].position,moved.mannequins[0].position)>0.03);
   assert.deepEqual(before.mannequins[0].boneLayout,moved.mannequins[0].boneLayout);checks.push('body mesh drag moves whole actor and preserves bone layout');
   await library();assert.equal(await page.locator('.pose-card').count(),initialPoseCount);await page.locator('#pose-library-close').click();checks.push('camera and root movement do not archive false poses');
-  await page.locator('[data-edit-mode="pose"]').click();await page.locator('[data-direct-view="side"]').click();
+  await page.locator('[data-edit-mode="pose"]').click();await page.locator('[data-direct-view="side"]').click();await page.waitForTimeout(150);
   const beforeKnee=await snapshot();await drag(await page.locator('[data-pose-point="l_knee"]').boundingBox(),45,-30);const afterKnee=await snapshot();
   metrics.kneeMoved=distance(beforeKnee.knee,afterKnee.knee);metrics.ankleFollowed=distance(beforeKnee.ankle,afterKnee.ankle);assert.ok(metrics.kneeMoved>0.015);assert.ok(metrics.ankleFollowed>0.015);assert.deepEqual(beforeKnee.position,afterKnee.position);checks.push('knee handle moves knee; lower leg follows; root stays');
   const beforeAnkle=await snapshot();await drag(await page.locator('[data-pose-point="l_ankle"]').boundingBox(),-15,-90);const afterAnkle=await snapshot();
@@ -56,13 +56,13 @@ try{
   await page.screenshot({path:out+'/library.png'});
   // Repeat the essential interactions on the shipped bundle, not just Vite source.
   await page.goto('http://127.0.0.1:3001');await page.locator('#studio-example').click();
-  await page.locator('[data-edit-mode="pose"]').click();await page.locator('[data-direct-view="front"]').click();
+  await page.locator('[data-edit-mode="pose"]').click();await page.locator('[data-direct-view="front"]').click();await page.waitForTimeout(150);
   const actorPoint=await page.locator('[data-pose-point="torso"]').boundingBox();await page.locator('[data-edit-mode="move"]').click();
   // Solo exit restores the scene camera; explicitly restore the front editing view before reusing its point.
   await page.locator('[data-direct-view="front"]').click();
   const shippedBefore=await save('shipped-before.json');await drag(actorPoint,60,0);const shippedMoved=await save('shipped-moved.json');
   assert.ok(distance(shippedBefore.mannequins[0].position,shippedMoved.mannequins[0].position)>0.02);
-  await page.locator('[data-edit-mode="pose"]').click();await page.locator('[data-direct-view="side"]').click();
+  await page.locator('[data-edit-mode="pose"]').click();await page.locator('[data-direct-view="side"]').click();await page.waitForTimeout(150);
   await drag(await page.locator('[data-pose-point="l_knee"]').boundingBox(),40,-35);const shippedPosed=await save('shipped-posed.json');
   assert.notDeepEqual(shippedPosed.mannequins[0].joints.l_leg.rotation,shippedMoved.mannequins[0].joints.l_leg.rotation);assert.deepEqual(shippedPosed.mannequins[0].boneLayout,shippedMoved.mannequins[0].boneLayout);
   await page.screenshot({path:out+'/production-handles.png'});

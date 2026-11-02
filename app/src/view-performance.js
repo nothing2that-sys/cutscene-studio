@@ -67,6 +67,7 @@ export function initViewPerformance(api){
   return {
     invalidate,revision:()=>revision,sync,stats,
     isSolo:()=>!!soloModel,
+    refocus(){sync();if(soloModel){focus(soloModel);invalidate();}},
     editingObjects:()=>soloModel?[soloModel]:api.objects(),
     snapshotCamera(){if(!savedCamera)return null;const {up,zoom,...state}=savedCamera;return structuredClone(state);},
     beforeRestore(){restoring=true;if(savedCamera){const original=savedCamera;savedCamera=null;soloModel=null;restoreCamera(original);}},

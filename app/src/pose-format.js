@@ -20,6 +20,7 @@ function semantic(actor){
 export function readReferencePoses(text){
   if(typeof text!=='string'||new TextEncoder().encode(text).length>5_000_000)throw Error('포즈 JSON은 5MB 이하로 넣어주세요.');
   let data;try{data=JSON.parse(text.replace(/^\uFEFF/,''));}catch{throw Error('포즈 JSON 문법을 확인하세요. 이미지 대신 저장한 포즈·장면·인물 JSON을 넣어주세요.');}
+  if(data?.type==='converted-pose'){if(data.version!==1||data.pose?.type!=='pose-reference')throw Error('지원하는 변환 포즈 형식이 아닙니다.');return readReferencePoses(JSON.stringify(data.pose));}
   if(data?.type==='pose-reference'){
     if(data.version!==1||data.rotationUnit!=='radians'||Object.keys(data).some(k=>!['type','version','name','rotationUnit','rotations'].includes(k)))throw Error('지원하는 포즈 참조 형식이 아닙니다.');
     return [{name:typeof data.name==='string'?data.name:'저장한 포즈',kind:'rotations',rotations:rotations(data.rotations)}];
