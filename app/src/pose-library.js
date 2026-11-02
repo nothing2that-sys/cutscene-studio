@@ -1,19 +1,20 @@
 import * as THREE from 'three';
 import {POSES} from './scene-format.js';
 import {constrainBody,snapshotBodyJoints} from './body-rig.js';
+import {bodyPartBounds} from './body-surface.js';
 import {STARTER_POSES} from './starter-poses.js';
 import {openPoseStore} from './pose-store.js';
 import {installImageReferences} from './image-references.js';
 
 import {POSE_NAMES,readReferencePoses} from './pose-format.js';
 export {readReferencePoses} from './pose-format.js';
-function footY(m){m.updateMatrixWorld(true);return Math.min(new THREE.Box3().setFromObject(m.l_ankle).min.y,new THREE.Box3().setFromObject(m.r_ankle).min.y);}
+function footY(m){m.updateMatrixWorld(true);return Math.min(bodyPartBounds(m,'l_ankle').min.y,bodyPartBounds(m,'r_ankle').min.y);}
 export function applyReferencePose(m,reference,ground=true){
   if(!m?.torso)throw Error('포즈를 적용할 인물을 선택하세요.');
   // Verify every source key before touching the target model.
   const allowed=snapshotBodyJoints(m);
   if(reference.kind==='rotations')for(const key of Object.keys(reference.rotations))if(!Object.hasOwn(allowed,key))throw Error('이 인물에 없는 관절입니다: '+key);
-  const before=footY(m),saved=Object.fromEntries(Object.entries(snapshotBodyJoints(m)).map(([key,j])=>[key,j.rotation]));
+  const before=ground?footY(m):null,saved=Object.fromEntries(Object.entries(snapshotBodyJoints(m)).map(([key,j])=>[key,j.rotation]));
   const position=m.position.clone();
   try{
     for(const [key,q]of m.userData.bodyBase.rotations)m[key].quaternion.copy(q);

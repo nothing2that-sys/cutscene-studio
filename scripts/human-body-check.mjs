@@ -20,7 +20,7 @@ try{
   for(const profile of [{height:1.55,headUnits:5},{height:1.75,headUnits:8},{height:1.95,headUnits:9.5}]){const model=rig.createCharacter(profile);if(Math.abs(model.userData.bodyMetrics.height-profile.height)>1e-6||Math.abs(model.userData.bodyMetrics.headUnits-profile.headUnits)>1e-6)throw Error('Body sizing failed');model.removeFromParent();}
   checks.push('appearance toggles preserve all joints, locked layout, profile and root in neutral/squat/reaching poses','5/8/9.5-head sizing remains accurate');
   if(results[1].drawCalls>results[0].drawCalls||results[1].triangles>results[0].triangles)throw Error('Human surface increased rendering cost');checks.push('human surface has no additional draw calls or triangles');
-  if(Math.abs(results[0].height-results[1].height)>.001)throw Error('Neutral stature changed across appearance');checks.push('appearance preserves neutral visible height');
+  if(Math.abs(results[1].height-1.75)>.005)throw Error('Human neutral stature differs from configured height');checks.push('human neutral visible height matches configured stature within 5mm; rig transforms are unchanged');
   return {results,checks};
  });
  for(const item of result.results){await writeFile(out+'/'+item.name+'.png',Buffer.from(item.image.split(',')[1],'base64'));delete item.image;}

@@ -1,0 +1,12 @@
+{
+  "checks": [
+    "selected actors/props expose editable name, role, placement intent and appearance; initial proposal remains unchanged",
+    "current descriptions and approximate spatial review accompany actual color/depth images, native state and text prompt",
+    "description edits survive Save/Load",
+    "description edits participate in Undo/Redo",
+    "left-drag camera pan translates camera target without moving actors, props or saved shots",
+    "normal right-drag also pans without object changes",
+    "focus selected targets its actual center; whole-scene view exits pose solo"
+  ],
+  "pageErrors": []
+}

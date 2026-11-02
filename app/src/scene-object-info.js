@@ -17,6 +17,11 @@ function meshBoxes(object){
  object.traverse(mesh=>{
   if(!mesh.isMesh||!mesh.geometry?.attributes.position)return;
   for(let node=mesh;node&&node!==object;node=node.parent)if(!node.visible)return;
+  if(mesh.isSkinnedMesh){
+   const parts=mesh.skeleton.bones.map(()=>new THREE.Box3()),inverse=mesh.skeleton.bones.map(b=>b.matrixWorld.clone().invert()),point=new THREE.Vector3(),weights=mesh.geometry.attributes.skinWeight,indices=mesh.geometry.attributes.skinIndex;
+   for(let i=0;i<mesh.geometry.attributes.position.count;i++){const w=[weights.getX(i),weights.getY(i),weights.getZ(i),weights.getW(i)],ids=[indices.getX(i),indices.getY(i),indices.getZ(i),indices.getW(i)],bone=ids[w.indexOf(Math.max(...w))];mesh.getVertexPosition(i,point).applyMatrix4(mesh.matrixWorld).applyMatrix4(inverse[bone]);parts[bone].expandByPoint(point);}
+   parts.forEach((part,i)=>{if(part.isEmpty())return;const obb=new OBB().fromBox3(part).applyMatrix4(mesh.skeleton.bones[i].matrixWorld);obb.halfSize.subScalar(.01).max(new THREE.Vector3());if(obb.halfSize.toArray().every(n=>n>0))boxes.push(obb);});return;
+  }
   mesh.geometry.computeBoundingBox();const obb=new OBB().fromBox3(mesh.geometry.boundingBox).applyMatrix4(mesh.matrixWorld);
   // Ignore touching surfaces and very shallow overlap at ordinary support points.
   obb.halfSize.subScalar(.01).max(new THREE.Vector3());if(obb.halfSize.toArray().some(n=>n<=0))return;boxes.push(obb);

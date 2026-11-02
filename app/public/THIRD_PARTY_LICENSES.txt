@@ -1,4 +1,9 @@
 Local Cutscene Studio uses the following third-party works.
+MakeHuman asset data (CC0-1.0), commit a8bc2d54ff0ac92e78ff71431b1023eda42bf482:
+https://github.com/makehumancommunity/makehuman
+Modified base mesh, default rig weights and chest target; no MakeHuman program code copied.
+Full CC0 text: licenses/MakeHuman-ASSETS-CC0.txt
+Pinned source URLs and SHA-256: app/src/assets/reference-human.source.json
 Modified pose-toolkit source is in app/. Upstream base: https://github.com/fanverseio/pose-toolkit/commit/5ad2d16ae107c8e5ee3304fd30bbadb7ed213e33
 Extension history is in this repository.
 

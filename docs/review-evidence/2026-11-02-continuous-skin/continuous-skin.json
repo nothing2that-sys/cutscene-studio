@@ -1,0 +1,64 @@
+{
+  "checks": [
+    "visible 5/8/9.5-head figures retain configured stature within 5mm; chest/profile edits rebuild skin without changing bones",
+    "six bent/rotated/lying poses preserve bones and root, keep all deformed vertices finite and avoid gross spikes",
+    "actual app depth shader follows posed skin; foreground masks overlap >99% for all six poses",
+    "default body view has no joint controls; only selected pose editing reveals controls"
+  ],
+  "profiles": [
+    {
+      "profile": {
+        "height": 1.55,
+        "headUnits": 5
+      },
+      "visibleHeight": 1.5499999961329878
+    },
+    {
+      "profile": {
+        "height": 1.75,
+        "headUnits": 8
+      },
+      "visibleHeight": 1.7499999367663421
+    },
+    {
+      "profile": {
+        "height": 1.95,
+        "headUnits": 9.5
+      },
+      "visibleHeight": 1.949999965391381
+    }
+  ],
+  "poses": [
+    {
+      "name": "neutral",
+      "maxEdge": 0.14547937989602897,
+      "depthMaskIoU": 1
+    },
+    {
+      "name": "squat",
+      "maxEdge": 0.14547937867627378,
+      "depthMaskIoU": 1
+    },
+    {
+      "name": "kneeling",
+      "maxEdge": 0.14547937885201292,
+      "depthMaskIoU": 1
+    },
+    {
+      "name": "armUp",
+      "maxEdge": 0.14547937989602897,
+      "depthMaskIoU": 1
+    },
+    {
+      "name": "twist",
+      "maxEdge": 0.14547937989602897,
+      "depthMaskIoU": 1
+    },
+    {
+      "name": "lying",
+      "maxEdge": 0.14547937920376725,
+      "depthMaskIoU": 1
+    }
+  ],
+  "pageErrors": []
+}

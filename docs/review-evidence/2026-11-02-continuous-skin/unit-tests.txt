@@ -1,0 +1,27 @@
+✔ reference human has a connected closed body and two closed eye surfaces (36.7787ms)
+✔ all skin influences are finite, bounded and normalized (6.1742ms)
+✔ converted wrappers validate their inner rotations and reject invalid payloads (2.2474ms)
+✔ starter semantic and rendered rotation references are readable (7.3991ms)
+✔ scene and saved project offer explicit per-person candidates (3.8587ms)
+✔ invalid pose files fail without silently selecting a default (0.884ms)
+✔ all field errors collected without normalizing away mistakes (3.6883ms)
+✔ syntax errors and fence errors preserve exact original for repair (0.8377ms)
+✔ spatial warnings permit scene and are distinct from errors (0.6361ms)
+✔ wrong shapes fail as field reports rather than TypeError (1.2471ms)
+✔ malformed native project rejected before scene mutation and has source (6.3398ms)
+✔ height and head units are independent validated actor settings (0.9346ms)
+✔ missing rig lock warns and invalid preserved proposal is rejected (3.0916ms)
+✔ optional chest profile defaults and invalid scene/native values (13.3243ms)
+✔ example scene normalizes and round trips without changing the input (0.7425ms)
+✔ bad LLM proposals are rejected before reaching the editor (1.7905ms)
+✔ actor/prop descriptions round-trip; invalid text values are rejected (3.4765ms)
+✔ edited notes override proposal and empty edits remain empty (2.0512ms)
+✔ spatial overlap ignores visual occlusion and simple support; checks furniture parts (2.4758ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 238.9956

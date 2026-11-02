@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Male } from 'mannequin-js/src/mannequin.js';
 import { JOINTS, chestIssues, normalizeChest } from './scene-format.js';
-import {setBodySurface,surfaceColor} from './body-surface.js';
+import {setBodySurface,surfaceColor,invalidateBodySurface,suspendBodySurface,resumeBodySurface} from './body-surface.js';
 
 const chestGuides=new WeakMap();
 const RAD=THREE.MathUtils.DEG2RAD;
@@ -84,11 +84,12 @@ export function clampJoint(m,key) {
 export function constrainBody(m) {
   enforceBoneLengths(m);
   for(const key of ['body',...Object.keys(JOINTS)])clampJoint(m,key);
-  m.updateMatrixWorld(true);
+  m.updateMatrixWorld(true);invalidateBodySurface(m);
 }
 export function configureBody(m,profile,keepFeet=true) {
   profileValid(profile);
   const oldMin=keepFeet?new THREE.Box3().setFromObject(m).min.y:null;
+  const previousSurface=suspendBodySurface(m);
   // Box3 also measures invisible objects: detach references during neutral sizing.
   chestGuides.get(m)?.removeFromParent();
   const rotations=rigRotations(m),position=m.position.clone(),orientation=m.quaternion.clone();
@@ -116,6 +117,7 @@ export function configureBody(m,profile,keepFeet=true) {
   m.userData.bodyProfile={height:profile.height,headUnits:profile.headUnits,...(profile.chest?{chest:normalizeChest(profile.chest)}:{})};
   restoreRotations(m,rotations);m.position.copy(position);m.quaternion.copy(orientation);m.updateMatrixWorld(true);
   configureChestGuide(m,m.userData.bodyProfile.chest);m.updateMatrixWorld(true);
+  if(previousSurface!==null)resumeBodySurface(m,previousSurface);
   if(keepFeet){m.position.y+=oldMin-new THREE.Box3().setFromObject(m).min.y;m.updateMatrixWorld(true);}
   lockBoneLayout(m);constrainBody(m);
 }
@@ -131,7 +133,7 @@ export function initializeBody(m,profile) {
   if(profile)configureBody(m,profile,false);else lockBoneLayout(m);
 }
 export function createCharacter(profile={height:1.75,headUnits:8}) {
-  const m=new Male();setBodySurface(m);initializeBody(m,profile);return m;
+  const m=new Male();initializeBody(m,profile);setBodySurface(m);return m;
 }
 export function boneDistances(m) {
   m.updateMatrixWorld(true);

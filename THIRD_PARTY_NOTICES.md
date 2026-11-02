@@ -8,6 +8,9 @@
 | mannequin-js 5.2.3 | https://github.com/boytchev/mannequin.js | GPL-3.0 | 코드로 생성하는 마네킹과 자세 데이터 |
 | Three.js | https://github.com/mrdoob/three.js | MIT | WebGL 렌더링, 카메라, 조작 컨트롤, 모델 로더 |
 | Vite 8.3.5 | https://github.com/vitejs/vite | MIT | 개발 서버와 Rolldown 기반 빌드 |
+| MakeHuman 인체 데이터 | https://github.com/makehumancommunity/makehuman | CC0-1.0 (assets) | 기본 인체 메시, 리그 가중치, 중립 가슴 형태의 가공 데이터 |
+
+연속 인체 데이터는 MakeHuman 커밋 `a8bc2d54ff0ac92e78ff71431b1023eda42bf482`에서 가져왔습니다. 프로그램 코드(AGPL)와 자산(CC0)은 [공식 LICENSE.md](https://github.com/makehumancommunity/makehuman/blob/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/LICENSE.md)에서 구분합니다. 프로그램 코드를 복사하지 않았습니다. 원본 링크·SHA-256은 `app/src/assets/reference-human.source.json`, CC0 전문은 [MakeHuman-ASSETS-CC0.txt](app/public/licenses/MakeHuman-ASSETS-CC0.txt)에 보존합니다. [가공·검증·제한](docs/CONTINUOUS_HUMAN.md).
 
 정확한 설치 버전은 `app/package-lock.json`, 각 의존성의 고지는 설치된 패키지의 LICENSE 파일을 참조합니다. 배포용 빌드에는 [의존성 라이선스 모음](app/public/THIRD_PARTY_LICENSES.txt)을 함께 제공합니다.
 

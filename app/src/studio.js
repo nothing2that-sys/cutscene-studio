@@ -110,8 +110,9 @@ export function initCutsceneStudio(api) {
       preview.setSize(width,height,false);
       if(depth) {
         depthMaterial=new THREE.ShaderMaterial({
+          side:THREE.DoubleSide,
           uniforms:{near:{value:shotCamera.near},far:{value:shotCamera.far}},
-          vertexShader:'varying float distanceZ; void main(){vec4 v=modelViewMatrix*vec4(position,1.); distanceZ=-v.z; gl_Position=projectionMatrix*v;}',
+          vertexShader:'#include <common>\n#include <skinning_pars_vertex>\nvarying float distanceZ;\nvoid main(){\n#include <skinbase_vertex>\n#include <begin_vertex>\n#include <skinning_vertex>\nvec4 v=modelViewMatrix*vec4(transformed,1.);distanceZ=-v.z;gl_Position=projectionMatrix*v;}',
           fragmentShader:'uniform float near; uniform float far; varying float distanceZ; void main(){float d=1.-clamp((distanceZ-near)/(far-near),0.,1.); gl_FragColor=vec4(vec3(d),1.);}',
         });
         stage.scene.overrideMaterial=depthMaterial; stage.scene.background=new THREE.Color(0x000000);
