@@ -6,6 +6,7 @@ import { initExportSystem } from './exportSystem.js';
 import { initCutsceneStudio } from './studio.js';
 import { initDirectEditor } from './direct-editor.js';
 import { installPoseLibrary, poseFingerprint } from './pose-library.js';
+import {renderObjectInfo} from './scene-object-info.js';
 import { initViewPerformance } from './view-performance.js';
 import { analyzeEditorState } from './scene-feedback.js';
 import { SceneValidationError, JOINTS } from './scene-format.js';
@@ -94,6 +95,7 @@ function snapshotState() {
       return {
         name: m.name,
         studioId: m.userData.studioId,
+        sceneNotes: m.userData.sceneNotes,
         bodyProfile: m.userData.bodyProfile,
         boneLayout: captureBoneLayout(m),
         position: m.position.toArray(),
@@ -107,7 +109,8 @@ function snapshotState() {
       position: m.position.toArray(),
       rotation: m.rotation.toArray(),
       scale: m.scale.toArray(),
-      name: m.userData._glbFileName || m.name,
+      name: m.name || m.userData._glbFileName,
+      sceneNotes: m.userData.sceneNotes,
       glbBase64: m.userData._glbBase64 || null,
       primitive: m.userData.primitive || null,
     })),
@@ -159,6 +162,7 @@ function applyState(json) {
     const m = createFullMannequin(d.bodyProfile || null);
     m.name = d.name || '';
     m.userData.studioId = d.studioId;
+    m.userData.sceneNotes = d.sceneNotes;
     m.position.fromArray(d.position);
     m.rotation.fromArray(d.rotation);
     m.scale.fromArray(d.scale);
@@ -186,6 +190,7 @@ function applyState(json) {
       if (d.primitive && studio) {
         const model = studio.createProp(d.primitive);
         model.name = d.name || d.primitive.name;
+        model.userData.sceneNotes = d.sceneNotes;
         model.position.fromArray(d.position);
         model.rotation.fromArray(d.rotation);
         model.scale.fromArray(d.scale);
@@ -202,6 +207,7 @@ function applyState(json) {
         if (generation !== restoreGeneration) return;
         const model = gltf.scene;
         model.name = d.name || 'restored-glb';
+        model.userData.sceneNotes = d.sceneNotes;
         model.position.fromArray(d.position);
         model.rotation.fromArray(d.rotation);
         model.scale.fromArray(d.scale);
@@ -443,7 +449,7 @@ function updateLayerWindow() {
       if (obj) {
         obj.name = e.target.value;
         if (isImported) obj.userData._glbFileName = e.target.value; // Sync to save data
-        captureState();
+        captureState();if(obj===activeMannequin)updatePropertiesPanel();
       }
     });
   });
@@ -480,7 +486,8 @@ function updateLayerWindow() {
             position: obj.position.toArray(),
             rotation: obj.rotation.toArray(),
             scale: obj.scale.toArray(),
-            name: obj.userData._glbFileName || obj.name,
+            name: obj.name || obj.userData._glbFileName,
+            sceneNotes: obj.userData.sceneNotes,
             glbBase64: obj.userData._glbBase64 || null,
             primitive: obj.userData.primitive || null,
           };
@@ -488,6 +495,8 @@ function updateLayerWindow() {
           const joints = snapshotBodyJoints(obj);
           exportData = {
             type: 'mannequin',
+            studioId: obj.userData.studioId,
+            sceneNotes: obj.userData.sceneNotes,
             bodyProfile: obj.userData.bodyProfile,
             boneLayout: captureBoneLayout(obj),
             position: obj.position.toArray(),
@@ -616,6 +625,7 @@ function base64ToArrayBuffer(base64) {
 
 function addMannequinFromData(data) {
   const m = createFullMannequin(data.bodyProfile || null);
+  m.userData.studioId=data.studioId;m.userData.sceneNotes=data.sceneNotes;
   m.position.fromArray(data.position || [0, GROUND_Y, 0]);
   m.rotation.fromArray(data.rotation || [0, 0, 0, 'XYZ']);
   m.scale.fromArray(data.scale || [1, 1, 1]);
@@ -646,6 +656,7 @@ function addImportedModelFromData(data) {
   if (data.primitive && studio) {
     const model = studio.createProp(data.primitive);
     model.name = data.name || model.name;
+    model.userData.sceneNotes=data.sceneNotes;
     model.position.fromArray(data.position);
     model.rotation.fromArray(data.rotation);
     model.scale.fromArray(data.scale);
@@ -664,6 +675,7 @@ function addImportedModelFromData(data) {
   loader.parse(arrayBuffer, '', (gltf) => {
     const model = gltf.scene;
     model.name = data.name || 'restored-glb';
+    model.userData.sceneNotes=data.sceneNotes;
     model.position.fromArray(data.position);
     model.rotation.fromArray(data.rotation);
     model.scale.fromArray(data.scale);
@@ -720,7 +732,8 @@ function saveProject() {
       position: m.position.toArray(),
       rotation: m.rotation.toArray(),
       scale: m.scale.toArray(),
-      name: m.userData._glbFileName || m.name,
+      name: m.name || m.userData._glbFileName,
+      sceneNotes: m.userData.sceneNotes,
       glbBase64: m.userData._glbBase64 || null,
     })),
     camera: {
@@ -1002,6 +1015,7 @@ function updatePropertiesPanel() {
     if(cfg.target!=='self'&&activeMannequin[cfg.target])setHighlight(activeMannequin[cfg.target]);else clearHighlight();
     updatePropertiesPanel();
   };
+  renderObjectInfo(content,activeMannequin,studio?.snapshot().document,{objects:()=>[...mannequins,...importedModels],commit:()=>{captureState();updateLayerWindow();}});
   setupSliderListeners();bindBodyProfile();attachGizmo(activeMannequin);
 }
 
@@ -1059,6 +1073,7 @@ function setupHUDListeners() {
 
 // ─── Mouse Interaction ────────────────────────────────────────────────────────
 function onMouseDown(event) {
+  if(directEditor?.cameraPan)return;
   if (event.target.closest('.glass-panel') || transformControl.dragging || transformControl.axis !== null) return;
   if (event.button !== 0) return;
   const rect = stage.renderer.domElement.getBoundingClientRect();
@@ -1343,7 +1358,7 @@ function init() {
     setWorkingFov(value){if(viewPerformance)viewPerformance.setWorkingFov(value);else{stage.camera.fov=value;stage.camera.updateProjectionMatrix();}},
   });
   stage.controls.addEventListener('end', () => captureState());
-  directEditor=initDirectEditor({stage,getSelection:()=>activeMannequin,objects:()=>viewPerformance?.editingObjects()||[...mannequins,...importedModels],commit:captureState,refresh:updatePropertiesPanel,
+  directEditor=initDirectEditor({stage,sceneObjects:()=>[...mannequins,...importedModels],cameraModeChanged(value){transformControl.enabled=!value;},getSelection:()=>activeMannequin,objects:()=>viewPerformance?.editingObjects()||[...mannequins,...importedModels],commit:captureState,refresh:updatePropertiesPanel,
     invalidate:()=>viewPerformance?.invalidate(),revision:()=>viewPerformance?.revision()||0,
     setDragging(value){directDragging=value;updateStageControlsEnabled();},
     select(object,part){activeMannequin=object;selectedBodyPart=part;clearHighlight();updatePropertiesPanel();updateLayerWindow();},

@@ -11,11 +11,11 @@ const POINTS=[
 
 export function initDirectEditor(api){
   const {stage}=api,canvas=stage.renderer.domElement;
-  let mode=null,drag=null,lastModel=null,lastTick=0,lastRevision=-1,frameRect=null,lastHover=0;
+  let mode=null,cameraPan=false,drag=null,lastModel=null,lastTick=0,lastRevision=-1,frameRect=null,lastHover=0;
   const toolbar=document.createElement('section');toolbar.id='direct-editor';toolbar.className='glass-panel';
   toolbar.innerHTML=`<div class="direct-mode-row"><button class="btn primary" data-edit-mode="move">인물 이동</button><button class="btn" data-edit-mode="pose">포즈 잡기</button><button class="btn" data-edit-mode="advanced">세부 조정</button><span id="direct-selection"></span></div>
     <div class="direct-view-row"><span>보기</span><button class="btn" data-direct-view="front">정면</button><button class="btn" data-direct-view="side">옆면</button><button class="btn" data-direct-view="top">위</button><span id="direct-pose-slot"></span></div>
-    <p id="direct-help"></p><output id="direct-status" role="status"></output>`;
+    <div class="direct-camera-row"><button class="btn" id="camera-pan-toggle" aria-pressed="false">화면 중심 이동</button><button class="btn" id="camera-focus-selected">선택 대상으로 중심</button><button class="btn" id="camera-frame-scene">전체 보기</button><span>빈 곳 왼쪽 드래그: 회전 · 오른쪽 드래그: 중심 이동 · 휠: 줌</span><span>캡처에 반영하려면 카메라 컷의 [갱신]을 누르세요.</span></div><p id="direct-help"></p><output id="direct-status" role="status"></output>`;
   document.getElementById('app').appendChild(toolbar);
   const overlay=document.createElement('div');overlay.id='pose-points';document.getElementById('app').appendChild(overlay);
   const aim=document.createElement('div');aim.id='pose-aim';aim.hidden=true;overlay.appendChild(aim);
@@ -52,6 +52,7 @@ export function initDirectEditor(api){
   }
   function setMode(next){
     if(!['move','pose','advanced'].includes(next))return;
+    if(cameraPan)setCameraPan(false);
     if(next===mode)return;
     end(true);mode=next;document.body.dataset.editMode=mode;
     toolbar.querySelectorAll('[data-edit-mode]').forEach(btn=>{btn.classList.toggle('primary',btn.dataset.editMode===mode);btn.setAttribute('aria-pressed',String(btn.dataset.editMode===mode));});
@@ -59,6 +60,14 @@ export function initDirectEditor(api){
     api.modeChanged(mode);status('');
   }
   toolbar.querySelectorAll('[data-edit-mode]').forEach(btn=>btn.onclick=()=>setMode(btn.dataset.editMode));
+  function setCameraPan(value){
+    end(true);cameraPan=value;stage.controls.mouseButtons.LEFT=value?THREE.MOUSE.PAN:THREE.MOUSE.ROTATE;stage.controls.enablePan=true;stage.controls.screenSpacePanning=true;
+    document.body.dataset.cameraPan=String(value);const button=toolbar.querySelector('#camera-pan-toggle');button.classList.toggle('primary',value);button.setAttribute('aria-pressed',String(value));canvas.style.cursor=value?'grab':'';api.cameraModeChanged?.(value);api.invalidate();status(value?'왼쪽 드래그로 화면 중심을 이동합니다. 대상 위치는 유지됩니다. 버튼을 다시 누르면 대상 조작으로 돌아갑니다.':'대상 조작으로 돌아왔습니다.');
+  }
+  toolbar.querySelector('#camera-pan-toggle').onclick=()=>setCameraPan(!cameraPan);
+  const centerOn=(box,fit)=>{const center=box.getCenter(new THREE.Vector3());if(fit){const direction=stage.camera.position.clone().sub(stage.controls.target).normalize(),size=box.getSize(new THREE.Vector3());stage.camera.position.copy(center).addScaledVector(direction,Math.max(size.x/Math.min(stage.camera.aspect,1),size.y,size.z,.5)*2.2);}else stage.camera.position.add(center.clone().sub(stage.controls.target));stage.controls.target.copy(center);stage.controls.update();api.invalidate();api.commit();};
+  toolbar.querySelector('#camera-focus-selected').onclick=()=>{const selected=api.getSelection();if(!selected){status('먼저 인물이나 사물을 선택하세요.');return;}centerOn(new THREE.Box3().setFromObject(selected),false);status('선택한 대상을 회전·줌의 중심으로 맞췄습니다.');};
+  toolbar.querySelector('#camera-frame-scene').onclick=()=>{setMode('move');const objects=api.sceneObjects?.()||api.objects(),box=new THREE.Box3();objects.forEach(o=>box.union(new THREE.Box3().setFromObject(o)));if(box.isEmpty())return;centerOn(box,true);status('전체 장면으로 중심과 거리를 맞췄습니다.');};
   toolbar.querySelectorAll('[data-direct-view]').forEach(btn=>btn.onclick=()=>{
     const m=api.getSelection();if(!m){status('먼저 인물을 선택하세요.');return;}
     const box=new THREE.Box3().setFromObject(m),center=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3()),distance=Math.max(size.y,size.x,size.z)*2.5;
@@ -76,13 +85,13 @@ export function initDirectEditor(api){
     btn.onpointerdown=event=>{if(event.button!==0)return;const m=api.getSelection();if(!m?.[key])return;stop(event);api.select(m,part);captureStart(event,m,'joint',key);};overlay.appendChild(btn);return {btn,line,key,part,label,side};
   });
   canvas.addEventListener('pointerdown',event=>{
-    if(mode==='advanced'||event.button!==0)return;
+    if(cameraPan||mode==='advanced'||event.button!==0)return;
     cast(event);const objects=api.objects();const hit=raycaster.intersectObjects(objects,true)[0];if(!hit)return;
     let node=hit.object;while(node&&!objects.includes(node))node=node.parent;if(!node)return;
     stop(event);api.select(node,'Root');
     if(mode==='move')captureStart(event,node,'object');else status('인물을 선택했습니다. 이름이 붙은 원을 잡아 포즈를 바꾸세요.');
   },true);
-  canvas.addEventListener('pointermove',event=>{if(drag||mode==='advanced'||performance.now()-lastHover<50)return;lastHover=performance.now();cast(event);canvas.style.cursor=raycaster.intersectObjects(api.objects(),true).length?(mode==='move'?'grab':'pointer'):'';});
+  canvas.addEventListener('pointermove',event=>{if(cameraPan){canvas.style.cursor='grab';return;}if(drag||mode==='advanced'||performance.now()-lastHover<50)return;lastHover=performance.now();cast(event);canvas.style.cursor=raycaster.intersectObjects(api.objects(),true).length?(mode==='move'?'grab':'pointer'):'';});
   window.addEventListener('pointermove',event=>{
     if(!drag||event.pointerId!==drag.id)return;stop(event);
     const dx=event.clientX-drag.startX,dy=event.clientY-drag.startY;drag.moved ||= Math.hypot(dx,dy)>2;
@@ -114,7 +123,7 @@ export function initDirectEditor(api){
     const placed=[];
     const centerX=m?.torso?screen(world(m.torso)).x:0;
     for(const {btn,line,key,side}of buttons){
-      btn.hidden=mode!=='pose'||!m?.[key];line.style.display='none';if(btn.hidden)continue;
+      btn.hidden=cameraPan||mode!=='pose'||!m?.[key];line.style.display='none';if(btn.hidden)continue;
       const p=screen(world(m[key]));btn.hidden=p.z< -1||p.z>1||p.x<0||p.x>innerWidth||p.y<0||p.y>innerHeight;
       if(btn.hidden)continue;
       const display={x:p.x,y:p.y};let attempts=0;
@@ -127,5 +136,5 @@ export function initDirectEditor(api){
     frameRect=null;
   }
   setMode('move');requestAnimationFrame(tick);
-  return {get mode(){return mode;},setMode,status,poseSlot:toolbar.querySelector('#direct-pose-slot'),cancel:()=>end(true)};
+  return {get cameraPan(){return cameraPan;},get mode(){return mode;},setMode,status,poseSlot:toolbar.querySelector('#direct-pose-slot'),cancel:()=>end(true)};
 }

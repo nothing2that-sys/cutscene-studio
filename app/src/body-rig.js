@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Male } from 'mannequin-js/src/mannequin.js';
 import { JOINTS, chestIssues, normalizeChest } from './scene-format.js';
+import {setBodySurface,surfaceColor} from './body-surface.js';
 
 const chestGuides=new WeakMap();
 const RAD=THREE.MathUtils.DEG2RAD;
@@ -41,7 +42,7 @@ function configureChestGuide(m,profile) {
     group=new THREE.Group();group.name='Chest volume reference';m.torso.imageWrapper.add(group);chestGuides.set(m,group);
     for(const side of ['left','right']){
       // Neutral mannequin volumes; these are shape anchors, not nipple markers.
-      const mesh=new THREE.Mesh(new THREE.SphereGeometry(1,32,24),new THREE.MeshStandardMaterial({color:'#b59a76',roughness:0.85}));
+      const mesh=new THREE.Mesh(new THREE.SphereGeometry(1,32,24),new THREE.MeshStandardMaterial({color:surfaceColor(),roughness:0.85}));
       mesh.name='Chest '+side;mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData.posePartKey='Torso';group.add(mesh);
     }
   }
@@ -130,7 +131,7 @@ export function initializeBody(m,profile) {
   if(profile)configureBody(m,profile,false);else lockBoneLayout(m);
 }
 export function createCharacter(profile={height:1.75,headUnits:8}) {
-  const m=new Male();initializeBody(m,profile);return m;
+  const m=new Male();setBodySurface(m);initializeBody(m,profile);return m;
 }
 export function boneDistances(m) {
   m.updateMatrixWorld(true);

@@ -79,7 +79,7 @@ export function analyzeScene(input) {
   const ids=new Set();
   function id(v,p){const value=str(v,p);if(!/^[A-Za-z0-9_-]{1,64}$/.test(value))error(p,'INVALID_ID','1~64자의 영문·숫자·밑줄·하이픈 ID가 필요합니다.','[A-Za-z0-9_-]{1,64}',v);else if(ids.has(value))error(p,'DUPLICATE_ID','인물·소품 ID가 중복됩니다. 고유한 ID로 바꾸세요.','unique actor/prop id',v);ids.add(value);return value;}
   const actors=list(raw.actors===undefined?[]:raw.actors,'actors',12).map((a,i)=>{
-    const p='actors['+i+']';keys(a,['id','name','position','yaw','height','headUnits','chest','pose','joints','intent'],p);
+    const p='actors['+i+']';keys(a,['id','name','position','yaw','height','headUnits','chest','pose','joints','intent','role','description'],p);
     const chest=a.chest===undefined?undefined:normalizeChest(a.chest);
     if(a.chest!==undefined)c.errors.push(...chestIssues(a.chest,p+'.chest').slice(0,Math.max(0,100-c.errors.length)));
     const pose=a.pose===undefined?'standing':a.pose;
@@ -90,12 +90,12 @@ export function analyzeScene(input) {
       const props=obj(values,p+'.joints.'+joint);keys(props,Object.keys(JOINTS[joint]),p+'.joints.'+joint);joints[joint]={};
       for(const [key,value]of Object.entries(props))if(Object.hasOwn(JOINTS[joint],key))joints[joint][key]=num(value,p+'.joints.'+joint+'.'+key,...JOINTS[joint][key]);
     }
-    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),position:vec(a.position,p+'.position'),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),height:num(a.height===undefined?1.75:a.height,p+'.height',0.5,3),headUnits:num(a.headUnits===undefined?8:a.headUnits,p+'.headUnits',3,12),...(chest?{chest}:{}),pose,joints,intent:str(a.intent,p+'.intent')};
+    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),position:vec(a.position,p+'.position'),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),height:num(a.height===undefined?1.75:a.height,p+'.height',0.5,3),headUnits:num(a.headUnits===undefined?8:a.headUnits,p+'.headUnits',3,12),...(chest?{chest}:{}),pose,joints,intent:str(a.intent,p+'.intent'),role:str(a.role,p+'.role'),description:str(a.description,p+'.description')};
   });
   const props=list(raw.props===undefined?[]:raw.props,'props',80).map((a,i)=>{
-    const p='props['+i+']';keys(a,['id','name','type','position','size','yaw','color'],p);
+    const p='props['+i+']';keys(a,['id','name','type','position','size','yaw','color','role','intent','description'],p);
     if(!PROP_TYPES.includes(a.type))error(p+'.type','UNSUPPORTED_PROP','지원하지 않는 소품 형상입니다.',PROP_TYPES,a.type);
-    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),type:a.type,position:vec(a.position,p+'.position'),size:vec(a.size,p+'.size',0.02,20),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),color:color(a.color,p+'.color','#8c7965')};
+    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),type:a.type,position:vec(a.position,p+'.position'),size:vec(a.size,p+'.size',0.02,20),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),color:color(a.color,p+'.color','#8c7965'),role:str(a.role,p+'.role'),intent:str(a.intent,p+'.intent'),description:str(a.description,p+'.description')};
   });
   const shotIds=new Set();
   const shots=list(raw.shots===undefined?[]:raw.shots,'shots',24).map((s,i)=>{
@@ -136,12 +136,12 @@ export const EXAMPLE_SCENE = {
   assumptions:'방 크기·인물 키·위치·저녁빛은 연출을 위한 추정이다. 두 인물과 상자가 함께 읽히는 한 순간을 선택했다.',
   room:{size:[6,3,5],color:'#b9b5ac',walls:true},
   actors:[
-    {id:'jihoon',name:'지훈',position:[-0.8,0,0],yaw:35,height:1.78,pose:'standing',joints:{head:{turn:25}},intent:'문가의 서연을 돌아본다'},
-    {id:'seoyeon',name:'서연',position:[1.6,0,-1.4],yaw:-40,height:1.65,pose:'standing',joints:{head:{turn:-15}},intent:'지훈을 바라본다'},
+    {id:'jihoon',name:'지훈',position:[-0.8,0,0],yaw:35,height:1.78,pose:'standing',joints:{head:{turn:25}},role:'탁자 앞에 선 인물',intent:'문가의 서연을 돌아본다'},
+    {id:'seoyeon',name:'서연',position:[1.6,0,-1.4],yaw:-40,height:1.65,pose:'standing',joints:{head:{turn:-15}},role:'문가에 멈춘 방문자',intent:'지훈을 바라본다'},
   ],
   props:[
-    {id:'table',name:'탁자',type:'table',position:[0,0,-0.2],size:[1.5,0.75,0.8],yaw:0,color:'#8c7965'},
-    {id:'box',name:'작은 상자',type:'box',position:[0.2,0.75,-0.2],size:[0.3,0.22,0.25],yaw:10,color:'#b48c58'},
+    {id:'table',name:'탁자',type:'table',role:'상자를 받치는 탁자',intent:'탁자 위 상자와 두 인물의 관계를 보여준다',description:'세부 디자인은 미정인 직사각형 탁자',position:[0,0,-0.2],size:[1.5,0.75,0.8],yaw:0,color:'#8c7965'},
+    {id:'box',name:'작은 상자',type:'box',role:'탁자 위 소품',intent:'원문에 등장한 작은 상자의 위치를 표시한다',description:'내용물과 세부 재질은 미정인 작은 직육면체 상자',position:[0.2,0.75,-0.2],size:[0.3,0.22,0.25],yaw:10,color:'#b48c58'},
   ],
   camera:{position:[4,2.5,6],target:[0.1,1,-0.5],fov:42},
   lighting:{position:[-3,5,2],target:[0,1,-0.5],color:'#ffe1b0',intensity:2.4,ambient:0.6},
