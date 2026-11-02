@@ -40,7 +40,7 @@ git status --short
 
 ## 3. 새 Windows 환경에서 실행
 
-준비물: Git, Node.js와 npm, WebGL 사용 가능한 브라우저. 자동 브라우저 검증에는 Google Chrome도 필요합니다. Node.js 버전은 `node --version`으로 기록하고, 설치 성공 여부는 아래 명령으로 판단하세요. Python은 앱 실행과 핵심 테스트에 필요하지 않습니다.
+준비물: Git, Node.js 20.19 이상인 20.x 또는 22.12 이상과 npm, WebGL 사용 가능한 브라우저. Vite 8.3.5로 갱신했으며 검증 환경은 Node.js 24.22.2입니다. 자동 브라우저 검증에는 Google Chrome도 필요합니다. Node.js 버전은 `node --version`으로 기록하고, 설치 성공 여부는 아래 명령으로 판단하세요. Python은 앱 실행과 핵심 테스트에 필요하지 않습니다.
 
 저장소 최상위에서 실행합니다.
 

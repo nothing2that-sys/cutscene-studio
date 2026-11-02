@@ -38,7 +38,7 @@ node --test scripts/scene-format.test.mjs scripts/scene-feedback.test.mjs
 
 ## 외부 검증에 포함할 의존성 문제
 
-2026-11-02의 새 설치와 `npm audit`에서 2건이 보고되었습니다: Vite high 1건, 간접 의존성 esbuild moderate 1건. 당시 npm은 Vite 8.3.5로의 메이저 업그레이드를 수정 후보로 제시했습니다. 검증 대상의 동작 변경을 피하기 위해 이 인계에서는 버전을 변경하지 않았습니다. 업그레이드와 회귀 검증을 별도 작업으로 평가하세요. 의존성 감사 결과는 조회 시점에 따라 바뀔 수 있습니다.
+최초 인계에서는 Vite high 1건, 간접 의존성 esbuild moderate 1건이 보고되었습니다. 이후 2026-11-02 Vite를 8.3.5로 고정 갱신해 취약 esbuild 의존성을 제거했고, 새 잠금 파일 설치 후 전체 `npm audit`와 운영 의존성 감사 모두 0건을 확인했습니다. 현재 빌드에는 Node.js 20.19 이상인 20.x 또는 22.12 이상이 필요하며, Node.js 24.22.2에서 실제 실행을 확인했습니다. 상세 회귀 결과와 감사 원본은 [외부 검증 보고서 최신 절](EXTERNAL_REVIEW_REPORT.md)을 참고하세요. 감사 결과는 조회 시점에 따라 바뀔 수 있습니다.
 
 또한 JS 단일 청크가 500kB를 초과한다는 빌드 경고가 있습니다. 기본 사용 서버는 Vite 개발 서버가 아니라 `scripts/serve.mjs`의 루프백 정적 서버입니다.
 

@@ -20,7 +20,7 @@ npm --prefix app run build
 
 이 작업 폴더에서 `start.cmd`를 실행하고 브라우저로 http://127.0.0.1:3001 을 여세요. 소스 클론 후에는 아래 명령으로 `app/dist`를 먼저 빌드합니다. 편집 중 외부 API나 인터넷 연결이 필요하지 않습니다. 실행기는 `CUTSCENE_NODE` 설정, PATH의 Node.js, 프로젝트 내부 `.review-tools/node/node.exe` 순으로 찾습니다. 특정 PC의 Codex 설치 경로는 필요하지 않습니다.
 
-다른 PC나 소스만 복사한 경우 Node.js와 npm을 설치한 뒤 `app`에서 다음을 실행합니다. 최초 의존성 설치에는 인터넷 연결이 필요합니다.
+다른 PC나 소스만 복사한 경우 Node.js 20.19 이상인 20.x 또는 22.12 이상과 npm을 설치한 뒤 `app`에서 다음을 실행합니다. 검증 환경은 Node.js 24.22.2입니다. 최초 의존성 설치에는 인터넷 연결이 필요합니다.
 
 ```powershell
 npm ci

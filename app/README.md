@@ -6,7 +6,7 @@ This app uses mannequin-js as its articulated human figure foundation: https://g
 
 ## Requirements
 
-- Node.js 18+
+- Node.js 20.19+ (20.x), or 22.12+ (Vite 8 requirement; tested with 24.22.2)
 - npm
 - A modern browser
 

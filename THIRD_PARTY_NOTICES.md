@@ -7,7 +7,7 @@
 | pose-toolkit | https://github.com/fanverseio/pose-toolkit | GPL-3.0 | 기반 UI, 관절·IK, 모델 가져오기와 조작, 내보내기 |
 | mannequin-js 5.2.3 | https://github.com/boytchev/mannequin.js | GPL-3.0 | 코드로 생성하는 마네킹과 자세 데이터 |
 | Three.js | https://github.com/mrdoob/three.js | MIT | WebGL 렌더링, 카메라, 조작 컨트롤, 모델 로더 |
-| Vite | https://github.com/vitejs/vite | MIT | 개발 서버와 빌드 |
+| Vite 8.3.5 | https://github.com/vitejs/vite | MIT | 개발 서버와 Rolldown 기반 빌드 |
 
 정확한 설치 버전은 `app/package-lock.json`, 각 의존성의 고지는 설치된 패키지의 LICENSE 파일을 참조합니다. 배포용 빌드에는 [의존성 라이선스 모음](app/public/THIRD_PARTY_LICENSES.txt)을 함께 제공합니다.
 
