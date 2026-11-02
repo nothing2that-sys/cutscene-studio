@@ -22,6 +22,17 @@ export const POSES = {
   reaching: { torso: { bend: 18 }, r_arm: { raise: 65 }, r_elbow: { bend: 15 } },
 };
 export const PROP_TYPES = ['box', 'table', 'chair', 'sphere'];
+export const CHEST_DEFAULTS = {height:0.65,spacing:0.46,projection:1};
+export const CHEST_LIMITS = {height:[0.55,0.78],spacing:[0.3,0.6],projection:[0.4,1.6]};
+export function chestIssues(value,path='chest') {
+  const errors=[];
+  const add=(p,message)=>errors.push({severity:'error',path:p,code:'CHEST_PROFILE',message});
+  if(!value||typeof value!=='object'||Array.isArray(value)){add(path,'가슴 형태는 height·spacing·projection 객체로 지정하세요.');return errors;}
+  for(const key of Object.keys(value))if(!Object.hasOwn(CHEST_LIMITS,key))add(path+'.'+key,'지원하지 않는 가슴 형태 항목입니다.');
+  for(const [key,[low,high]]of Object.entries(CHEST_LIMITS))if(value[key]!==undefined&&(!Number.isFinite(value[key])||value[key]<low||value[key]>high))add(path+'.'+key,`${low}~${high} 범위의 숫자가 필요합니다.`);
+  return errors;
+}
+export function normalizeChest(value){return Object.fromEntries(Object.entries(CHEST_DEFAULTS).map(([key,fallback])=>[key,value?.[key]===undefined?fallback:value[key]]));}
 
 function collector() {
   const errors=[],warnings=[];
@@ -68,7 +79,9 @@ export function analyzeScene(input) {
   const ids=new Set();
   function id(v,p){const value=str(v,p);if(!/^[A-Za-z0-9_-]{1,64}$/.test(value))error(p,'INVALID_ID','1~64자의 영문·숫자·밑줄·하이픈 ID가 필요합니다.','[A-Za-z0-9_-]{1,64}',v);else if(ids.has(value))error(p,'DUPLICATE_ID','인물·소품 ID가 중복됩니다. 고유한 ID로 바꾸세요.','unique actor/prop id',v);ids.add(value);return value;}
   const actors=list(raw.actors===undefined?[]:raw.actors,'actors',12).map((a,i)=>{
-    const p='actors['+i+']';keys(a,['id','name','position','yaw','height','headUnits','pose','joints','intent'],p);
+    const p='actors['+i+']';keys(a,['id','name','position','yaw','height','headUnits','chest','pose','joints','intent'],p);
+    const chest=a.chest===undefined?undefined:normalizeChest(a.chest);
+    if(a.chest!==undefined)c.errors.push(...chestIssues(a.chest,p+'.chest').slice(0,Math.max(0,100-c.errors.length)));
     const pose=a.pose===undefined?'standing':a.pose;
     if(typeof pose!=='string'||!Object.hasOwn(POSES,pose))error(p+'.pose','UNSUPPORTED_POSE','지원하지 않는 기본 포즈입니다.',Object.keys(POSES),pose);
     const joints={},entries=a.joints===undefined?{}:obj(a.joints,p+'.joints');
@@ -77,7 +90,7 @@ export function analyzeScene(input) {
       const props=obj(values,p+'.joints.'+joint);keys(props,Object.keys(JOINTS[joint]),p+'.joints.'+joint);joints[joint]={};
       for(const [key,value]of Object.entries(props))if(Object.hasOwn(JOINTS[joint],key))joints[joint][key]=num(value,p+'.joints.'+joint+'.'+key,...JOINTS[joint][key]);
     }
-    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),position:vec(a.position,p+'.position'),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),height:num(a.height===undefined?1.75:a.height,p+'.height',0.5,3),headUnits:num(a.headUnits===undefined?8:a.headUnits,p+'.headUnits',3,12),pose,joints,intent:str(a.intent,p+'.intent')};
+    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),position:vec(a.position,p+'.position'),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),height:num(a.height===undefined?1.75:a.height,p+'.height',0.5,3),headUnits:num(a.headUnits===undefined?8:a.headUnits,p+'.headUnits',3,12),...(chest?{chest}:{}),pose,joints,intent:str(a.intent,p+'.intent')};
   });
   const props=list(raw.props===undefined?[]:raw.props,'props',80).map((a,i)=>{
     const p='props['+i+']';keys(a,['id','name','type','position','size','yaw','color'],p);

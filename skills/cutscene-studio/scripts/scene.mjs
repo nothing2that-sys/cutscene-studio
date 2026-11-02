@@ -53,6 +53,7 @@ function inspect(data){
     kind:data.editorState?'handoff':'editor-project',
     actualStateSource:data.editorState?'editorState':'root mannequins/importedModels',
     title:studio.document?.title,
+    anatomyReferences:data.anatomyReferences||[],
     transformConvention:'Root transforms, not proposal feet anchors; Euler rotation is radians with order',
     actors:state.mannequins.map(m=>({id:m.studioId,name:m.name,bodyProfile:m.bodyProfile,boneLayout:m.boneLayout,position:m.position,rotation:m.rotation,scale:m.scale,posture:m.posture,joints:m.joints})),
     props:state.importedModels.map(m=>({name:m.name,position:m.position,rotation:m.rotation,scale:m.scale,primitive:m.primitive,embeddedGLB:!!m.glbBase64})),

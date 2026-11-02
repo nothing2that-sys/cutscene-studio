@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { Male } from 'mannequin-js/src/mannequin.js';
-import { JOINTS } from './scene-format.js';
+import { JOINTS, chestIssues, normalizeChest } from './scene-format.js';
 
+const chestGuides=new WeakMap();
 const RAD=THREE.MathUtils.DEG2RAD;
 const AXES={torso:{bend:['z',-1],tilt:['x',-1],turn:['y',1]},neck:{nod:['z',-1],tilt:['x',-1],turn:['y',1]},head:{nod:['z',-1],tilt:['x',-1],turn:['y',1]}};
 const bodyLimits={bend:[-90,90],tilt:[-90,90],turn:[-180,180]};
@@ -19,6 +20,38 @@ function rigError(message){throw new Error(message);}
 function profileValid(profile) {
   if(!profile||typeof profile.height!=='number'||!Number.isFinite(profile.height)||profile.height<0.5||profile.height>3)rigError('키는 50~300cm 범위여야 합니다.');
   if(typeof profile.headUnits!=='number'||!Number.isFinite(profile.headUnits)||profile.headUnits<3||profile.headUnits>12)rigError('등신 비율은 3~12 범위여야 합니다.');
+  if(profile.chest!==undefined){const issues=chestIssues(profile.chest);if(issues.length)rigError(issues.map(i=>i.path+': '+i.message).join('\n'));}
+}
+function positionChestGuide(m) {
+  const group=chestGuides.get(m),profile=m.userData.bodyProfile?.chest;
+  if(!group||!profile)return;
+  group.position.set(0,0,0);group.quaternion.identity();group.scale.set(1,1,1);
+  group.children.forEach((mesh,i)=>{
+    mesh.position.set(2.8,17*profile.height,(i===0?-1:1)*10*profile.spacing/2);
+    mesh.rotation.set(0,0,0);mesh.scale.set(1.55*profile.projection,2.05,2);
+  });
+}
+function configureChestGuide(m,profile) {
+  let group=chestGuides.get(m);
+  if(!profile){
+    if(group){group.removeFromParent();group.children.forEach(mesh=>{mesh.geometry.dispose();mesh.material.dispose();});chestGuides.delete(m);}
+    return;
+  }
+  if(!group){
+    group=new THREE.Group();group.name='Chest volume reference';m.torso.imageWrapper.add(group);chestGuides.set(m,group);
+    for(const side of ['left','right']){
+      // Neutral mannequin volumes; these are shape anchors, not nipple markers.
+      const mesh=new THREE.Mesh(new THREE.SphereGeometry(1,32,24),new THREE.MeshStandardMaterial({color:'#b59a76',roughness:0.85}));
+      mesh.name='Chest '+side;mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData.posePartKey='Torso';group.add(mesh);
+    }
+  }
+  m.torso.imageWrapper.add(group);
+  positionChestGuide(m);
+}
+export function chestLandmarks(m) {
+  if(!chestGuides.get(m))return null;
+  m.updateMatrixWorld(true);
+  return {kind:'chest-volume-centers',space:'world-meters',left:chestGuides.get(m).children[0].getWorldPosition(new THREE.Vector3()).toArray(),right:chestGuides.get(m).children[1].getWorldPosition(new THREE.Vector3()).toArray()};
 }
 function rigRotations(m){return named(m).map(([key,j])=>[key,j.quaternion.clone()]);}
 function restoreRotations(m,rotations){for(const [key,q]of rotations)m[key].quaternion.copy(q);}
@@ -31,6 +64,7 @@ export function enforceBoneLengths(m) {
   m.scale.fromArray(lock.rootScale);
   for(const [key,values]of Object.entries(lock.joints))if(m[key]?.isObject3D){m[key].position.fromArray(values.position);m[key].scale.fromArray(values.scale);}
   m.head.image.position.fromArray(lock.headImage.position);m.head.image.scale.fromArray(lock.headImage.scale);
+  positionChestGuide(m);
 }
 export function clampJoint(m,key) {
   const joint=m[key],limits=key==='body'?bodyLimits:JOINTS[key];
@@ -54,6 +88,8 @@ export function constrainBody(m) {
 export function configureBody(m,profile,keepFeet=true) {
   profileValid(profile);
   const oldMin=keepFeet?new THREE.Box3().setFromObject(m).min.y:null;
+  // Box3 also measures invisible objects: detach references during neutral sizing.
+  chestGuides.get(m)?.removeFromParent();
   const rotations=rigRotations(m),position=m.position.clone(),orientation=m.quaternion.clone();
   const base=m.userData.bodyBase;
   m.position.set(0,0,0);m.quaternion.identity();m.scale.fromArray(base.scale);
@@ -76,8 +112,9 @@ export function configureBody(m,profile,keepFeet=true) {
   const actual=new THREE.Box3().setFromObject(m),actualHead=new THREE.Box3().setFromObject(m.head.image);
   m.userData.bodyMetrics={height:actual.max.y-actual.min.y,headHeight:actualHead.max.y-actualHead.min.y};
   m.userData.bodyMetrics.headUnits=m.userData.bodyMetrics.height/m.userData.bodyMetrics.headHeight;
-  m.userData.bodyProfile={height:profile.height,headUnits:profile.headUnits};
+  m.userData.bodyProfile={height:profile.height,headUnits:profile.headUnits,...(profile.chest?{chest:normalizeChest(profile.chest)}:{})};
   restoreRotations(m,rotations);m.position.copy(position);m.quaternion.copy(orientation);m.updateMatrixWorld(true);
+  configureChestGuide(m,m.userData.bodyProfile.chest);m.updateMatrixWorld(true);
   if(keepFeet){m.position.y+=oldMin-new THREE.Box3().setFromObject(m).min.y;m.updateMatrixWorld(true);}
   lockBoneLayout(m);constrainBody(m);
 }

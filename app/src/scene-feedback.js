@@ -1,4 +1,4 @@
-import { analyzeScene, validateCamera } from './scene-format.js';
+import { analyzeScene, validateCamera, chestIssues } from './scene-format.js';
 
 const issue=(path,code,message,expected,actual)=>({severity:'error',path,code,message,expected,actual});
 const plain=v=>!!v&&typeof v==='object'&&!Array.isArray(v);
@@ -22,6 +22,7 @@ export function analyzeEditorState(data) {
     if(m.bodyProfile!==undefined){
       const b=m.bodyProfile;
       if(!plain(b)||!Number.isFinite(b.height)||b.height<0.5||b.height>3||!Number.isFinite(b.headUnits)||b.headUnits<3||b.headUnits>12)add(p+'.bodyProfile','BODY_PROFILE','체형은 키 0.5~3m, 등신 비율 3~12로 지정하세요.');
+      if(plain(b)&&b.chest!==undefined)errors.push(...chestIssues(b.chest,p+'.bodyProfile.chest'));
       if(m.boneLayout===undefined)warnings.push({severity:'warning',path:p+'.boneLayout',code:'LEGACY_RIG',message:'체형 정보에 뼈 길이 고정 기준이 없습니다. 불러온 현재 길이를 기준으로 잠그며 원래 비율은 검증할 수 없습니다.'});
     }
     if(m.boneLayout!==undefined){
