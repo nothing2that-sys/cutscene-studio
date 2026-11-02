@@ -678,21 +678,15 @@ function addMannequinFromPickedFile() {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = event => {
-      try {
-        const data = JSON.parse(event.target.result);
-        if (data.type === 'mannequin') {
-          addMannequinFromData(data);
-          return;
-        }
-        if (data.type === 'importedModel') {
-          addImportedModelFromData(data);
-          return;
-        }
+      const text = event.target.result;
+      let data = null;
+      try { data = JSON.parse(text.replace(/^\uFEFF/, '')); } catch {}
+      // Single objects go through the same validation, report and rollback as Load.
+      if (data && data.type !== 'mannequin' && data.type !== 'importedModel') {
         window.alert('Please pick a saved mannequin or imported-object JSON file.');
-      } catch (error) {
-        console.error('Failed to parse mannequin file:', file.name, error);
-        window.alert('Could not read that JSON file.');
+        return;
       }
+      studio.importText(text, file.name, false);
     };
     reader.readAsText(file);
   };
@@ -1196,7 +1190,8 @@ function init() {
   });
   transformControl.addEventListener('dragging-changed', e => {
     updateStageControlsEnabled();
-    if (!e.value) captureState();
+    // Sync the numeric panel to the dragged pose so a later slider edit starts from it.
+    if (!e.value) { updatePropertiesPanel(); captureState(); }
   });
   transformControl.addEventListener('objectChange',()=>{
     if(!activeMannequin)return;

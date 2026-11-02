@@ -215,7 +215,7 @@ export function initCutsceneStudio(api) {
       const replace=window.document.createElement('button');replace.className='btn';replace.textContent='갱신';replace.title='현재 작업 카메라를 이 컷에 저장';
       replace.onclick=()=>run(()=>{shot.camera=readCamera();activeShot=i;syncUI();api.commit();status('현재 카메라로 컷을 갱신했습니다.');});
       const remove=window.document.createElement('button');remove.className='btn';remove.textContent='×';remove.setAttribute('aria-label',`${shot.name} 삭제`);
-      remove.onclick=()=>run(()=>{shots.splice(i,1);activeShot=Math.min(activeShot,shots.length-1);syncUI();api.commit();});
+      remove.onclick=()=>run(()=>{shots.splice(i,1);if(i<activeShot)activeShot--;activeShot=Math.min(activeShot,shots.length-1);syncUI();api.commit();});
       row.append(btn,replace,remove);list.appendChild(row);
     });
     $('studio-caption').textContent=`${currentShot().name} · 인물과 포즈는 공유 · ${aspect.toFixed(2)}:1`;
