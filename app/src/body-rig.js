@@ -52,6 +52,7 @@ function configureChestGuide(m,profile) {
 export function chestLandmarks(m) {
   if(!chestGuides.get(m))return null;
   m.updateMatrixWorld(true);
+  if(m.userData.bodySurface==='human'&&m.userData.surfaceChestAnchors){const [left,right]=m.userData.surfaceChestAnchors.map(p=>m.torso.imageWrapper.localToWorld(new THREE.Vector3(...p)).toArray());return {kind:'chest-volume-centers',space:'world-meters',left,right};}
   return {kind:'chest-volume-centers',space:'world-meters',left:chestGuides.get(m).children[0].getWorldPosition(new THREE.Vector3()).toArray(),right:chestGuides.get(m).children[1].getWorldPosition(new THREE.Vector3()).toArray()};
 }
 function rigRotations(m){return named(m).map(([key,j])=>[key,j.quaternion.clone()]);}

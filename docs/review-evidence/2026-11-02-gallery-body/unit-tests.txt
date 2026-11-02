@@ -1,0 +1,30 @@
+✔ reference human has a connected closed body and two closed eye surfaces (38.8732ms)
+✔ all skin influences are finite, bounded and normalized (6.2441ms)
+✔ gallery body and remeshed featureless head form one closed manifold surface (60.4981ms)
+✔ authored chest morphs and skin weights match gallery topology and remain finite (10.9931ms)
+✔ gallery model sources are pinned CC0 MakeHuman data, with no gallery image payload (1.2787ms)
+✔ converted wrappers validate their inner rotations and reject invalid payloads (2.994ms)
+✔ starter semantic and rendered rotation references are readable (11.4325ms)
+✔ scene and saved project offer explicit per-person candidates (4.0277ms)
+✔ invalid pose files fail without silently selecting a default (0.9377ms)
+✔ all field errors collected without normalizing away mistakes (5.7456ms)
+✔ syntax errors and fence errors preserve exact original for repair (0.9446ms)
+✔ spatial warnings permit scene and are distinct from errors (0.6878ms)
+✔ wrong shapes fail as field reports rather than TypeError (1.3554ms)
+✔ malformed native project rejected before scene mutation and has source (5.6611ms)
+✔ height and head units are independent validated actor settings (1.0122ms)
+✔ missing rig lock warns and invalid preserved proposal is rejected (3.1669ms)
+✔ optional chest profile defaults and invalid scene/native values (14.0451ms)
+✔ example scene normalizes and round trips without changing the input (0.5591ms)
+✔ bad LLM proposals are rejected before reaching the editor (1.7104ms)
+✔ actor/prop descriptions round-trip; invalid text values are rejected (3.1961ms)
+✔ edited notes override proposal and empty edits remain empty (1.7177ms)
+✔ spatial overlap ignores visual occlusion and simple support; checks furniture parts (2.3527ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 272.945
