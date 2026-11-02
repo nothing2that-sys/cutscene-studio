@@ -3,6 +3,7 @@ import {POSES} from './scene-format.js';
 import {constrainBody,snapshotBodyJoints} from './body-rig.js';
 import {STARTER_POSES} from './starter-poses.js';
 import {openPoseStore} from './pose-store.js';
+import {installImageReferences} from './image-references.js';
 
 import {POSE_NAMES,readReferencePoses} from './pose-format.js';
 export {readReferencePoses} from './pose-format.js';
@@ -36,7 +37,7 @@ export function installPoseLibrary(editor,api){
   const known=new Set();let auto=true;try{auto=localStorage.getItem('pose-auto-record')!=='false';}catch{}
   const apply=(reference,record)=>{editor.cancel();applyReferencePose(api.getSelection(),reference,document.getElementById('pose-ground').checked);
     if(record){record.fingerprint=fingerprint(exportReferencePose(api.getSelection()));known.add(record.fingerprint);record.thumbnail=api.thumbnail();store?.put(record).catch(error=>editor.status('저장 실패: '+error.message));render();}
-    api.refresh();api.commit();editor.status('선택한 인물에 「'+reference.name+'」 포즈를 적용했습니다. 체형·수평 위치를 유지합니다.');};
+    editor.setMode('pose');api.refresh();api.commit();editor.status('선택한 인물에 「'+reference.name+'」 포즈를 적용했습니다. 체형·수평 위치를 유지합니다.');};
   document.getElementById('quick-pose-apply').onclick=()=>run(()=>{const pose=document.getElementById('quick-pose').value;apply({name:POSE_NAMES[pose],kind:'semantic',pose,joints:{}});});
   const dialog=document.createElement('dialog');dialog.id='pose-source-dialog';dialog.innerHTML='<h3>가져올 포즈의 인물을 고르세요</h3><select id="pose-source-select" aria-label="참조 인물"></select><div><button class="btn primary" id="pose-source-apply">선택 인물에 적용</button><button class="btn" id="pose-source-cancel">취소</button></div>';document.body.appendChild(dialog);
   let candidates=[];
@@ -75,16 +76,16 @@ export function installPoseLibrary(editor,api){
     }
     document.getElementById('pose-library-status').textContent=ready?records.length+'개 · 브라우저 로컬 보관':'라이브러리 여는 중…';
   }
-  async function recordCurrent(manual=false){
+  async function recordCurrent(manual=false,reference=null){
     if(!ready||(!manual&&!auto)||!api.getSelection()?.torso)return;
     const pose=exportReferencePose(api.getSelection()),key=fingerprint(pose);
     if(known.has(key)){
-      if(manual){const existing=records.find(r=>r.fingerprint===key),name=document.getElementById('pose-library-name').value.trim();if(existing&&name){existing.name=name;await store.put(existing);render();editor.status('저장된 포즈 이름을 「'+name+'」으로 바꿨습니다.');}else editor.status('같은 포즈가 이미 라이브러리에 있습니다. 이름을 입력해 정리할 수 있습니다.');}
+      if(manual){const existing=records.find(r=>r.fingerprint===key),name=document.getElementById('pose-library-name').value.trim();if(existing&&name){existing.name=name;if(reference)existing.reference=reference;await store.put(existing);render();editor.status('저장된 포즈 이름을 「'+name+'」으로 바꿨습니다.');}else editor.status('같은 포즈가 이미 라이브러리에 있습니다. 이름을 입력해 정리할 수 있습니다.');}
       return;
     }
     known.add(key);
     const name=manual?(document.getElementById('pose-library-name').value.trim()||pose.name):'작업 포즈 '+new Date().toLocaleString('ko-KR');
-    const record={id:crypto.randomUUID(),name,source:manual?'user-saved':'auto-recorded',pose,fingerprint:key,thumbnail:api.thumbnail(),createdAt:new Date().toISOString()};
+    const record={id:crypto.randomUUID(),name,source:manual?'user-saved':'auto-recorded',pose,fingerprint:key,thumbnail:api.thumbnail(),createdAt:new Date().toISOString(),...(reference?{reference}:{})};
     try{await store.put(record);records.push(record);if(!panel.hidden)render();if(manual)editor.status('라이브러리에 「'+name+'」을 저장했습니다.');}
     catch(error){known.delete(key);editor.status('포즈 저장 실패. 포즈 JSON 저장으로 보관하세요: '+error.message);}
   }
@@ -97,10 +98,13 @@ export function installPoseLibrary(editor,api){
     try{
       if(!ready)throw Error('라이브러리를 여는 중입니다.');if(file.size>50_000_000)throw Error('라이브러리 백업은 50MB 이하로 넣어주세요.');
       const data=JSON.parse(await file.text());if(data.type!=='pose-library'||data.version!==1||!Array.isArray(data.poses)||data.poses.length>2000)throw Error('지원하는 라이브러리 백업이 아닙니다.');
-      const imported=data.poses.map(r=>{if(!r||typeof r.id!=='string'||!r.id.length||typeof r.name!=='string'||r.name.length>200||r.id.length>100)throw Error('잘못된 포즈 정보입니다.');readReferencePoses(JSON.stringify(r.pose));if(r.thumbnail&&!/^data:image\/(png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(r.thumbnail)&&!/^\/pose-library\/[a-z0-9-]+\.png$/.test(r.thumbnail))throw Error('지원하지 않는 썸네일입니다.');return {id:r.id,name:r.name,pose:r.pose,thumbnail:r.thumbnail||'',source:'restored',createdAt:r.createdAt||'',fingerprint:r.pose.type==='pose-reference'?fingerprint(r.pose):undefined};});
+      const imported=data.poses.map(r=>{if(!r||typeof r.id!=='string'||!r.id.length||typeof r.name!=='string'||r.name.length>200||r.id.length>100)throw Error('잘못된 포즈 정보입니다.');readReferencePoses(JSON.stringify(r.pose));if(r.thumbnail&&!/^data:image\/(png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(r.thumbnail)&&!/^\/pose-library\/[a-z0-9-]+\.png$/.test(r.thumbnail))throw Error('지원하지 않는 썸네일입니다.');
+        const reference=r.reference?.collection==='drive-image-reference'&&/^POSE-\d{4}(-VAR\d+)?$/.test(r.reference.poseId)?{collection:'drive-image-reference',poseId:r.reference.poseId}:null;
+        return {id:r.id,name:r.name,pose:r.pose,thumbnail:r.thumbnail||'',source:'restored',createdAt:r.createdAt||'',fingerprint:r.pose.type==='pose-reference'?fingerprint(r.pose):undefined,...(reference?{reference}:{})};});
       await store.putMany(imported);records=await store.all();known.clear();records.forEach(r=>r.fingerprint&&known.add(r.fingerprint));render();editor.status(imported.length+'개 포즈를 복원했습니다.');
     }catch(error){editor.status('백업을 적용하지 못했습니다: '+error.message);}finally{e.target.value='';}
   };
   openPoseStore().then(async db=>{store=db;records=await store.all();let seeded=false;try{seeded=localStorage.getItem('pose-starters-seeded')==='true';}catch{}if(!records.length&&!seeded){records=structuredClone(STARTER_POSES);await store.putMany(records);}try{localStorage.setItem('pose-starters-seeded','true');}catch{}records.forEach(r=>r.fingerprint&&known.add(r.fingerprint));ready=true;render();}).catch(error=>{editor.status('브라우저 저장소를 열지 못했습니다. 포즈 JSON 저장을 이용하세요: '+error.message);});
+  installImageReferences(editor,{saveLinked:async(name,reference)=>{if(!ready)throw Error('라이브러리를 여는 중입니다.');if(!api.getSelection()?.torso)throw Error('먼저 저장할 인물을 선택하세요.');document.getElementById('pose-library-name').value=name;await recordCurrent(true,reference);}});
   return {recordCurrent:()=>recordCurrent().catch(error=>editor.status(error.message))};
 }

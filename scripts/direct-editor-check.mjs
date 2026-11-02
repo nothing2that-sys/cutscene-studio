@@ -58,6 +58,8 @@ try{
   await page.goto('http://127.0.0.1:3001');await page.locator('#studio-example').click();
   await page.locator('[data-edit-mode="pose"]').click();await page.locator('[data-direct-view="front"]').click();
   const actorPoint=await page.locator('[data-pose-point="torso"]').boundingBox();await page.locator('[data-edit-mode="move"]').click();
+  // Solo exit restores the scene camera; explicitly restore the front editing view before reusing its point.
+  await page.locator('[data-direct-view="front"]').click();
   const shippedBefore=await save('shipped-before.json');await drag(actorPoint,60,0);const shippedMoved=await save('shipped-moved.json');
   assert.ok(distance(shippedBefore.mannequins[0].position,shippedMoved.mannequins[0].position)>0.02);
   await page.locator('[data-edit-mode="pose"]').click();await page.locator('[data-direct-view="side"]').click();

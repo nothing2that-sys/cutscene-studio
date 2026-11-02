@@ -6,6 +6,7 @@ import { initExportSystem } from './exportSystem.js';
 import { initCutsceneStudio } from './studio.js';
 import { initDirectEditor } from './direct-editor.js';
 import { installPoseLibrary, poseFingerprint } from './pose-library.js';
+import { initViewPerformance } from './view-performance.js';
 import { analyzeEditorState } from './scene-feedback.js';
 import { SceneValidationError, JOINTS } from './scene-format.js';
 import { createCharacter, configureBody, captureBoneLayout, lockBoneLayout, enforceBoneLengths, constrainBody, clampJoint, manipulationChain, solveConstrainedIK, snapshotBodyJoints } from './body-rig.js';
@@ -68,6 +69,7 @@ let studio = null;
 let restoreGeneration = 0;
 let restoringState = false;
 let interactionMode='move',directEditor=null,directDragging=false,poseLibrary=null;
+let viewPerformance=null;
 
 function updateStageControlsEnabled() {
   if (!stage || !stage.controls) return;
@@ -112,13 +114,14 @@ function snapshotState() {
     activeIndex: mannequins.indexOf(activeMannequin),
     activeImportIndex: importedModels.indexOf(activeMannequin),
     selectedBodyPart,
-    camera: { position: stage.camera.position.toArray(), rotation: stage.camera.rotation.toArray(), target: stage.controls.target.toArray(), fov: stage.camera.fov },
+    camera: viewPerformance?.snapshotCamera() || { position: stage.camera.position.toArray(), rotation: stage.camera.rotation.toArray(), target: stage.controls.target.toArray(), fov: stage.camera.fov },
     studio: studio?.snapshot(),
   };
   return state;
 }
 
 function captureState() {
+  viewPerformance?.invalidate();
   if (restoringState) return;
   mannequins.forEach(constrainBody);
   const state = snapshotState();
@@ -142,6 +145,7 @@ function applyState(json) {
   const checked = analyzeEditorState(state);
   if (!checked.valid) throw new SceneValidationError(checked.errors);
   restoringState = true;
+  viewPerformance?.beforeRestore();
   try {
   const generation = ++restoreGeneration;
   mannequins.forEach(m => stage.scene.remove(m));
@@ -242,7 +246,7 @@ function applyState(json) {
   }
   updatePropertiesPanel();
   updateLayerWindow();
-  } finally { restoringState = false; }
+  } finally { restoringState = false;viewPerformance?.afterRestore(); }
 }
 
 function undo() { if (historyIndex > 0) applyState(historyStack[--historyIndex]); updateHistoryButtons(); }
@@ -317,7 +321,7 @@ function getChainEnd(mannequin, limbKey) {
 
 function solveIKChain(mannequin,limbKey,target) {
   const result=solveConstrainedIK(mannequin,IK_CHAINS[limbKey],target);
-  showIKResult(result);return result;
+  showIKResult(result);viewPerformance?.invalidate();return result;
 }
 
 function tickIKHandles() {
@@ -1176,7 +1180,7 @@ function init() {
     cc.appendChild(stage.renderer.domElement);
     Object.assign(stage.renderer.domElement.style, { position:'absolute', top:'0', left:'0', width:'100%', height:'100%' });
   }
-  createStage(() => { updateHUDValues(); updateMannequinHUD(); tickIKHandles(); syncProxy(); studio?.tick(); });
+  createStage(() => { if(document.getElementById('camera-hud')?.offsetParent)updateHUDValues();if(document.getElementById('mannequin-pos-hud')?.offsetParent)updateMannequinHUD();tickIKHandles();syncProxy(); });
   if (stage.ground && stage.ground.material) { stage.ground.material.transparent = true; stage.ground.material.opacity = 0.8; }
   stage.camera.position.set(0, 0.7, 7);
   stage.camera.rotation.set(THREE.MathUtils.degToRad(-4), 0, 0);
@@ -1208,6 +1212,7 @@ function init() {
     if (!e.value) { updatePropertiesPanel(); captureState(); }
   });
   transformControl.addEventListener('objectChange',()=>{
+    viewPerformance?.invalidate();
     if(!activeMannequin)return;
     if(gizmoJoint){
       if(transformControl.getMode()==='translate'&&gizmoChain){
@@ -1333,14 +1338,20 @@ function init() {
     addObject(data) { if (data.type === "mannequin") addMannequinFromData(data); else addImportedModelFromData(data); },
     select(object) { activeMannequin = object; selectedBodyPart = 'Root'; clearHighlight(); attachGizmo(object); updatePropertiesPanel(); updateLayerWindow(); },
     clean() { clearHighlight(); },
+    workingCamera:()=>viewPerformance?.snapshotCamera(),
+    setWorkingCamera(def){if(viewPerformance)viewPerformance.setWorkingCamera(def);else{stage.camera.position.fromArray(def.position);stage.camera.fov=def.fov;stage.camera.updateProjectionMatrix();stage.controls.target.fromArray(def.target);stage.controls.update();}},
+    setWorkingFov(value){if(viewPerformance)viewPerformance.setWorkingFov(value);else{stage.camera.fov=value;stage.camera.updateProjectionMatrix();}},
   });
   stage.controls.addEventListener('end', () => captureState());
-  directEditor=initDirectEditor({stage,getSelection:()=>activeMannequin,objects:()=>[...mannequins,...importedModels],commit:captureState,refresh:updatePropertiesPanel,
+  directEditor=initDirectEditor({stage,getSelection:()=>activeMannequin,objects:()=>viewPerformance?.editingObjects()||[...mannequins,...importedModels],commit:captureState,refresh:updatePropertiesPanel,
+    invalidate:()=>viewPerformance?.invalidate(),revision:()=>viewPerformance?.revision()||0,
     setDragging(value){directDragging=value;updateStageControlsEnabled();},
     select(object,part){activeMannequin=object;selectedBodyPart=part;clearHighlight();updatePropertiesPanel();updateLayerWindow();},
-    modeChanged(mode){interactionMode=mode;isDraggingIK=false;activeIKHandle=null;Object.keys(ikEnabled).forEach(key=>ikEnabled[key]=false);if(mode==='move')selectedBodyPart='Root';updateStageControlsEnabled();updatePropertiesPanel();}
+    modeChanged(mode){interactionMode=mode;isDraggingIK=false;activeIKHandle=null;Object.keys(ikEnabled).forEach(key=>ikEnabled[key]=false);if(mode==='move')selectedBodyPart='Root';updateStageControlsEnabled();updatePropertiesPanel();viewPerformance?.sync();viewPerformance?.invalidate();}
   });
   poseLibrary=installPoseLibrary(directEditor,{getSelection:()=>activeMannequin,refresh:updatePropertiesPanel,commit:captureState,thumbnail:()=>studio.poseThumbnail(activeMannequin)});
+  viewPerformance=initViewPerformance({stage,getSelection:()=>activeMannequin,getMode:()=>interactionMode,objects:()=>[...mannequins,...importedModels],isDragging:()=>directDragging||isDraggingIK||!!transformControl.dragging,
+    invalidatePreview:()=>studio.invalidatePreview(),tickPreview:paused=>studio.tick({paused}),updateWalls:()=>studio.updateEditingWalls()});
   captureState();
 }
 

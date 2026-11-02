@@ -1,0 +1,33 @@
+{
+  "phase": "before",
+  "software": false,
+  "renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x00009A49) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "actors": 6,
+  "idle": {
+    "durationMs": 2564.399999976158,
+    "animationFrames": 52,
+    "mainRenderCount": 52,
+    "mainRenderFps": 20.277647793044554,
+    "averageRenderCpuMs": 25.742307693912434,
+    "averageDrawCalls": 593,
+    "averageTriangles": 121428,
+    "buffer": [
+      1600,
+      1100
+    ]
+  },
+  "moving": {
+    "durationMs": 2560.100000023842,
+    "animationFrames": 56,
+    "mainRenderCount": 56,
+    "mainRenderFps": 21.874145540986085,
+    "averageRenderCpuMs": 20.04107143091304,
+    "averageDrawCalls": 593,
+    "averageTriangles": 121428,
+    "buffer": [
+      1600,
+      1100
+    ]
+  },
+  "pageErrors": []
+}

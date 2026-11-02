@@ -146,7 +146,7 @@ export function manipulationChain(part) {
   if(/_(leg|knee|ankle)$/.test(part))return part.endsWith('_ankle')?[side+'leg',side+'knee',side+'ankle']:[side+'leg',side+'knee'];
   return null;
 }
-export function solveConstrainedIK(m,keys,requested) {
+export function solveConstrainedIK(m,keys,requested,options={}) {
   constrainBody(m);
   const chain=keys.map(key=>m[key]);if(chain.some(x=>!x)||chain.length<2)return {reached:false,error:Infinity};
   const end=chain.at(-1),base=chain[0].getWorldPosition(new THREE.Vector3()),target=requested.clone();
@@ -157,7 +157,7 @@ export function solveConstrainedIK(m,keys,requested) {
   // Optimize actual Euler DOFs rather than projecting a large quaternion onto
   // limits: that projection can choose a completely different pose near a limit.
   // Keep each input event inside a world-orientation trust region of the last pose.
-  const watched=['body',...Object.keys(JOINTS)].filter(key=>m[key]);
+  const watched=['body',...Object.keys(JOINTS)].filter(key=>{for(let node=m[key];node;node=node.parent)if(node===chain[0])return true;return false;});
   const startWorld=watched.map(key=>m[key].getWorldQuaternion(new THREE.Quaternion()));
   const startLocal=chain.map(j=>j.rotation.clone());
   const maxWorldStep=20*RAD,maxLocalStep=12*RAD;
@@ -184,7 +184,8 @@ export function solveConstrainedIK(m,keys,requested) {
       }else {restoreRotations(m,saved);constrainBody(m);}
     }
   }
-  for(let iteration=0;iteration<24;iteration++){
+  const iterations=Number.isInteger(options.iterations)?THREE.MathUtils.clamp(options.iterations,1,24):24;
+  for(let iteration=0;iteration<iterations;iteration++){
     let improved=false;
     for(let i=chain.length-2;i>=0;i--){
       const joint=chain[i],key=keys[i],limits=key==='body'?bodyLimits:JOINTS[key];
@@ -207,12 +208,12 @@ export function solveConstrainedIK(m,keys,requested) {
         const low=Math.max(bounds[0],startLocal[i][component]-maxLocalStep),high=Math.min(bounds[1],startLocal[i][component]+maxLocalStep);
         let step=THREE.MathUtils.clamp(old+THREE.MathUtils.clamp(angle,-4*RAD,4*RAD),low,high)-old;
         for(let attempt=0;attempt<8&&Math.abs(step)>1e-7;attempt++,step*=0.5){
-          joint.rotation[component]=old+step;m.updateMatrixWorld(true);
+          joint.rotation[component]=old+step;chain[0].updateWorldMatrix(true,true);
           const continuous=watched.every((k,n)=>startWorld[n].angleTo(m[k].getWorldQuaternion(q))<=maxWorldStep+1e-10);
           const error=end.getWorldPosition(ep).distanceToSquared(target);
           if(continuous&&error<bestError-1e-12){bestError=error;improved=true;break;}
           if(!continuous)continuityLimited=true;
-          joint.rotation[component]=old;m.updateMatrixWorld(true);
+          joint.rotation[component]=old;chain[0].updateWorldMatrix(true,true);
         }
       }
     }

@@ -15,6 +15,7 @@ export function initCutsceneStudio(api) {
   let activeShot = -1;
   let aspect = 16/9;
   let lastFrame = 0;
+  let previewDirty=true;
   const environment = new THREE.Group();
   environment.name = 'Cutscene room';
   stage.scene.add(environment);
@@ -51,7 +52,7 @@ export function initCutsceneStudio(api) {
         <div class="studio-row"><label>화각 <input id="studio-fov" type="number" min="10" max="100" value="40"></label><select id="studio-aspect" aria-label="촬영 화면비"><option value="1.7777777777777777">16:9</option><option value="1.3333333333333333">4:3</option><option value="1">1:1</option><option value="0.75">3:4</option><option value="0.5625">9:16</option></select></div>
         <div id="studio-shots"></div>
       </div>
-      <div class="studio-section"><h3>촬영 미리보기</h3><div id="studio-preview"></div><p id="studio-caption" class="studio-help">컷을 저장하면 이곳에 촬영 구도가 표시됩니다.</p>
+      <div class="studio-section"><h3>촬영 미리보기</h3><div id="studio-preview"></div><p id="studio-caption" class="studio-help">컷을 저장하면 이곳에 촬영 구도가 표시됩니다.</p><p id="studio-preview-state" class="studio-help"></p><button id="studio-preview-refresh" class="btn">미리보기 갱신</button>
         <div class="studio-row"><button id="studio-color" class="btn primary">PNG 캡처</button><button id="studio-depth" class="btn">Depth PNG</button></div>
         <div class="studio-row"><button id="studio-packet" class="btn">LLM 전달 묶음</button><button id="studio-prompt" class="btn">작화 지시문</button></div>
       </div>
@@ -69,7 +70,7 @@ export function initCutsceneStudio(api) {
     setTimeout(()=>URL.revokeObjectURL(url),1000);
   };
   const feedback=createValidationPanel(panel.querySelector('.studio-scroll'),download,status);
-  function readCamera() { return {position:stage.camera.position.toArray(),target:stage.controls.target.toArray(),fov:stage.camera.fov}; }
+  function readCamera() { const original=api.workingCamera?.();return original?{position:original.position,target:original.target,fov:original.fov}:{position:stage.camera.position.toArray(),target:stage.controls.target.toArray(),fov:stage.camera.fov}; }
   function setCamera(camera,def) {
     camera.position.fromArray(def.position); camera.fov=def.fov; camera.lookAt(new THREE.Vector3(...def.target)); camera.updateProjectionMatrix();
   }
@@ -224,8 +225,9 @@ export function initCutsceneStudio(api) {
     shots.forEach((shot,i)=> {
       const row=window.document.createElement('div');row.className='studio-shot-row';
       const btn=window.document.createElement('button');btn.className=`btn ${i===activeShot?'primary':''}`;btn.textContent=`${i+1}. ${shot.name}`;btn.title=shot.purpose;
-      btn.onclick=()=>run(()=> {activeShot=i;setCamera(stage.camera,shot.camera);stage.controls.target.fromArray(shot.camera.target);stage.controls.update();syncUI();api.commit();});
+      btn.onclick=()=>run(()=> {activeShot=i;if(api.setWorkingCamera)api.setWorkingCamera(shot.camera);else{setCamera(stage.camera,shot.camera);stage.controls.target.fromArray(shot.camera.target);stage.controls.update();}syncUI();api.commit();});
       const replace=window.document.createElement('button');replace.className='btn';replace.textContent='갱신';replace.title='현재 작업 카메라를 이 컷에 저장';
+      replace.dataset.shotUpdate='true';
       replace.onclick=()=>run(()=>{shot.camera=readCamera();activeShot=i;syncUI();api.commit();status('현재 카메라로 컷을 갱신했습니다.');});
       const remove=window.document.createElement('button');remove.className='btn';remove.textContent='×';remove.setAttribute('aria-label',`${shot.name} 삭제`);
       remove.onclick=()=>run(()=>{shots.splice(i,1);if(i<activeShot)activeShot--;activeShot=Math.min(activeShot,shots.length-1);syncUI();api.commit();});
@@ -239,7 +241,7 @@ export function initCutsceneStudio(api) {
     $('studio-walls').checked=document.room.walls;$('studio-light').value=document.lighting.intensity;
     $('studio-light-color').value=document.lighting.color;$('studio-ambient').value=document.lighting.ambient;
     $('studio-light-direction').value=Object.keys(lightPresets).find(key=>lightPresets[key].every((v,i)=>Math.abs(v-document.lighting.position[i])<1e-8))||'custom';
-    $('studio-fov').value=stage.camera.fov;$('studio-aspect').value=String(aspect);renderShots();
+    $('studio-fov').value=readCamera().fov;$('studio-aspect').value=String(aspect);renderShots();
   }
   function promptText() {
     const shot=currentShot();
@@ -270,10 +272,11 @@ export function initCutsceneStudio(api) {
     const def={id:`prop-${crypto.randomUUID()}`,name:{box:'상자',table:'탁자',chair:'의자',sphere:'구체'}[type],type,position:[0,0,0],size:{box:[0.4,0.4,0.4],table:[1.4,0.75,0.8],chair:[0.5,0.95,0.5],sphere:[0.4,0.4,0.4]}[type],yaw:0,color:'#8c7965'};
     const prop=createProp(def);api.importedModels.push(prop);stage.scene.add(prop);api.select(prop);api.commit();
   }));
-  $('studio-fov').onchange=()=>run(()=>{const v=Number($('studio-fov').value);if(v<10||v>100||!Number.isFinite(v))throw new Error('화각은 10~100도입니다.');stage.camera.fov=v;stage.camera.updateProjectionMatrix();api.commit();status('작업 카메라 화각을 바꿨습니다. 컷의 갱신을 누르면 촬영에 반영합니다.');});
+  $('studio-fov').onchange=()=>run(()=>{const v=Number($('studio-fov').value);if(v<10||v>100||!Number.isFinite(v))throw new Error('화각은 10~100도입니다.');if(api.setWorkingFov)api.setWorkingFov(v);else {stage.camera.fov=v;stage.camera.updateProjectionMatrix();}api.commit();status('작업 카메라 화각을 바꿨습니다. 컷의 갱신을 누르면 촬영에 반영합니다.');});
   $('studio-aspect').onchange=()=>{aspect=Number($('studio-aspect').value);syncUI();api.commit();};
   $('studio-shot-add').onclick=()=>run(()=>{if(shots.length>=24)throw new Error('카메라 컷은 최대 24개입니다.');shots.push({id:crypto.randomUUID(),name:$('studio-shot-name').value||`컷 ${shots.length+1}`,purpose:'사용자가 조정한 구도',camera:readCamera()});activeShot=shots.length-1;$('studio-shot-name').value='';syncUI();api.commit();});
   $('studio-color').onclick=()=>run(()=>savePNG(false));$('studio-depth').onclick=()=>run(()=>savePNG(true));
+  $('studio-preview-refresh').onclick=()=>run(()=>{previewDirty=true;tickPreview({force:true});});
   $('studio-prompt').onclick=()=>download('cutscene-direction.txt',promptText(),'text/plain;charset=utf-8');
   $('studio-packet').onclick=()=>run(()=>{
     const color=renderPNG(),depth=renderPNG(true);
@@ -290,16 +293,18 @@ export function initCutsceneStudio(api) {
   rebuildRoom();syncUI();
   // The third-party library points its favicon at an unbundled asset.
   window.document.querySelectorAll('link[rel="icon"]').forEach(link=>link.href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="%236366f1"/><text x="5" y="23" fill="white" font-size="22">C</text></svg>');
+  function updateEditingWalls(){for(const wall of environment.children)if(wall.userData.editingWall)wall.visible=wall.userData.editingWall==='left'?stage.camera.position.x>=-document.room.size[0]/2:stage.camera.position.z>=-document.room.size[2]/2;}
+  function tickPreview({paused=false,force=false}={}){
+    if((paused||!previewDirty)&&!force)return;
+    if(!force&&performance.now()-lastFrame<250)return;lastFrame=performance.now();previewDirty=false;
+    const w=288,h=Math.round(w/aspect);if(preview.domElement.width!==w||preview.domElement.height!==h)preview.setSize(w,h,false);
+    updateShotCamera();cleanRender(()=>preview.render(stage.scene,shotCamera));
+  }
   return {
     snapshot:()=>structuredClone({document,initialProposal,proposalOrigin,shots,activeShot,aspect}),
     restore(state) {if(!state)return;document=validateScene(state.document);initialProposal=validateScene(state.initialProposal||state.document);proposalOrigin=state.initialProposal?(state.proposalOrigin||'scene-import'):'legacy-current-state';shots=structuredClone(state.shots||[]);activeShot=state.activeShot ?? -1;aspect=state.aspect||16/9;rebuildRoom();syncUI();},
     createProp,loadScene,importText,showImportError,poseThumbnail,
     saveProject(state) {download('cutscene-project.json',JSON.stringify(state,null,2));status('정밀 프로젝트를 저장했습니다. Load로 다시 열 수 있습니다.');},
-    tick() {
-      if(performance.now()-lastFrame<120)return;lastFrame=performance.now();
-      for(const wall of environment.children)if(wall.userData.editingWall)wall.visible=wall.userData.editingWall==='left'?stage.camera.position.x>=-document.room.size[0]/2:stage.camera.position.z>=-document.room.size[2]/2;
-      const w=288,h=Math.round(w/aspect);if(preview.domElement.width!==w||preview.domElement.height!==h)preview.setSize(w,h,false);
-      updateShotCamera();cleanRender(()=>preview.render(stage.scene,shotCamera));
-    },
+    invalidatePreview(){previewDirty=true;},updateEditingWalls,tick:tickPreview,
   };
 }

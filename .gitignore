@@ -7,3 +7,4 @@ validation/
 .env.*
 !.env.example
 *.log
+app/public/local-pose-references/
