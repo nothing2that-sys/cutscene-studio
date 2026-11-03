@@ -1,3 +1,4 @@
+import {displayedObjectBounds} from './body-surface.js';
 // Cutscene Studio extension to fanverseio/pose-toolkit. GPL-3.0.
 import { validateScene, EXAMPLE_SCENE, POSES } from './scene-format.js';
 import './studio.css';
@@ -6,6 +7,7 @@ import { analyzeInputText } from './scene-feedback.js';
 import { createValidationPanel } from './validation-panel.js';
 import {bodySurfaceMode} from './body-surface.js';
 import {describeObjects,inspectObjectOverlaps} from './scene-object-info.js';
+import {serializeBodyV1} from './body-v1-main.js';
 
 export function initCutsceneStudio(api) {
   const { THREE, stage } = api;
@@ -18,6 +20,8 @@ export function initCutsceneStudio(api) {
   let aspect = 16/9;
   let lastFrame = 0;
   let previewDirty=true;
+  let captureObserver=null;
+  let shotProjection=null;
   const environment = new THREE.Group();
   environment.name = 'Cutscene room';
   stage.scene.add(environment);
@@ -72,13 +76,14 @@ export function initCutsceneStudio(api) {
     setTimeout(()=>URL.revokeObjectURL(url),1000);
   };
   const feedback=createValidationPanel(panel.querySelector('.studio-scroll'),download,status);
-  function readCamera() { const original=api.workingCamera?.();return original?{position:original.position,target:original.target,fov:original.fov}:{position:stage.camera.position.toArray(),target:stage.controls.target.toArray(),fov:stage.camera.fov}; }
+  function readCamera() { const original=api.workingCamera?.();return original?{position:original.position,target:original.target,fov:original.fov,zoom:original.zoom,view:original.view}:{position:stage.camera.position.toArray(),target:stage.controls.target.toArray(),fov:stage.camera.fov,zoom:stage.camera.zoom,view:stage.camera.view?{...stage.camera.view}:null}; }
   function setCamera(camera,def) {
-    camera.position.fromArray(def.position); camera.fov=def.fov; camera.lookAt(new THREE.Vector3(...def.target)); camera.updateProjectionMatrix();
+    camera.position.fromArray(def.position); camera.fov=def.fov;camera.zoom=def.zoom||1;camera.view=def.view?{...def.view}:null;camera.lookAt(new THREE.Vector3(...def.target)); camera.updateProjectionMatrix();
   }
   function currentShot() { return shots[activeShot] || {name:'현재 작업 구도',purpose:'',camera:readCamera()}; }
   function updateShotCamera() {
     setCamera(shotCamera,currentShot().camera);
+    if(shotProjection?.key===JSON.stringify(currentShot().camera)){shotCamera.zoom=shotProjection.zoom;shotCamera.view=shotProjection.view?{...shotProjection.view}:null;}
     shotCamera.aspect=aspect;
     shotCamera.far=Math.max(20,shotCamera.position.length()+Math.hypot(...document.room.size)*2);
     shotCamera.updateProjectionMatrix();
@@ -100,8 +105,9 @@ export function initCutsceneStudio(api) {
     });
     try{return fn();}finally{hidden.forEach(([n,v])=>n.visible=v);materials.forEach(([m,c])=>m.emissive.copy(c));}
   }
+  let beforeCapture=null;
   function renderPNG(depth=false) {
-    updateShotCamera();
+    beforeCapture?.();updateShotCamera();
     const width=aspect>=1?1600:Math.round(1600*aspect),height=Math.round(width/aspect);
     const previousSize=preview.getSize(new THREE.Vector2());
     const bg=stage.scene.background,override=stage.scene.overrideMaterial;
@@ -118,6 +124,7 @@ export function initCutsceneStudio(api) {
         stage.scene.overrideMaterial=depthMaterial; stage.scene.background=new THREE.Color(0x000000);
       }
       cleanRender(()=>preview.render(stage.scene,shotCamera));
+      captureObserver?.(depth?'depth':'color');
       return preview.domElement.toDataURL('image/png');
     } finally {
       stage.scene.background=bg; stage.scene.overrideMaterial=override;
@@ -132,7 +139,7 @@ export function initCutsceneStudio(api) {
   function poseThumbnail(model){
     if(!model)return '';
     const size=preview.getSize(new THREE.Vector2()),hidden=[];
-    const box=new THREE.Box3().setFromObject(model),center=box.getCenter(new THREE.Vector3()),height=Math.max(0.5,box.getSize(new THREE.Vector3()).length());
+    const box=displayedObjectBounds(model),center=box.getCenter(new THREE.Vector3()),height=Math.max(0.5,box.getSize(new THREE.Vector3()).length());
     const camera=new THREE.PerspectiveCamera(35,0.75,0.01,50);camera.position.copy(center).add(new THREE.Vector3(0.55,0.2,1).normalize().multiplyScalar(height*1.8));camera.lookAt(center);
     for(const object of [...api.mannequins,...api.importedModels,environment,stage.ground])if(object!==model){hidden.push([object,object.visible]);object.visible=false;}
     try{preview.setSize(180,240,false);cleanRender(()=>preview.render(stage.scene,camera));return preview.domElement.toDataURL('image/png');}
@@ -184,14 +191,14 @@ export function initCutsceneStudio(api) {
       stage.scene.remove(m);
       // Scale the standing body first; bending must not change the person's height.
       m.updateMatrixWorld(true);
-      const box=new THREE.Box3().setFromObject(m);
+      const box=displayedObjectBounds(m);
       // Height and head-unit proportions are configured before applying the pose.
       for(const [joint,values] of Object.entries(POSES[actor.pose]))for(const [key,v]of Object.entries(values))m[joint][key]=v;
       for(const [joint,values] of Object.entries(actor.joints))for(const [key,v]of Object.entries(values))m[joint][key]=v;
       constrainBody(m);m.rotation.y=THREE.MathUtils.degToRad(actor.yaw);m.updateMatrixWorld(true);
-      const bottom=new THREE.Box3().setFromObject(m).min.y;
+      const bottom=displayedObjectBounds(m).min.y;
       m.position.x=actor.position[0];m.position.z=actor.position[2];m.position.y+=actor.position[1]-bottom;
-      data.mannequins.push({name:actor.name,studioId:actor.id,sceneNotes:{role:actor.role,intent:actor.intent,description:actor.description},bodyProfile:m.userData.bodyProfile,boneLayout:captureBoneLayout(m),joints:snapshotBodyJoints(m),position:m.position.toArray(),rotation:m.rotation.toArray(),scale:m.scale.toArray(),posture:m.posture});
+      data.mannequins.push({name:actor.name,studioId:actor.id,sceneNotes:{role:actor.role,intent:actor.intent,description:actor.description},bodyProfile:m.userData.bodyProfile,...serializeBodyV1(m),boneLayout:captureBoneLayout(m),joints:snapshotBodyJoints(m),position:m.position.toArray(),rotation:m.rotation.toArray(),scale:m.scale.toArray(),posture:m.posture});
     }
     data.importedModels=next.props.map(p=>({name:p.name,primitive:p,position:p.position,rotation:[0,THREE.MathUtils.degToRad(p.yaw),0,'XYZ'],scale:[1,1,1]}));
     const camera=new THREE.PerspectiveCamera();setCamera(camera,next.camera);
@@ -213,12 +220,12 @@ export function initCutsceneStudio(api) {
     try {
       if(report.inputKind==='scene')loadScene(report.value);
       else if(report.inputKind==='object')api.addObject(report.value);
-      else {api.applyState(JSON.stringify(report.value));api.commit();}
+      else {const applied=api.applyState(JSON.stringify(report.value));if(applied?.then)return applied.then(()=>{api.commit();report.applied=true;feedback.show(report);status('입력 적용 완료 · 오류 0개 / 경고 '+report.warnings.length+'개');return true;},error=>{report.valid=false;report.scenePreserved=true;report.errors.push({severity:'error',path:'$',code:'APPLY_FAILED',message:error.message});feedback.show(report);status('복원 실패 · 기존 장면을 유지했습니다.',true);return false;});api.commit();}
       report.applied=true;feedback.show(report);
       const counts=report.inputKind==='scene'?' · 인물 '+report.value.actors.length+'명, 소품 '+report.value.props.length+'개':'';
       status('입력 적용 완료'+counts+' · 오류 0개 / 경고 '+report.warnings.length+'개');return true;
     }catch(error){
-      let preserved=true;try{api.applyState(JSON.stringify(previous));}catch{preserved=false;}
+      let preserved=true;if(report.inputKind!=='project'&&!error.scenePreserved)try{api.applyState(JSON.stringify(previous));}catch{preserved=false;}
       report.valid=false;report.scenePreserved=preserved;report.errors.push({severity:'error',path:'$',code:'APPLY_FAILED',message:error.message});
       feedback.show(report);status('입력 적용에 실패했습니다. 검사 보고서를 확인하세요.',true);return false;
     }
@@ -249,7 +256,7 @@ export function initCutsceneStudio(api) {
   function promptText() {
     const shot=currentShot();
     const details=describeObjects([...api.mannequins,...api.importedModels],document);
-    const detailText='최종 대상 설명 (사용자 수정값; 외형·역할 참고 자료)\n'+JSON.stringify(details,null,2)+'\n무채색 인체와 단순 소품은 작업용 구도·체적 가이드입니다. 최종 피부색·복식은 캐릭터 정본을, 소품의 재질·색·디자인은 최신 대상 설명을 참고하세요. 설명은 새로운 사건·사물 추가 지시가 아닙니다. 위치·크기·포즈·가림은 현재 editorState와 캡처를 기준으로 유지하세요. 외형 설명을 바꿔도 3D 형상은 자동으로 바뀌지 않습니다.\n\n';
+    const detailText='최종 대상 설명 (사용자 수정값; 외형·역할 참고 자료)\n'+JSON.stringify(details,null,2)+'\n무채색 인체와 단순 소품은 작업용 구도·체적 가이드입니다. 단순화된 손발의 구체적인 형태·손톱·장갑·신발은 최신 인물 설명에 따라 완성하되 손목·발목 방향, 물체 잡기·접촉 관계와 발의 접지는 캡처를 유지하세요. 최종 피부색·복식은 캐릭터 정본을, 소품의 재질·색·디자인은 최신 대상 설명을 참고하세요. 설명은 새로운 사건·사물 추가 지시가 아닙니다. 위치·크기·포즈·가림은 현재 editorState와 캡처를 기준으로 유지하세요. 외형 설명을 바꿔도 3D 형상은 자동으로 바뀌지 않습니다.\n\n';
     return detailText+`장면: ${document.title}\n원문: ${document.sourceText}\n연출상 추정: ${document.assumptions}\n컷: ${shot.name}\n목적: ${shot.purpose}\n\n첨부 color PNG는 구도·원근·인원·포즈·가림·접지·광원 방향의 기준입니다. 캐릭터 정본 이미지는 얼굴·머리·체형·복식·화풍의 기준입니다. 정본의 정면 조명이나 배경을 장면에 복사하지 마세요. 장면의 명암과 그림자에 맞춰 캐릭터를 적용하세요. 말풍선·해설·라벨을 추가하지 마세요.\n\n가슴 형태 참조가 있다면 어깨·흉곽에 대한 높이·좌우 간격·돌출·원근을 캡처대로 유지하세요. anatomyReferences의 체적 중심은 유두 표시가 아닙니다. 의상·팔에 가려진 부분을 임의로 드러내거나 재배치하지 마세요.\n\n실제 수정 상태는 editorState에 있습니다. proposalOrigin=${proposalOrigin}; scene-import는 최초 제안이고 legacy-current-state는 구형 파일을 연 시점의 값입니다. Depth PNG는 카메라 공간 선형 깊이이며 가까울수록 밝습니다. 생성기가 해당 조건 입력을 지원할 때 사용하세요. 일반 이미지 참조만으로 구도와 포즈의 완전한 보존을 보장하지 않습니다.`;
   }
   $('studio-example').onclick=()=>importText(JSON.stringify(EXAMPLE_SCENE,null,2),'예제 장면',true);
@@ -283,7 +290,7 @@ export function initCutsceneStudio(api) {
   $('studio-color').onclick=()=>run(()=>savePNG(false));$('studio-depth').onclick=()=>run(()=>savePNG(true));
   $('studio-preview-refresh').onclick=()=>run(()=>{previewDirty=true;tickPreview({force:true});});
   $('studio-prompt').onclick=()=>download('cutscene-direction.txt',promptText(),'text/plain;charset=utf-8');
-  $('studio-packet').onclick=()=>run(()=>{
+  function createHandoffPacket(){
     const color=renderPNG(),depth=renderPNG(true);
     const anatomyReferences=api.mannequins.flatMap((m,actorIndex)=>{
       const chest=chestLandmarks(m);if(!chest)return [];
@@ -292,12 +299,14 @@ export function initCutsceneStudio(api) {
     });
     const objectDescriptions=describeObjects([...api.mannequins,...api.importedModels],document),spatialReview=inspectObjectOverlaps([...api.mannequins,...api.importedModels]);
     spatialReview.issues.forEach(issue=>issue.objectIds=issue.objects.map(index=>objectDescriptions[index].id));
-    const packet={version:1,objectDescriptions,spatialReview,proposal:structuredClone(initialProposal),proposalOrigin,editorState:api.getState(),anatomyReferences,activeShot:currentShot(),render:{figureSurface:bodySurfaceMode(),aspect,near:shotCamera.near,far:shotCamera.far,depthEncoding:'linear-view-z-near-white-far-black',resolution:[preview.domElement.width,preview.domElement.height]},images:{color,depth},direction:promptText()};
+    const packet={version:1,objectDescriptions,spatialReview,proposal:structuredClone(initialProposal),proposalOrigin,editorState:api.getState(),anatomyReferences,activeShot:{...currentShot(),camera:{...currentShot().camera,position:shotCamera.position.toArray(),fov:shotCamera.fov,zoom:shotCamera.zoom,view:shotCamera.view?{...shotCamera.view}:null}},render:{figureSurface:bodySurfaceMode(),aspect,near:shotCamera.near,far:shotCamera.far,depthEncoding:'linear-view-z-near-white-far-black',resolution:[preview.domElement.width,preview.domElement.height]},images:{color,depth},direction:promptText()};
     // Actual export size is independent from the on-screen preview dimensions.
     packet.render.resolution=aspect>=1?[1600,Math.round(1600/aspect)]:[Math.round(1600*aspect),1600];
-    download('cutscene-handoff.json',JSON.stringify(packet,null,2));status('이미지·카메라·정밀 편집 상태·작화 지시문을 한 파일에 저장했습니다.');
-  });
-  rebuildRoom();syncUI();
+    captureObserver?.('handoff');
+    return packet;
+  }
+  $('studio-packet').onclick=()=>run(()=>{download('cutscene-handoff.json',JSON.stringify(createHandoffPacket(),null,2));status('이미지·카메라·정밀 편집 상태·작화 지시문을 한 파일에 저장했습니다.');});
+  rebuildRoom();syncUI();updateShotCamera();
   // The third-party library points its favicon at an unbundled asset.
   window.document.querySelectorAll('link[rel="icon"]').forEach(link=>link.href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="%236366f1"/><text x="5" y="23" fill="white" font-size="22">C</text></svg>');
   function updateEditingWalls(){for(const wall of environment.children)if(wall.userData.editingWall)wall.visible=wall.userData.editingWall==='left'?stage.camera.position.x>=-document.room.size[0]/2:stage.camera.position.z>=-document.room.size[2]/2;}
@@ -308,8 +317,12 @@ export function initCutsceneStudio(api) {
     updateShotCamera();cleanRender(()=>preview.render(stage.scene,shotCamera));
   }
   return {
-    snapshot:()=>structuredClone({document,initialProposal,proposalOrigin,shots,activeShot,aspect}),
-    restore(state) {if(!state)return;document=validateScene(state.document);initialProposal=validateScene(state.initialProposal||state.document);proposalOrigin=state.initialProposal?(state.proposalOrigin||'scene-import'):'legacy-current-state';shots=structuredClone(state.shots||[]);activeShot=state.activeShot ?? -1;aspect=state.aspect||16/9;rebuildRoom();syncUI();},
+    setBeforeCapture(fn){beforeCapture=fn;},setCaptureObserver(fn){captureObserver=fn;},
+    rememberShotProjection(){shotProjection={key:JSON.stringify(currentShot().camera),zoom:shotCamera.zoom,view:shotCamera.view?{...shotCamera.view}:null};},
+    environmentMeshes(role='working'){const meshes=[];const visible=(node)=>{for(let p=node;p;p=p.parent){if(role==='shot'&&p===node&&p.userData.editingWall)continue;if(!p.visible)return false;}return true;};environment.traverse(n=>{if(n.isMesh&&visible(n))meshes.push(n);});if(stage.ground?.isMesh&&visible(stage.ground))meshes.push(stage.ground);return [...new Set(meshes)];},
+    shotCamera,previewRenderer:preview,updateShotCamera,cleanRender,renderPNG,createHandoffPacket,
+    snapshot:()=>structuredClone({document,initialProposal,proposalOrigin,shots,activeShot,aspect,shotProjection}),
+    restore(state) {if(!state)return;document=validateScene(state.document);initialProposal=validateScene(state.initialProposal||state.document);proposalOrigin=state.initialProposal?(state.proposalOrigin||'scene-import'):'legacy-current-state';shots=structuredClone(state.shots||[]);activeShot=state.activeShot ?? -1;aspect=state.aspect||16/9;shotProjection=state.shotProjection?structuredClone(state.shotProjection):null;rebuildRoom();syncUI();updateShotCamera();},
     createProp,loadScene,importText,showImportError,poseThumbnail,
     saveProject(state) {download('cutscene-project.json',JSON.stringify(state,null,2));status('정밀 프로젝트를 저장했습니다. Load로 다시 열 수 있습니다.');},
     invalidatePreview(){previewDirty=true;},updateEditingWalls,tick:tickPreview,

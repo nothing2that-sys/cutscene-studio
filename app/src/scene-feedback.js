@@ -73,10 +73,13 @@ export function analyzeEditorState(data) {
     if(data.camera.fov!==undefined&&(typeof data.camera.fov!=='number'||!Number.isFinite(data.camera.fov)||data.camera.fov<10||data.camera.fov>100))add('camera.fov','NUMBER_RANGE','화각은 10~100도여야 합니다.');
     }
   }
+  const projection=(value,path)=>{try{validateCamera({position:[0,0,1],target:[0,0,0],fov:40,zoom:value?.zoom,view:value?.view},path);}catch(e){errors.push(...(e.issues||[issue(path,'INVALID_PROJECTION',e.message)]));}};
+  if(data.camera)projection(data.camera,'camera');
+  if(data.fixedView!==undefined&&data.fixedView!==null){const f=data.fixedView;if(!plain(f)||typeof f.enabled!=='boolean'||!['working','shot'].includes(f.role)||!Number.isFinite(f.zoom)||f.zoom<.25||f.zoom>4||!Number.isFinite(f.panX)||!Number.isFinite(f.panY))add('fixedView','INVALID_FIXED_VIEW','유효한 고정 화면·팬·줌 상태가 필요합니다.');}
   if(data.studio!==undefined){
     if(!plain(data.studio)){add('studio','OBJECT_REQUIRED','스튜디오 상태 객체가 필요합니다.');}
     else {
-      const s=data.studio,r=analyzeScene(s.document);
+      const s=data.studio,r=analyzeScene(s.document);if(s.shotProjection!==undefined&&s.shotProjection!==null){if(!plain(s.shotProjection)||typeof s.shotProjection.key!=='string')add('studio.shotProjection','INVALID_PROJECTION','유효한 촬영 투영 상태가 필요합니다.');else projection(s.shotProjection,'studio.shotProjection');}
       errors.push(...r.errors.map(x=>({...x,path:'studio.document.'+x.path})));
       if(s.initialProposal!==undefined){const initial=analyzeScene(s.initialProposal);errors.push(...initial.errors.map(x=>({...x,path:'studio.initialProposal.'+x.path})));}
       if(!Array.isArray(s.shots)||s.shots.length>24)add('studio.shots','PROJECT_SHOTS','최대 24개의 카메라 컷 배열이 필요합니다.');

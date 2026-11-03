@@ -1,0 +1,57 @@
+import * as THREE from 'three';
+import {NATURAL_SOURCE_REQUESTS} from './body-v1-source-request.js';
+import {getBodyV1,validateBodyV1State} from './body-v1-adapter.js';
+import {snapshotBodyJoints,captureBoneLayout,clampJoint,constrainBody,readLegacyPosture} from './body-rig.js';
+export function serializeBodyV1(m){return getBodyV1(m)?{bodyAsset:{...m.userData.bodyAsset},bodyV1Pose:getBodyV1(m).snapshot()}:{bodyCompatibility:'legacy-male-v7'};}
+export function installBodyV1Main(api){
+ let fixed=null,cameraRole='working';
+ const appliedListeners=new Set();let lastAppliedState=null;
+ const meshes=root=>{const result=[];root.traverse(n=>{if(n.isMesh&&n.geometry?.attributes.position?.count){let visible=true;for(let p=n;p;p=p.parent)if(!p.visible)visible=false;if(visible)result.push(n);}});return result;};
+ const model=id=>{const m=api.mannequins.find(m=>m.userData.studioId===id);if(!m)throw Error('인물 ID가 없습니다: '+id);return m;};
+ function recordJointInput({actorId,joint,property,degrees,from,guard},alreadySynchronized=false){const m=model(actorId),target=joint==='self'?m:m[joint];if(!alreadySynchronized)getBodyV1(m)?.sync();const applied=target[property],limited=Math.abs(applied-degrees)>.001;lastAppliedState={operation:'setJoint',originalRequest:{actorId,joint,property,degrees},actualApplied:{degrees:applied},limited,rejected:limited&&Math.abs(applied-from)<.001,reason:guard?.reason||(limited?'native-or-declared-limit':'input-applied'),protection:guard?.protection,requestedContact:guard?.requestedContact,appliedContact:guard?.appliedContact,phase:'committed',intermediate:false,atomic:true};const status=document.getElementById('body-v1-joint-result');if(status)status.textContent=`요청 ${degrees.toFixed(2)}° → 적용 ${applied.toFixed(2)}°${limited?' · '+(guard?.reason==='contact-rejected'?'접촉 보호 · 이전 자세 유지':'기존 관절 범위 제한'):''}`;for(const prefix of ['num-rot-','rng-rot-']){const input=document.getElementById(prefix+property);if(input)input.value=String(applied);}for(const listener of appliedListeners)listener(lastAppliedState);return lastAppliedState;}
+ function commitJointInput({actorId,joint,property,degrees}){
+  if(api.isRestoring?.())throw Error('장면 복원 중입니다. 완료 후 편집하세요.');
+  if(!Number.isFinite(degrees))throw Error('관절각은 유한한 숫자여야 합니다.');const m=model(actorId),a=getBodyV1(m),target=m[joint];if(!target||typeof target[property]!=='number')throw Error('지원하지 않는 관절 입력');const from=target[property],saved=target.quaternion.clone(),order=target.rotation.order,cost=r=>r.pairs.reduce((s,p)=>s+p.count*(p.maxDepthPixels+.2)**2,0);let guard={protection:!!a?.jointProtection,reason:'input-applied'};
+  const baseline=a?.jointProtection?a.auditDisplayedJoint(joint):null;try{target[property]=degrees;clampJoint(m,joint);if(Math.abs(target[property]-degrees)>.001)guard.reason='native-or-declared-limit';a?.sync();if(baseline){const candidate=a.auditDisplayedJoint(joint,{alreadySynchronized:true});guard.requestedContact=candidate;if(cost(candidate)>cost(baseline)+.001){target.rotation.order=order;target.quaternion.copy(saved);a.sync();guard.reason='contact-rejected';guard.appliedContact=a.auditDisplayedJoint(joint,{alreadySynchronized:true});}else guard.appliedContact=candidate;}}catch(error){target.rotation.order=order;target.quaternion.copy(saved);a?.sync();throw error;}fixed?.invalidate?.();api.viewPerformance.invalidate();return recordJointInput({actorId,joint,property,degrees,from,guard},true);
+ }
+ const boundary={whenReady:()=>api.whenReady?.()||Promise.resolve(),get restoring(){return !!api.isRestoring?.();},stage:api.stage,viewPerformance:api.viewPerformance,studio:api.studio,
+  onAppliedState(listener){if(typeof listener!=='function')throw Error('적용 관측자는 함수여야 합니다.');appliedListeners.add(listener);return()=>appliedListeners.delete(listener);},get lastAppliedState(){return lastAppliedState;},recordJointInput,commitJointInput,
+  get actors(){return api.mannequins.map((m,i)=>{const id=m.userData.studioId||'legacy-'+i;if(getBodyV1(m)){const actor=getBodyV1(m).actor(id);let visible=true;for(let p=actor.root;p;p=p.parent)if(!p.visible)visible=false;if(!visible)return {id,root:actor.root,driver:actor.driver,bodyMeshes:[],joints:actor.joints,pelvis:actor.pelvis,chest:actor.chest};return actor;}return {id,root:m,driver:m,bodyMeshes:meshes(m),joints:Object.fromEntries(['body','torso','neck','head','l_arm','r_arm','l_elbow','r_elbow','l_wrist','r_wrist','l_leg','r_leg','l_knee','r_knee','l_ankle','r_ankle'].map(k=>[k,m[k]])),pelvis:m.body,chest:m.torso};});},
+  get environmentMeshes(){return api.studio.environmentMeshes?.(fixed?.enabled?fixed.state.role:'working')||[];},
+  get props(){return api.importedModels.map((p,i)=>({id:p.userData.primitive?.id||p.userData.studioId||'prop-'+i,root:p,meshes:meshes(p)}));},
+  get renderers(){return [api.stage.renderer,api.studio.previewRenderer];},
+  get cameras(){return {working:api.stage.camera,shot:api.studio.shotCamera};},
+  get displayCamera(){return fixed?.enabled?fixed.displayCamera:api.stage.camera;},
+  get cache(){return fixed?.cache||null;},
+  installFixedView(controller){fixed=controller;return boundary;},
+  get fixedController(){return fixed;},
+  drive:{
+   applySource(id,source){if(api.isRestoring?.())throw Error('장면 복원 중입니다. 완료 후 편집하세요.');const m=model(id),a=getBodyV1(m),request=NATURAL_SOURCE_REQUESTS[source];if(!a||!request)throw Error('공통 인체와 추정 자세를 선택하세요.');const before=api.snapshot();try{m.position.fromArray(request.actorPlacement);m.updateMatrixWorld(true);a.source({source,sourceRequest:request,sourceRequestRevision:request.revision},()=>{for(const key of Object.keys(a.actor(id).joints))clampJoint(m,key);});constrainBody(m);boundary.drive.setMode('3d','working');api.viewPerformance.setWorkingCamera(request.camera);api.refresh?.();api.capture();fixed?.invalidate?.();return a.snapshot();}catch(error){api.apply(JSON.stringify(before));throw error;}},
+   async loadSource(source){const request=NATURAL_SOURCE_REQUESTS[source];if(!request)throw Error('지원하지 않는 공통 몸체 추정 자세');return boundary.drive.loadFixture({id:'source-'+source,source,sourceRequest:request,sourceRequestRevision:request.revision,actorId:'body-v1-primary',heightMeters:1.7,workingCamera:request.camera});},
+   async loadFixture(f){
+    const state=api.snapshot(),defs=f.actors||[{id:f.actorId||'body-v1-primary',position:f.sourceRequest?.actorPlacement||[0,0,0],pose:f.pose||{}}];state.mannequins=[];
+    for(const def of defs){const m=api.create({height:f.heightMeters||1.7,headUnits:8});m.removeFromParent();m.userData.studioId=def.id;m.userData.sceneNotes={role:'',intent:'',description:''};const a=getBodyV1(m);a.neutral();m.position.fromArray(def.position||f.sourceRequest?.actorPlacement||[0,0,0]);m.updateMatrixWorld(true);
+     if(f.source)a.source(f,()=>{for(const key of Object.keys(a.actor(def.id).joints))clampJoint(m,key);});
+     else for(const [joint,values]of Object.entries(def.pose||{}))for(const [property,degrees]of Object.entries(values)){if(!m[joint]||!Number.isFinite(degrees))throw Error('잘못된 fixture 관절');m[joint][property]=degrees;}
+     constrainBody(m);m.position.fromArray(def.position||f.sourceRequest?.actorPlacement||[0,0,0]);m.updateMatrixWorld(true);
+     state.mannequins.push({name:def.id,studioId:def.id,sceneNotes:m.userData.sceneNotes,bodyProfile:m.userData.bodyProfile,...serializeBodyV1(m),boneLayout:captureBoneLayout(m),joints:snapshotBodyJoints(m),position:m.position.toArray(),rotation:m.rotation.toArray(),scale:m.scale.toArray(),posture:readLegacyPosture(m)});
+    }
+    state.importedModels=(f.props||[]).map((p,i)=>{const primitive={id:p.id||'prop-'+i,name:p.id||'소품',type:p.type||'box',position:p.position||[0,0,0],size:p.size||[.5,.5,.5],yaw:p.yaw||0,color:p.color||'#8c7965'};return {name:primitive.name,primitive,position:primitive.position,rotation:[0,primitive.yaw*Math.PI/180,0,'XYZ'],scale:[1,1,1]};});
+    const camera=f.workingCamera;if(camera){const aspect=api.stage.renderer.domElement.width/api.stage.renderer.domElement.height,c=new THREE.PerspectiveCamera(camera.fov,aspect,camera.near,camera.far);c.position.fromArray(camera.position);c.lookAt(new THREE.Vector3(...camera.target));state.camera={...camera,aspect,rotation:c.rotation.toArray()};}
+    if(state.studio&&f.shotCamera){const c=f.shotCamera;state.studio.shots=[{id:'fixture-shot',name:'기준 촬영',purpose:'등록 fixture',camera:{position:c.position,target:c.target,fov:c.fov}}];state.studio.activeShot=0;state.studio.aspect=c.aspect;}
+    state.activeIndex=0;state.activeImportIndex=-1;state.selectedBodyPart='Root';api.apply(JSON.stringify(state));api.capture();fixed?.invalidate?.();return api.snapshot();
+   },
+   setJoint(id,joint,property,degrees){const result=commitJointInput({actorId:id,joint,property,degrees});api.capture();fixed?.invalidate?.();return result;},
+   moveActor(id,position){if(api.isRestoring?.())throw Error('장면 복원 중입니다. 완료 후 편집하세요.');if(!Array.isArray(position)||position.length!==3||!position.every(Number.isFinite))throw Error('배치 좌표 오류');const m=model(id),p=new THREE.Vector3(...position);m.parent?.worldToLocal(p);m.position.copy(p);constrainBody(m);api.capture();fixed?.invalidate?.();},
+   setVisibility(id,value){if(api.isRestoring?.())throw Error('장면 복원 중입니다. 완료 후 편집하세요.');const m=api.mannequins.find(m=>m.userData.studioId===id)||api.importedModels.find(m=>m.userData.primitive?.id===id);if(!m)throw Error('대상 ID가 없습니다.');m.visible=!!value;api.capture();fixed?.invalidate?.();},
+   setMode(mode,role='working'){if(!['3d','fixed'].includes(mode)||!['working','shot'].includes(role))throw Error('보기 모드 오류');cameraRole=role;if(role==='shot')api.studio.updateShotCamera();if(fixed)return fixed.setMode(mode,role);if(mode==='fixed')throw Error('고정 선화는 M3 통합 전입니다.');api.viewPerformance.invalidate();},
+   panZoom(index){if(!fixed)throw Error('고정 선화는 M3 통합 전입니다.');return fixed.panZoom(index);},
+   save(){return api.isRestoring?.()?api.whenReady().then(()=>api.snapshot()):api.snapshot();},
+   load(value){validateBodyV1State(value);const result=api.apply(JSON.stringify(value));if(result?.then)return result.then(()=>{api.capture();fixed?.invalidate?.();});api.capture();fixed?.invalidate?.();return result;},
+   undo(){api.undo();fixed?.invalidate?.();},redo(){api.redo();fixed?.invalidate?.();},
+   export(kind){if(api.isRestoring?.())throw Error('장면 복원 중입니다. 완료 후 내보내세요.');if(kind==='color')return api.studio.renderPNG(false);if(kind==='depth')return api.studio.renderPNG(true);if(kind==='handoff')return api.studio.createHandoffPacket();throw Error('지원하지 않는 출력');}
+  }
+ };
+ const actions=document.createElement('section');actions.id='body-v1-source-actions';actions.innerHTML='<h3>공통 인체 · 추정 자세</h3><small>선택 인물에 자세·발 지지·위치와 작업 카메라를 적용합니다. 원본의 유일한 복원값을 뜻하지 않습니다.</small><button class="btn" data-body-source="original">원본 · 자연스러운 발 지지 추정</button><button class="btn" data-body-source="p015">P015 · 공통 몸체 교차 자세</button><small role="status"></small><small id="body-v1-joint-result" role="status"></small>';const target=document.querySelector('#properties-panel');target?.appendChild(actions);for(const button of actions.querySelectorAll('button'))button.onclick=()=>{try{const m=api.selected?.();if(!m)throw Error('공통 인체를 선택하세요.');boundary.drive.applySource(m.userData.studioId,button.dataset.bodySource);actions.querySelector('[role=status]').textContent=NATURAL_SOURCE_REQUESTS[button.dataset.bodySource].interpretation;}catch(error){actions.querySelector('[role=status]').textContent=error.message;}};
+ window.__bodyV1=boundary;return boundary;
+}

@@ -1,9 +1,10 @@
+import {displayedObjectBounds} from './body-surface.js';
 import * as THREE from 'three';
 import {bodySurfaceMode,setBodySurfaceMode,bodyGuidesVisible,setBodyGuides} from './body-surface.js';
 
 export function initViewPerformance(api){
   const {stage}=api,renderer=stage.renderer;
-  let dirty=true,revision=1,lastRender=0,lastControlsRevision=-1,savedCamera=null,soloModel=null,restoring=false;
+  let dirty=true,revision=1,lastRender=0,lastControlsRevision=-1,savedCamera=null,soloModel=null,restoring=false,fixedController=null;
   let lightweight=true;try{lightweight=localStorage.getItem('cutscene-lightweight')!=='false';}catch{}
   const options=document.createElement('div');options.className='view-performance';
   options.innerHTML='<label><input id="pose-solo" type="checkbox" checked> 포즈는 선택 인물만</label><label><input id="edit-lightweight" type="checkbox"> 가벼운 화면</label><details id="render-info"><summary>렌더링 정보</summary><pre id="render-info-text"></pre></details>';
@@ -15,11 +16,11 @@ export function initViewPerformance(api){
   const guideLabel=document.createElement('label');guideLabel.innerHTML='<input id="body-guides" type="checkbox"> 인체 구조선';options.appendChild(guideLabel);const guideInput=guideLabel.querySelector('input');guideInput.checked=bodyGuidesVisible();guideInput.disabled=surfaceSelect.value==='rig';guideInput.onchange=()=>{setBodyGuides(guideInput.checked,api.objects());invalidate();};
   const soloInput=options.querySelector('#pose-solo'),lightInput=options.querySelector('#edit-lightweight');lightInput.checked=lightweight;
   const originalDamping=stage.controls.enableDamping,stats={renders:0,lastDrawCalls:0,lastTriangles:0,lastVisibleActors:0};
-  function invalidate(){dirty=true;revision++;api.invalidatePreview();}
-  function cameraState(){return {position:stage.camera.position.toArray(),rotation:stage.camera.rotation.toArray(),target:stage.controls.target.toArray(),fov:stage.camera.fov,up:stage.camera.up.toArray(),zoom:stage.camera.zoom};}
-  function restoreCamera(state){stage.camera.position.fromArray(state.position);stage.camera.rotation.fromArray(state.rotation);stage.camera.up.fromArray(state.up||[0,1,0]);stage.camera.fov=state.fov;stage.camera.zoom=state.zoom||1;stage.camera.updateProjectionMatrix();stage.controls.target.fromArray(state.target);stage.controls.update();}
+  function invalidate(){dirty=true;revision++;api.invalidatePreview();fixedController?.invalidate();}
+  function cameraState(){return {position:stage.camera.position.toArray(),rotation:stage.camera.rotation.toArray(),target:stage.controls.target.toArray(),fov:stage.camera.fov,up:stage.camera.up.toArray(),zoom:stage.camera.zoom,view:stage.camera.view?{...stage.camera.view}:null};}
+  function restoreCamera(state){stage.camera.position.fromArray(state.position);stage.camera.rotation.fromArray(state.rotation);stage.camera.up.fromArray(state.up||[0,1,0]);stage.camera.fov=state.fov;stage.camera.zoom=state.zoom||1;stage.camera.view=state.view?{...state.view}:null;stage.camera.updateProjectionMatrix();stage.controls.target.fromArray(state.target);stage.controls.update();}
   function focus(model,view){
-    model.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(model),center=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3());center.y+=size.y*0.12;
+    model.updateMatrixWorld(true);const box=displayedObjectBounds(model),center=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3());center.y+=size.y*0.12;
     const valid=a=>Array.isArray(a)&&a.length===3&&a.every(Number.isFinite)&&a.some(n=>Math.abs(n)>1e-8);
     const direction=valid(view?.direction)?new THREE.Vector3(...view.direction):stage.camera.position.clone().sub(center);
     if(valid(view?.direction))stage.camera.up.fromArray(valid(view?.up)?view.up:[0,1,0]).normalize();
@@ -51,7 +52,7 @@ export function initViewPerformance(api){
       for(const object of api.objects())if(object!==soloModel){hidden.push([object,object.visible]);object.visible=false;}
       stage.scene.children.forEach(object=>{if(object.name==='Cutscene room'||object===stage.ground||object.type==='GridHelper'||object.type==='AxesHelper'){hidden.push([object,object.visible]);object.visible=false;}});
     }
-    try{renderer.render(stage.scene,stage.camera);stats.renders++;stats.lastDrawCalls=renderer.info.render.calls;stats.lastTriangles=renderer.info.render.triangles;stats.lastVisibleActors=api.objects().filter(m=>m.torso&&m.visible).length;updateInfo();}
+    try{renderer.render(stage.scene,fixedController?.displayCamera||stage.camera);stats.renders++;stats.lastDrawCalls=renderer.info.render.calls;stats.lastTriangles=renderer.info.render.triangles;stats.lastVisibleActors=api.objects().filter(m=>m.torso&&m.visible).length;updateInfo();}
     finally{for(const [object,visible]of hidden)object.visible=visible;}
   }
   lightInput.onchange=()=>{lightweight=lightInput.checked;try{localStorage.setItem('cutscene-lightweight',String(lightweight));}catch{}resize();};
@@ -67,6 +68,7 @@ export function initViewPerformance(api){
   renderer.setAnimationLoop(null);const started=performance.now();
   function frame(now){
     requestAnimationFrame(frame);if(document.hidden)return;
+    if(fixedController?.enabled){fixedController.tick();return;}
     sync();stage.controls.update();api.tickPreview(!!soloModel||api.isDragging());
     const interval=1000/(lightweight?30:60);
     if((!dirty&&now-started>600)||now-lastRender<interval)return;
@@ -74,11 +76,12 @@ export function initViewPerformance(api){
   }
   resize();requestAnimationFrame(frame);
   return {
+    setFixedController(controller){fixedController=controller;},
     invalidate,revision:()=>revision,sync,stats,
     isSolo:()=>!!soloModel,
     refocus(view){sync();if(soloModel){focus(soloModel,view);invalidate();}},
     editingObjects:()=>soloModel?[soloModel]:api.objects(),
-    snapshotCamera(){if(!savedCamera)return null;const {up,zoom,...state}=savedCamera;return structuredClone(state);},
+    snapshotCamera(){if(!savedCamera)return null;const {up,...state}=savedCamera;return structuredClone(state);},
     beforeRestore(){restoring=true;if(savedCamera){const original=savedCamera;savedCamera=null;soloModel=null;restoreCamera(original);}},
     afterRestore(){restoring=false;sync();invalidate();},
     setWorkingCamera(def){

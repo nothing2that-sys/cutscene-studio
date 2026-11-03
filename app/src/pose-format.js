@@ -1,3 +1,4 @@
+import {validateBodyV1State} from './body-v1-adapter.js';
 import {validateScene,JOINTS} from './scene-format.js';
 import {analyzeEditorState} from './scene-feedback.js';
 export const POSE_NAMES={standing:'서기',sitting:'앉기',pointing:'가리키기',reaching:'손 뻗기'};
@@ -22,15 +23,15 @@ export function readReferencePoses(text){
   let data;try{data=JSON.parse(text.replace(/^\uFEFF/,''));}catch{throw Error('포즈 JSON 문법을 확인하세요. 이미지 대신 저장한 포즈·장면·인물 JSON을 넣어주세요.');}
   if(data?.type==='converted-pose'){if(data.version!==1||data.pose?.type!=='pose-reference')throw Error('지원하는 변환 포즈 형식이 아닙니다.');return readReferencePoses(JSON.stringify(data.pose));}
   if(data?.type==='pose-reference'){
-    if(data.version!==1||data.rotationUnit!=='radians'||Object.keys(data).some(k=>!['type','version','name','rotationUnit','rotations'].includes(k)))throw Error('지원하는 포즈 참조 형식이 아닙니다.');
-    return [{name:typeof data.name==='string'?data.name:'저장한 포즈',kind:'rotations',rotations:rotations(data.rotations)}];
+    if(data.version!==1||data.rotationUnit!=='radians'||Object.keys(data).some(k=>!['type','version','name','rotationUnit','rotations','bodyAsset','bodyProfile','bodyV1Pose'].includes(k)))throw Error('지원하는 포즈 참조 형식이 아닙니다.');
+    if(data.bodyAsset||data.bodyV1Pose)validateBodyV1State({...data,type:'mannequin'});return [{name:typeof data.name==='string'?data.name:'저장한 포즈',kind:'rotations',rotations:rotations(data.rotations),...(data.bodyAsset?{bodyAsset:structuredClone(data.bodyAsset),bodyProfile:structuredClone(data.bodyProfile),bodyV1Pose:structuredClone(data.bodyV1Pose)}:{})}];
   }
   const native=data?.editorState||data;
   if(native?.type==='mannequin'||Array.isArray(native?.mannequins)){
     const check=analyzeEditorState(native);if(!check.valid)throw Error(check.errors.map(e=>e.path+': '+e.message).join('\n'));
     const actors=native.type==='mannequin'?[native]:native.mannequins;
     if(!actors.length)throw Error('파일에 인물이 없습니다.');
-    return actors.map(m=>({name:m.name||'저장된 인물',kind:'rotations',rotations:rotations(Object.fromEntries(Object.entries(m.joints||{}).map(([key,value])=>[key,value.rotation])))}));
+    return actors.map(m=>{if(m.bodyAsset||m.bodyV1Pose)validateBodyV1State({...m,type:'mannequin'});return {name:m.name||'저장된 인물',kind:'rotations',rotations:rotations(Object.fromEntries(Object.entries(m.joints||{}).map(([key,value])=>[key,value.rotation]))),...(m.bodyAsset?{bodyAsset:structuredClone(m.bodyAsset),bodyProfile:structuredClone(m.bodyProfile),bodyV1Pose:structuredClone(m.bodyV1Pose)}:{})};});
   }
   if(Array.isArray(data?.actors)){
     const scene=validateScene(data);if(!scene.actors.length)throw Error('장면에 인물이 없습니다.');return scene.actors.map(semantic);

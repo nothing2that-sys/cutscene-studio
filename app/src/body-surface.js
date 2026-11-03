@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {buildHumanSkin,HUMAN_SKIN_STATS,skinPartBounds} from './human-skin.js';
+import {getBodyV1} from './body-v1-adapter.js';
 export {HUMAN_SKIN_STATS};
 const surfaces=new WeakMap(),empty=new THREE.BufferGeometry();empty.setAttribute('position',new THREE.Float32BufferAttribute([],3));empty.computeBoundingBox();
 let mode='human';try{mode=localStorage.getItem('cutscene-body-surface')==='rig'?'rig':'human';}catch{}
@@ -13,14 +14,17 @@ function collect(m,state){m.traverse(image=>{if(image.isMesh&&image!==state.mesh
 function restoreSources(state){for(const p of state.sources){p.image.geometry=p.geometry;p.image.visible=p.visible;p.image.raycast=p.raycast;}}
 function hideSources(state){for(const p of state.sources){p.image.geometry=empty;p.image.visible=false;p.image.raycast=()=>{};}}
 export function setBodySurface(m,value=mode){
+ if(getBodyV1(m)){getBodyV1(m).sync();return;}
  if(!m?.torso)return;const state=stateFor(m);if(state.paused)return;collect(m,state);restoreSources(state);state.mode=value==='rig'?'rig':'human';
  if(state.mode==='human'){if(!state.mesh){const built=buildHumanSkin(m,state.material,state.bones);state.mesh=built.mesh;state.bones=built.bones;}else m.add(state.mesh);hideSources(state);}else state.mesh?.removeFromParent();
  if(state.material.userData.bodyGuides)state.material.userData.bodyGuides.value=guides?1:0;
  m.userData.bodySurface=state.mode;invalidateBodySurface(m);
 }
-export function invalidateBodySurface(m){const state=surfaces.get(m);if(state?.mesh&&!state.paused)state.mesh.traverse(part=>{if(part.isSkinnedMesh){part.boundingBox=null;part.boundingSphere=null;}});}
+export function invalidateBodySurface(m){if(getBodyV1(m)){getBodyV1(m).sync();return;}const state=surfaces.get(m);if(state?.mesh&&!state.paused)state.mesh.traverse(part=>{if(part.isSkinnedMesh){part.boundingBox=null;part.boundingSphere=null;}});}
 export function suspendBodySurface(m){const state=surfaces.get(m);if(!state)return null;state.paused=true;state.mesh?.removeFromParent();restoreSources(state);return state.mode;}
 export function resumeBodySurface(m,previous){const state=surfaces.get(m);if(!state)return;if(state.mesh){state.mesh.traverse(part=>{if(part.userData.bodyOutline)part.material.dispose();});state.mesh.geometry.dispose();state.mesh.skeleton.dispose();state.mesh=null;}state.paused=false;setBodySurface(m,previous);}
 export function getHumanSkin(m){return surfaces.get(m)?.mesh||null;}
-export function bodyPartBounds(m,key){const mesh=getHumanSkin(m);return mesh?.parent===m?skinPartBounds(mesh,key):new THREE.Box3().setFromObject(m[key]);}
+export function bodyPartBounds(m,key){const v1=getBodyV1(m);if(v1){const names={body:'thorax',torso:'thorax',neck:'neck',head:'head',l_arm:'upperL',r_arm:'upperR',l_elbow:'foreL',r_elbow:'foreR',l_wrist:'handL',r_wrist:'handR',l_leg:'thighL',r_leg:'thighR',l_knee:'shinL',r_knee:'shinR',l_ankle:'footL',r_ankle:'footR'};return new THREE.Box3().setFromObject(v1.full.meshes.get(names[key])||v1.root);}const mesh=getHumanSkin(m);return mesh?.parent===m?skinPartBounds(mesh,key):new THREE.Box3().setFromObject(m[key]);}
 export function setBodySurfaceMode(value,models=[]){mode=value==='rig'?'rig':'human';try{localStorage.setItem('cutscene-body-surface',mode);}catch{}models.forEach(m=>setBodySurface(m,mode));}
+
+export {displayedObjectBounds} from './body-v1-adapter.js';

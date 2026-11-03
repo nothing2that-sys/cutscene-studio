@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { Male } from 'mannequin-js/src/mannequin.js';
 import { JOINTS, chestIssues, normalizeChest } from './scene-format.js';
 import {setBodySurface,surfaceColor,invalidateBodySurface,suspendBodySurface,resumeBodySurface} from './body-surface.js';
+import {getBodyV1,installBodyV1} from './body-v1-adapter.js';
 
 const chestGuides=new WeakMap();
 const RAD=THREE.MathUtils.DEG2RAD;
@@ -89,6 +90,7 @@ export function constrainBody(m) {
 }
 export function configureBody(m,profile,keepFeet=true) {
   profileValid(profile);
+  if(getBodyV1(m)){const current=m.userData.bodyProfile;if(profile.headUnits!==current.headUnits||JSON.stringify(profile.chest||null)!==JSON.stringify(current.chest||null))rigError('공통 인체는 현재 기본 등신·가슴 형태를 유지합니다. 다른 체형은 기존 인체 장면으로 불러와 사용하세요.');getBodyV1(m).configure(profile);lockBoneLayout(m);constrainBody(m);return;}
   const oldMin=keepFeet?new THREE.Box3().setFromObject(m).min.y:null;
   const previousSurface=suspendBodySurface(m);
   // Box3 also measures invisible objects: detach references during neutral sizing.
@@ -133,8 +135,8 @@ export function initializeBody(m,profile) {
   }
   if(profile)configureBody(m,profile,false);else lockBoneLayout(m);
 }
-export function createCharacter(profile={height:1.75,headUnits:8}) {
-  const m=new Male();initializeBody(m,profile);setBodySurface(m);return m;
+export function createCharacter(profile={height:1.75,headUnits:8},options={}) {
+  const m=new Male();initializeBody(m,profile);if(options.legacy||profile&&(profile.headUnits!==8||profile.chest)){m.userData.bodyCompatibility='legacy-male-v7';setBodySurface(m);}else{if(options.driverNativeScale!==undefined){if(!Number.isFinite(options.driverNativeScale)||options.driverNativeScale<=0)throw Error('잘못된 driver native scale');m.scale.setScalar(options.driverNativeScale);}const driverNativeScale=m.scale.x;installBodyV1(m,{freshFactory:()=>{const clone=createCharacter(m.userData.bodyProfile,{driverNativeScale});clone.removeFromParent();return clone;}});lockBoneLayout(m);}return m;
 }
 export function boneDistances(m) {
   m.updateMatrixWorld(true);
@@ -234,4 +236,11 @@ export function solveConstrainedIK(m,keys,requested,options={}) {
 
 export function snapshotBodyJoints(m) {
   return Object.fromEntries(named(m).map(([key,j])=>[key,{position:j.position.toArray(),rotation:j.rotation.toArray(),scale:j.scale.toArray()}]));
+}
+
+// mannequin-js posture getters reorder Euler objects, including hidden thumb
+// drivers. Serialization must observe the scene without changing a single DOF.
+export function readLegacyPosture(m){
+ const saved=[];m.traverse(n=>{if(n.rotation&&n.quaternion)saved.push({n,e:n.rotation.toArray(),q:n.quaternion.toArray()});});
+ try{return structuredClone(m.posture);}finally{for(const {n,e,q}of saved){const er=n.rotation._onChangeCallback,qr=n.quaternion._onChangeCallback;n.rotation._onChangeCallback=()=>{};n.quaternion._onChangeCallback=()=>{};try{n.rotation.fromArray(e);n.quaternion.fromArray(q);}finally{n.rotation._onChangeCallback=er;n.quaternion._onChangeCallback=qr;}}}
 }

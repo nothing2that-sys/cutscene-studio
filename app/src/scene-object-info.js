@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {getBodyV1,displayedObjectBounds} from './body-v1-adapter.js';
 import {OBB} from 'three/addons/math/OBB.js';
 
 export function objectNotes(object,scene){
@@ -7,9 +8,10 @@ export function objectNotes(object,scene){
 }
 export function describeObjects(objects,scene){
  let actorIndex=0,propIndex=0;const used=new Set();
- return objects.map(object=>{const actor=!!object.torso,index=actor?actorIndex++:propIndex++,box=new THREE.Box3().setFromObject(object);
+ return objects.map(object=>{const actor=!!object.torso,index=actor?actorIndex++:propIndex++,box=displayedObjectBounds(object);
   const sourceId=object.userData.studioId||object.userData.primitive?.id||null,baseId=sourceId||`${actor?'actor':'prop'}-${index+1}`;let id=baseId;for(let suffix=2;used.has(id);suffix++)id=baseId+'-'+suffix;used.add(id);
-  return {id,sourceId,kind:actor?'actor':object.userData.primitive?.type||'imported-model',editorStateArray:actor?'mannequins':'importedModels',editorStateIndex:index,name:object.name||'이름 없음',...objectNotes(object,scene),position:object.position.toArray(),rotation:object.rotation.toArray(),scale:object.scale.toArray(),positionSpace:'editor world root, meters',bounds:box.isEmpty()?null:{min:box.min.toArray(),max:box.max.toArray()}};
+  const state=actor?getBodyV1(object)?.snapshot():null;
+  return {id,sourceId,...(state?{bodyAsset:{...object.userData.bodyAsset},bodyRestRevision:state.basePose.restRevision,sourceRequestOrigin:state.sourceRequestRevision?{revision:state.sourceRequestRevision,interpretation:state.basePose.sourceRequestInterpretation,editedPoseStoredExplicitly:true}:null}:{}),kind:actor?'actor':object.userData.primitive?.type||'imported-model',editorStateArray:actor?'mannequins':'importedModels',editorStateIndex:index,name:object.name||'이름 없음',...objectNotes(object,scene),position:object.position.toArray(),rotation:object.rotation.toArray(),scale:object.scale.toArray(),positionSpace:'editor world root, meters',bounds:box.isEmpty()?null:{min:box.min.toArray(),max:box.max.toArray()}};
  });
 }
 function meshBoxes(object){
@@ -28,7 +30,7 @@ function meshBoxes(object){
  });return boxes;
 }
 export function inspectObjectOverlaps(objects,selected=null){
- const targets=objects.filter(o=>!selected||o===selected),cache=new Map(),bounds=new Map(objects.map(o=>[o,new THREE.Box3().setFromObject(o)])),issues=[],seen=new Set();
+ const targets=objects.filter(o=>!selected||o===selected),cache=new Map(),bounds=new Map(objects.map(o=>[o,displayedObjectBounds(o)])),issues=[],seen=new Set();
  const get=o=>{if(!cache.has(o))cache.set(o,meshBoxes(o));return cache.get(o);};
  for(const a of targets)for(const b of objects){
   if(a===b)continue;const ai=objects.indexOf(a),bi=objects.indexOf(b),key=[ai,bi].sort((x,y)=>x-y).join(':');if(seen.has(key))continue;seen.add(key);
@@ -46,6 +48,7 @@ export function renderObjectInfo(container,object,scene,api){
   const row=document.createElement('label');row.className='studio-label';row.textContent=label;
   const field=document.createElement(key==='name'||key==='role'?'input':'textarea');field.id='object-info-'+key;field.value=values[key];field.maxLength=key==='name'?200:12000;field.placeholder=key==='name'?'이름 없음':'미작성 · 장면 의도에 맞게 입력하세요';row.appendChild(field);section.appendChild(row);fields[key]=field;
  }
+ if(object.torso){fields.description.placeholder='손발의 형태·손톱·피부·장갑·신발 등 최종 작화에 필요한 설명';const hint=document.createElement('p');hint.className='body-hint';hint.textContent='손발은 닫힌 단순 외피로 표시합니다. 세부 형태·손톱·장갑·신발은 인물 설명으로 전달합니다. 손목·발목 방향과 접촉 위치는 현재 포즈를 유지합니다.';section.appendChild(hint);}
  const status=document.createElement('output');status.id='object-info-status';
  const save=()=>{object.name=fields.name.value;object.userData.sceneNotes=Object.fromEntries(['role','intent','description'].map(key=>[key,fields[key].value]));if(object.userData.primitive)Object.assign(object.userData.primitive,{name:object.name,...object.userData.sceneNotes});heading.textContent='선택한 대상 · '+(object.name||'이름 없음');api.commit();status.textContent='설명 저장됨 · 최종 전달 묶음과 작화 지시문에 포함됩니다.';};
  Object.values(fields).forEach(field=>field.onchange=save);

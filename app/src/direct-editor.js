@@ -1,3 +1,4 @@
+import {displayedObjectBounds} from './body-surface.js';
 import * as THREE from 'three';
 import {constrainBody,manipulationChain,solveConstrainedIK} from './body-rig.js';
 
@@ -54,7 +55,7 @@ export function initDirectEditor(api){
     if(!['move','pose','advanced'].includes(next))return;
     if(cameraPan)setCameraPan(false);
     if(next===mode)return;
-    end(true);mode=next;document.body.dataset.editMode=mode;
+    end(true);mode=next;document.body.dataset.editorMode=mode;
     toolbar.querySelectorAll('[data-edit-mode]').forEach(btn=>{btn.classList.toggle('primary',btn.dataset.editMode===mode);btn.setAttribute('aria-pressed',String(btn.dataset.editMode===mode));});
     toolbar.querySelector('#direct-help').textContent=mode==='move'?'인물의 어느 부분이든 잡아 통째로 옮기세요. 빈 곳을 끌면 화면이 회전합니다.':mode==='pose'?'이름이 붙은 원을 잡아 움직이세요. 좌우는 인물 기준입니다. 다른 방향은 정면·옆면·위 보기를 사용하세요.':'관절 수치와 이동·회전 기즈모로 미세 조정합니다.';
     api.modeChanged(mode);status('');
@@ -66,11 +67,11 @@ export function initDirectEditor(api){
   }
   toolbar.querySelector('#camera-pan-toggle').onclick=()=>setCameraPan(!cameraPan);
   const centerOn=(box,fit)=>{const center=box.getCenter(new THREE.Vector3());if(fit){const direction=stage.camera.position.clone().sub(stage.controls.target).normalize(),size=box.getSize(new THREE.Vector3());stage.camera.position.copy(center).addScaledVector(direction,Math.max(size.x/Math.min(stage.camera.aspect,1),size.y,size.z,.5)*2.2);}else stage.camera.position.add(center.clone().sub(stage.controls.target));stage.controls.target.copy(center);stage.controls.update();api.invalidate();api.commit();};
-  toolbar.querySelector('#camera-focus-selected').onclick=()=>{const selected=api.getSelection();if(!selected){status('먼저 인물이나 사물을 선택하세요.');return;}centerOn(new THREE.Box3().setFromObject(selected),false);status('선택한 대상을 회전·줌의 중심으로 맞췄습니다.');};
-  toolbar.querySelector('#camera-frame-scene').onclick=()=>{setMode('move');const objects=api.sceneObjects?.()||api.objects(),box=new THREE.Box3();objects.forEach(o=>box.union(new THREE.Box3().setFromObject(o)));if(box.isEmpty())return;centerOn(box,true);status('전체 장면으로 중심과 거리를 맞췄습니다.');};
+  toolbar.querySelector('#camera-focus-selected').onclick=()=>{const selected=api.getSelection();if(!selected){status('먼저 인물이나 사물을 선택하세요.');return;}centerOn(displayedObjectBounds(selected),false);status('선택한 대상을 회전·줌의 중심으로 맞췄습니다.');};
+  toolbar.querySelector('#camera-frame-scene').onclick=()=>{setMode('move');const objects=api.sceneObjects?.()||api.objects(),box=new THREE.Box3();objects.forEach(o=>box.union(displayedObjectBounds(o)));if(box.isEmpty())return;centerOn(box,true);status('전체 장면으로 중심과 거리를 맞췄습니다.');};
   toolbar.querySelectorAll('[data-direct-view]').forEach(btn=>btn.onclick=()=>{
     const m=api.getSelection();if(!m){status('먼저 인물을 선택하세요.');return;}
-    const box=new THREE.Box3().setFromObject(m),center=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3()),distance=Math.max(size.y,size.x,size.z)*2.5;
+    const box=displayedObjectBounds(m),center=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3()),distance=Math.max(size.y,size.x,size.z)*2.5;
     // Leave room above the model for the editing toolbar.
     center.y+=size.y*0.12;
     let offset=new THREE.Vector3(1,0,0);if(m.body)offset.applyQuaternion(m.body.getWorldQuaternion(new THREE.Quaternion()));else offset.applyQuaternion(m.quaternion);
@@ -112,7 +113,7 @@ export function initDirectEditor(api){
     if(drag&&drag.object!==m)end(true);
     if(m!==lastModel){lastModel=m;status('');}
     toolbar.querySelector('#direct-selection').textContent=m?m.name||'선택한 인물':'인물을 클릭하세요';
-    outline.visible=!!m&&mode==='move';if(outline.visible)outline.box.setFromObject(m);
+    outline.visible=!!m&&mode==='move';if(outline.visible)displayedObjectBounds(m,outline.box);
     if(drag?.kind==='joint'&&drag.needsSolve){
       const result=solveConstrainedIK(m,manipulationChain(drag.key),drag.target,{iterations:8});
       drag.stalled=Math.abs(result.error-drag.lastError)<1e-6?drag.stalled+1:0;drag.lastError=result.error;

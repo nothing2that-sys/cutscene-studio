@@ -14,7 +14,7 @@ const value=id=>document.getElementById(id).value;
 function build(){
  const stature=Number(value('preview-height'))/100;if(!Number.isFinite(stature)||stature<.5||stature>3){document.getElementById('preview-status').textContent='키는 50~300cm로 입력하세요.';return;}
  if(model){const geometries=new Set(),materials=new Set();model.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)for(const material of [o.material].flat())materials.add(material);});getHumanSkin(model)?.skeleton.dispose();model.removeFromParent();for(const geometry of geometries)geometry.dispose();for(const material of materials)material.dispose();}
- model=createCharacter({height:stature,headUnits:Number(value('preview-heads')),...(value('preview-body')==='feminine'?{chest:{height:.65,spacing:.46,projection:1}}:{})});setBodySurface(model,'human');getHumanSkin(model).material.userData.bodyGuides.value=document.getElementById('preview-guides').checked?1:0;
+ model=createCharacter({height:stature,headUnits:Number(value('preview-heads')),...(value('preview-body')==='feminine'?{chest:{height:.65,spacing:.46,projection:1}}:{})},{legacy:true});setBodySurface(model,'human');getHumanSkin(model).material.userData.bodyGuides.value=document.getElementById('preview-guides').checked?1:0;
  for(const part of ['body','torso','neck','head'])model[part].rotation.set(0,0,0);
  if(value('preview-pose')==='hips'){
   for(const side of ['l','r']){model[side+'_arm'].raise=-5;model[side+'_arm'].straddle=55;model[side+'_elbow'].bend=100;}
@@ -27,7 +27,7 @@ function build(){
   Object.assign(model.l_wrist,{bend:30,turn:60,straddle:45});
  }else if(value('preview-pose')==='raised'){model.l_arm.raise=150;model.l_arm.straddle=25;model.l_elbow.bend=105;model.r_elbow.bend=75;}
  else if(value('preview-pose')==='squat'){for(const side of ['l','r']){model[side+'_leg'].raise=100;model[side+'_leg'].straddle=20;model[side+'_knee'].bend=130;model[side+'_arm'].raise=80;}model.torso.bend=20;}
- constrainBody(model);const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());center=bounds.getCenter(new THREE.Vector3());range=Math.max(size.y*.57,.45);span=Math.max(size.x,size.z);orbit.target.copy(center);frame(new THREE.Vector3(6,.35,4));ready=true;resize();document.getElementById('preview-status').textContent=`${Math.round(stature*100)}cm · ${value('preview-heads')}등신 · 동일한 체형·자세의 방향 비교`;
+ constrainBody(model);const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());center=bounds.getCenter(new THREE.Vector3());range=Math.max(size.y*.57,.45);span=Math.max(size.x,size.z);orbit.target.copy(center);frame(new THREE.Vector3(6,.35,4));ready=true;resize();document.getElementById('preview-status').textContent=`${Math.round(stature*100)}cm · ${value('preview-heads')}등신 · 기존 인체 체형·자세의 방향 비교`;
 }
 function frame(direction){camera.position.copy(center).add(direction);camera.lookAt(center);}
 function viewport(x,w,direction){if(direction)frame(direction);const aspect=w/height,fit=Math.max(range,span*.57/aspect);camera.left=-fit*aspect;camera.right=fit*aspect;camera.top=fit;camera.bottom=-fit;camera.updateProjectionMatrix();renderer.setViewport(x,0,w,height);renderer.setScissor(x,0,w,height);renderer.render(scene,camera);}

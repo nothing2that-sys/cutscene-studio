@@ -463,3 +463,11 @@ input:checked + .slider {
 input:checked + .slider:before {
   transform: translateX(20px);
 }
+/* The fixed layer shares the renderer viewport. Navigation transforms only
+   this existing bitmap; the controls remain accessible above it. */
+#body-v1-fixed-canvas{position:fixed;inset:0;width:100vw;height:100vh;z-index:1;transform-origin:50% 50%;touch-action:none;cursor:grab}
+#body-v1-fixed-canvas[hidden]{display:none}
+.body-v1-view-tools{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:150;display:flex;flex-direction:row;gap:8px;padding:8px;align-items:center;white-space:nowrap}
+.body-v1-view-tools span{font-size:11px;color:var(--text-secondary)}
+.body-v1-panels-hidden #direct-editor,.body-v1-panels-hidden #studio-panel,.body-v1-panels-hidden #properties-panel,.body-v1-panels-hidden #layer-panel{display:none!important}
+body.body-v1-fixed{background:#fff}

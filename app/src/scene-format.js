@@ -50,10 +50,10 @@ function collector() {
   const color=(v,p,fallback)=>{if(v===undefined)return fallback;if(typeof v!=='string'||!/^#[0-9a-f]{6}$/i.test(v)){error(p,'COLOR_REQUIRED','#RRGGBB 형식의 색상이 필요합니다.','#RRGGBB',v);return fallback;}return v;};
   const list=(v,p,max)=>{if(!Array.isArray(v)||v.length>max){error(p,'ARRAY_LIMIT','최대 '+max+'개의 객체 배열이 필요합니다.',{type:'array',maxItems:max},v);return [];}return v.map((x,i)=>obj(x,p+'['+i+']'));};
   function camera(input,p='camera') {
-    const c=obj(input,p);keys(c,['position','target','fov'],p);
+    const c=obj(input,p);keys(c,['position','target','fov','zoom','view'],p);
     const position=vec(c.position,p+'.position'),target=vec(c.target,p+'.target');
     if(Array.isArray(c.position)&&Array.isArray(c.target)&&position.every((x,i)=>Math.abs(x-target[i])<1e-6))error(p,'CAMERA_NO_DIRECTION','카메라 위치와 목표점은 달라야 합니다.','position != target',c);
-    return {position,target,fov:num(c.fov===undefined?40:c.fov,p+'.fov',10,100)};
+    const projection={};if(c.zoom!==undefined)projection.zoom=num(c.zoom,p+'.zoom',.0001,10000);if(c.view!==undefined){if(c.view===null)projection.view=null;else{const v=obj(c.view,p+'.view');keys(v,['enabled','fullWidth','fullHeight','offsetX','offsetY','width','height'],p+'.view');if(typeof v.enabled!=='boolean')error(p+'.view.enabled','BOOLEAN_REQUIRED','true 또는 false가 필요합니다.');projection.view={enabled:!!v.enabled};for(const k of ['fullWidth','fullHeight','width','height'])projection.view[k]=num(v[k],p+'.view.'+k,.0001,1000000);for(const k of ['offsetX','offsetY'])projection.view[k]=num(v[k],p+'.view.'+k,-1000000,1000000);}}return {position,target,fov:num(c.fov===undefined?40:c.fov,p+'.fov',10,100),...projection};
   }
   return {errors,warnings,error,warn,obj,keys,num,vec,str,color,list,camera};
 }

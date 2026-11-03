@@ -1,3 +1,5 @@
+import {getBodyV1,validateBodyV1State} from './body-v1-adapter.js';
+import {displayedObjectBounds} from './body-surface.js';
 import * as THREE from 'three';
 import {POSES} from './scene-format.js';
 import {constrainBody,snapshotBodyJoints} from './body-rig.js';
@@ -14,22 +16,24 @@ export function applyReferencePose(m,reference,ground=true){
   // Verify every source key before touching the target model.
   const allowed=snapshotBodyJoints(m);
   if(reference.kind==='rotations')for(const key of Object.keys(reference.rotations))if(!Object.hasOwn(allowed,key))throw Error('이 인물에 없는 관절입니다: '+key);
+  const adapter=getBodyV1(m);if(reference.bodyAsset){validateBodyV1State({...reference,type:'mannequin'});if(!adapter)throw Error('공통 인체 v1 포즈는 공통 인체에 적용하세요.');}const savedAdapter=adapter?.snapshot();
   const before=ground?footY(m):null,saved=Object.fromEntries(Object.entries(snapshotBodyJoints(m)).map(([key,j])=>[key,j.rotation]));
   const position=m.position.clone();
   try{
-    for(const [key,q]of m.userData.bodyBase.rotations)m[key].quaternion.copy(q);
+    if(adapter&&!reference.bodyAsset)adapter.neutral();for(const [key,q]of m.userData.bodyBase.rotations)m[key].quaternion.copy(q);
     if(reference.kind==='rotations')for(const [key,r]of Object.entries(reference.rotations))m[key].rotation.fromArray(r.length===3?[...r,'XYZ']:r);
     else {for(const source of [POSES[reference.pose],reference.joints])for(const [key,values]of Object.entries(source||{}))for(const [prop,v]of Object.entries(values))m[key][prop]=v;}
-    constrainBody(m);if(ground)m.position.y+=before-footY(m);m.updateMatrixWorld(true);
-  }catch(error){m.position.copy(position);for(const [key,r]of Object.entries(saved))m[key].rotation.fromArray(r);constrainBody(m);throw error;}
+    if(reference.bodyAsset)adapter.restore(reference.bodyV1Pose);constrainBody(m);if(ground)m.position.y+=before-footY(m);m.updateMatrixWorld(true);
+  }catch(error){m.position.copy(position);for(const [key,r]of Object.entries(saved))m[key].rotation.fromArray(r);if(savedAdapter)adapter.restore(savedAdapter);constrainBody(m);throw error;}
 }
 export function exportReferencePose(m){
   if(!m?.torso)throw Error('저장할 인물을 선택하세요.');constrainBody(m);
-  return {type:'pose-reference',version:1,name:(m.name||'인물')+' 포즈',rotationUnit:'radians',rotations:Object.fromEntries(Object.entries(snapshotBodyJoints(m)).map(([key,j])=>[key,j.rotation]))};
+  const asset=getBodyV1(m);return {...(asset?{bodyAsset:{...m.userData.bodyAsset},bodyProfile:structuredClone(m.userData.bodyProfile),bodyV1Pose:asset.snapshot()}:{}),type:'pose-reference',version:1,name:(m.name||'인물')+' 포즈',rotationUnit:'radians',rotations:Object.fromEntries(Object.entries(snapshotBodyJoints(m)).map(([key,j])=>[key,j.rotation]))};
 }
 export function poseFingerprint(pose){
-  return JSON.stringify(Object.entries(pose.rotations).sort(([a],[b])=>a.localeCompare(b)).map(([key,r])=>{const q=new THREE.Quaternion().setFromEuler(new THREE.Euler(...r.slice(0,3),r[3]||'XYZ'));const sign=q.w<0?-1:1;return [key,...q.toArray().map(v=>Math.round(v*sign*1000))];}));
+ const rotations=Object.entries(pose.rotations).sort(([a],[b])=>a.localeCompare(b)).map(([key,r])=>{const q=new THREE.Quaternion().setFromEuler(new THREE.Euler(...r.slice(0,3),r[3]||'XYZ'));const sign=q.w<0?-1:1;return [key,...q.toArray().map(v=>Math.round(v*sign*1000))];});if(!pose.bodyV1Pose)return JSON.stringify(rotations);const p=pose.bodyV1Pose;return JSON.stringify({rotations,rest:p.driverRestRevision,base:p.basePose.quaternions,root:p.basePose.root,curls:p.basePose.curls,driver:p.driverBase},(_key,v)=>typeof v==='number'?Math.round(v*1000)/1000:v);
 }
+
 const fingerprint=poseFingerprint;
 export function installPoseLibrary(editor,api){
   editor.poseSlot.innerHTML=`<select id="quick-pose" aria-label="기본 포즈">${Object.entries(POSE_NAMES).map(([k,n])=>`<option value="${k}">${n}</option>`).join('')}</select><button class="btn" id="quick-pose-apply">포즈 적용</button><label class="btn">포즈 JSON 불러오기<input id="pose-reference-file" type="file" accept=".json" hidden></label><button class="btn" id="pose-reference-save">포즈 저장</button><label class="pose-ground"><input id="pose-ground" type="checkbox" checked>발 높이 유지</label>`;
@@ -37,7 +41,7 @@ export function installPoseLibrary(editor,api){
   let store,records=[],ready=false;
   const known=new Set();let auto=true;try{auto=localStorage.getItem('pose-auto-record')!=='false';}catch{}
   const apply=(reference,record,{groundVolume=false,referenceView=null}={})=>{editor.cancel();const model=api.getSelection(),ground=document.getElementById('pose-ground').checked,floor=ground&&groundVolume&&model?.torso?footY(model):null;applyReferencePose(model,reference,ground&&!groundVolume);
-    if(floor!==null){model.updateMatrixWorld(true);model.position.y+=floor-new THREE.Box3().setFromObject(model).min.y;model.updateMatrixWorld(true);}
+    if(floor!==null){model.updateMatrixWorld(true);model.position.y+=floor-displayedObjectBounds(model).min.y;model.updateMatrixWorld(true);}
     if(record){record.fingerprint=fingerprint(exportReferencePose(api.getSelection()));known.add(record.fingerprint);record.thumbnail=api.thumbnail();store?.put(record).catch(error=>editor.status('저장 실패: '+error.message));render();}
     editor.setMode('pose');api.afterApply?.(referenceView);api.refresh();api.commit();editor.status('선택한 인물에 「'+reference.name+'」 포즈를 적용했습니다. 체형·수평 위치를 유지합니다.');};
   document.getElementById('quick-pose-apply').onclick=()=>run(()=>{const pose=document.getElementById('quick-pose').value;apply({name:POSE_NAMES[pose],kind:'semantic',pose,joints:{}});});

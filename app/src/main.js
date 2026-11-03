@@ -1,3 +1,4 @@
+import {displayedObjectBounds} from './body-surface.js';
 import * as THREE from 'three';
 import { createStage, getStage } from 'mannequin-js/src/mannequin.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
@@ -9,8 +10,11 @@ import { installPoseLibrary, poseFingerprint } from './pose-library.js';
 import {renderObjectInfo} from './scene-object-info.js';
 import { initViewPerformance } from './view-performance.js';
 import { analyzeEditorState } from './scene-feedback.js';
+import {prepareBodyV1,getBodyV1,validateBodyV1State} from './body-v1-adapter.js';
+import {installBodyV1Main} from './body-v1-main.js';
+import {installSceneFixedView} from './body-v1-fixed.js';
 import { SceneValidationError, JOINTS } from './scene-format.js';
-import { createCharacter, configureBody, captureBoneLayout, lockBoneLayout, enforceBoneLengths, constrainBody, clampJoint, manipulationChain, solveConstrainedIK, snapshotBodyJoints } from './body-rig.js';
+import { createCharacter, configureBody, captureBoneLayout, lockBoneLayout, enforceBoneLengths, constrainBody, clampJoint, manipulationChain, solveConstrainedIK, snapshotBodyJoints, readLegacyPosture } from './body-rig.js';
 
 const BUILTIN_POSES = {
   Default: { posture: null, joints: {} }
@@ -69,6 +73,8 @@ let historyIndex = -1;
 let studio = null;
 let restoreGeneration = 0;
 let restoringState = false;
+let pendingRestore = null;
+async function whenSceneReady(){while(pendingRestore){const operation=pendingRestore,generation=restoreGeneration;try{await operation;}catch(error){if(generation===restoreGeneration)throw error;}}}
 let interactionMode='move',directEditor=null,directDragging=false,poseLibrary=null;
 let viewPerformance=null;
 
@@ -97,11 +103,13 @@ function snapshotState() {
         studioId: m.userData.studioId,
         sceneNotes: m.userData.sceneNotes,
         bodyProfile: m.userData.bodyProfile,
+        visible:m.visible,
+        ...(getBodyV1(m)?{bodyAsset:m.userData.bodyAsset,bodyV1Pose:getBodyV1(m).snapshot()}:{bodyCompatibility:'legacy-male-v7'}),
         boneLayout: captureBoneLayout(m),
         position: m.position.toArray(),
         rotation: m.rotation.toArray(),
         scale: m.scale.toArray(),
-        posture: m.posture,
+        posture: readLegacyPosture(m),
         joints: joints
       };
     }),
@@ -113,19 +121,21 @@ function snapshotState() {
       sceneNotes: m.userData.sceneNotes,
       glbBase64: m.userData._glbBase64 || null,
       primitive: m.userData.primitive || null,
+      visible:m.visible,
     })),
     activeIndex: mannequins.indexOf(activeMannequin),
     activeImportIndex: importedModels.indexOf(activeMannequin),
     selectedBodyPart,
-    camera: viewPerformance?.snapshotCamera() || { position: stage.camera.position.toArray(), rotation: stage.camera.rotation.toArray(), target: stage.controls.target.toArray(), fov: stage.camera.fov },
+    camera: viewPerformance?.snapshotCamera() || { position: stage.camera.position.toArray(), rotation: stage.camera.rotation.toArray(), target: stage.controls.target.toArray(), fov: stage.camera.fov,zoom:stage.camera.zoom,view:stage.camera.view?{...stage.camera.view}:null },
     studio: studio?.snapshot(),
+    fixedView:window.__bodyV1?.fixedController?.state||null,
   };
   return state;
 }
 
 function captureState() {
   viewPerformance?.invalidate();
-  if (restoringState) return;
+  if (restoringState || pendingRestore) return;
   mannequins.forEach(constrainBody);
   const state = snapshotState();
   const previous=historyIndex>=0?JSON.parse(historyStack[historyIndex]):null;
@@ -143,88 +153,24 @@ function captureState() {
 }
 
 function applyState(json) {
-  if (!json) return;
-  const state = JSON.parse(json);
-  const checked = analyzeEditorState(state);
-  if (!checked.valid) throw new SceneValidationError(checked.errors);
-  restoringState = true;
-  viewPerformance?.beforeRestore();
+  if(!json)return;const state=JSON.parse(json);validateBodyV1State(state);const checked=analyzeEditorState(state);if(!checked.valid)throw new SceneValidationError(checked.errors);
+  let generation;const preparedActors=[],preparedProps=new Array((state.importedModels||[]).length),tasks=[];
+  const discard=()=>{for(const m of preparedActors){getBodyV1(m)?.full.dispose();m.removeFromParent();}for(const m of preparedProps)if(m){m.removeFromParent();m.traverse(n=>{n.geometry?.dispose();});}};
+  const prepareProp=(model,d,index)=>{model.removeFromParent();model.name=d.name||d.primitive?.name||'restored-glb';model.userData.sceneNotes=d.sceneNotes;model.position.fromArray(d.position);model.rotation.fromArray(d.rotation);model.scale.fromArray(d.scale);model.visible=d.visible!==false;if(d.glbBase64){model.userData._glbBase64=d.glbBase64;model.userData._glbFileName=d.name;}preparedProps[index]=model;};
   try {
-  const generation = ++restoreGeneration;
-  mannequins.forEach(m => stage.scene.remove(m));
-  mannequins.length = 0;
-  importedModels.forEach(m => stage.scene.remove(m));
-  importedModels.length = 0;
-  detachGizmo();
-  activeMannequin = null;
-  clearHighlight();
-  state.mannequins.forEach(d => {
-    const m = createFullMannequin(d.bodyProfile || null);
-    m.name = d.name || '';
-    m.userData.studioId = d.studioId;
-    m.userData.sceneNotes = d.sceneNotes;
-    m.position.fromArray(d.position);
-    m.rotation.fromArray(d.rotation);
-    m.scale.fromArray(d.scale);
-    try {
-      if (d.posture) m.posture = d.posture;
-      // Re-apply specific joint rotations and positions since posture might not cover everything
-      if (d.joints) {
-        for (const [part, data] of Object.entries(d.joints)) {
-          if (m[part]) {
-            if (data.position) m[part].position.fromArray(data.position);
-            if (data.rotation) m[part].rotation.fromArray(data.rotation);
-            if (data.scale) m[part].scale.fromArray(data.scale);
-          }
-        }
-      }
-    } catch(e) { console.error('Failed to restore posture', e); }
-    lockBoneLayout(m); constrainBody(m);
-    mannequins.push(m);
-    stage.scene.add(m);
-  });
-  // Restore imported GLB models from base64 if they were loaded
-  if (state.importedModels && state.importedModels.length > 0) {
-    const loader = new GLTFLoader();
-    state.importedModels.forEach(d => {
-      if (d.primitive && studio) {
-        const model = studio.createProp(d.primitive);
-        model.name = d.name || d.primitive.name;
-        model.userData.sceneNotes = d.sceneNotes;
-        model.position.fromArray(d.position);
-        model.rotation.fromArray(d.rotation);
-        model.scale.fromArray(d.scale);
-        stage.scene.add(model);
-        importedModels.push(model);
-        return;
-      }
-      if (!d.glbBase64) {
-        // If no base64, we can't fully restore it, but we can create a placeholder or just skip
-        return;
-      }
-      const arrayBuffer = base64ToArrayBuffer(d.glbBase64);
-      loader.parse(arrayBuffer, '', (gltf) => {
-        if (generation !== restoreGeneration) return;
-        const model = gltf.scene;
-        model.name = d.name || 'restored-glb';
-        model.userData.sceneNotes = d.sceneNotes;
-        model.position.fromArray(d.position);
-        model.rotation.fromArray(d.rotation);
-        model.scale.fromArray(d.scale);
-        model.userData._glbBase64 = d.glbBase64;
-        model.userData._glbFileName = d.name;
-        stage.scene.add(model);
-        importedModels.push(model);
-        updateLayerWindow();
-      }, (error) => {
-        console.error('Failed to restore GLB on undo:', d.name, error);
-      });
-    });
-  }
+    for(const d of state.mannequins){const m=createFullMannequin(d.bodyProfile||null,{legacy:!d.bodyAsset,driverNativeScale:d.bodyV1Pose?.driverNativeScale});m.removeFromParent();preparedActors.push(m);m.name=d.name||'';m.userData.studioId=d.studioId;m.userData.sceneNotes=d.sceneNotes;m.visible=d.visible!==false;m.position.fromArray(d.position);m.rotation.fromArray(d.rotation);m.scale.fromArray(d.scale);if(d.posture)m.posture=d.posture;if(d.joints)for(const[part,data]of Object.entries(d.joints))if(m[part]){if(data.position)m[part].position.fromArray(data.position);if(data.rotation)m[part].rotation.fromArray(data.rotation);if(data.scale)m[part].scale.fromArray(data.scale);}getBodyV1(m)?.restore(d.bodyV1Pose);lockBoneLayout(m);constrainBody(m);}
+    const loader=new GLTFLoader();for(const[index,d]of(state.importedModels||[]).entries()){if(d.primitive&&studio){prepareProp(studio.createProp(d.primitive),d,index);continue;}if(!d.glbBase64)throw Error('복원할 GLB 원문이 없습니다: '+(d.name||index));const bytes=base64ToArrayBuffer(d.glbBase64);tasks.push(new Promise((resolve,reject)=>loader.parse(bytes,'',gltf=>{prepareProp(gltf.scene,d,index);resolve();},reject)));}
+  }catch(error){discard();throw error;}
+  generation=++restoreGeneration;
+  const commit=()=>{if(generation!==restoreGeneration){discard();return false;}const previousActors=[...mannequins],previousProps=[...importedModels],previousActive=activeMannequin,previousPart=selectedBodyPart,previousStudio=studio?.snapshot(),previousFixed=window.__bodyV1?.fixedController?.state,previousCamera={position:stage.camera.position.clone(),quaternion:stage.camera.quaternion.clone(),target:stage.controls.target.clone(),fov:stage.camera.fov,zoom:stage.camera.zoom,view:stage.camera.view?{...stage.camera.view}:null};restoringState=true;viewPerformance?.beforeRestore();try{
+    mannequins.forEach(m=>stage.scene.remove(m));mannequins.splice(0,mannequins.length,...preparedActors);for(const m of mannequins)stage.scene.add(m);
+    importedModels.forEach(m=>stage.scene.remove(m));importedModels.splice(0,importedModels.length,...preparedProps);for(const m of importedModels)stage.scene.add(m);detachGizmo();activeMannequin=null;clearHighlight();
   if (state.camera) {
     stage.camera.position.fromArray(state.camera.position);
     stage.camera.rotation.fromArray(state.camera.rotation);
     stage.camera.fov = state.camera.fov || 35;
+    stage.camera.zoom=state.camera.zoom||1;
+    stage.camera.view=state.camera.view?{...state.camera.view}:null;
     if (state.camera.target) stage.controls.target.fromArray(state.camera.target);
     stage.camera.updateProjectionMatrix();
     stage.controls.update();
@@ -252,19 +198,31 @@ function applyState(json) {
   }
   updatePropertiesPanel();
   updateLayerWindow();
-  } finally { restoringState = false;viewPerformance?.afterRestore(); }
+
+    window.__bodyV1?.fixedController?.restore(state.fixedView);for(const m of previousActors)getBodyV1(m)?.full.dispose();return true;
+  }catch(error){for(const m of [...mannequins,...importedModels])stage.scene.remove(m);mannequins.splice(0,mannequins.length,...previousActors);importedModels.splice(0,importedModels.length,...previousProps);for(const m of [...mannequins,...importedModels])stage.scene.add(m);activeMannequin=previousActive;selectedBodyPart=previousPart;stage.camera.position.copy(previousCamera.position);stage.camera.quaternion.copy(previousCamera.quaternion);stage.camera.fov=previousCamera.fov;stage.camera.zoom=previousCamera.zoom;stage.camera.view=previousCamera.view;stage.controls.target.copy(previousCamera.target);stage.camera.updateProjectionMatrix();studio?.restore(previousStudio);detachGizmo();if(activeMannequin)attachGizmo(activeMannequin);updatePropertiesPanel();updateLayerWindow();window.__bodyV1?.fixedController?.restore(previousFixed);discard();throw error;
+  }finally{restoringState=false;viewPerformance?.afterRestore();}};
+  if(!tasks.length){pendingRestore=null;const status=document.getElementById('scene-restore-status');if(status){status.textContent='';status.hidden=true;}return commit();}
+  const status=document.getElementById('scene-restore-status')||Object.assign(document.body.appendChild(document.createElement('output')),{id:'scene-restore-status'});status.setAttribute('role','status');status.setAttribute('aria-live','polite');status.style.cssText='position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:10000;background:#222;color:white;padding:8px 12px;border-radius:6px;max-width:80vw';status.hidden=false;status.textContent='장면 복원 중 · 기존 장면을 유지합니다. 저장은 완료 후 진행됩니다.';
+  const operation=Promise.all(tasks).then(commit,error=>{discard();throw error;});pendingRestore=operation;operation.then(()=>{if(pendingRestore===operation){pendingRestore=null;status.textContent='';status.hidden=true;captureState();}},error=>{if(pendingRestore===operation){pendingRestore=null;status.textContent='장면 복원 실패 · 기존 장면을 유지했습니다. '+error.message;}});return operation;
 }
 
-function undo() { if (historyIndex > 0) applyState(historyStack[--historyIndex]); updateHistoryButtons(); }
-function redo() { if (historyIndex < historyStack.length-1) applyState(historyStack[++historyIndex]); updateHistoryButtons(); }
+function restoreHistory(index){const previous=historyIndex;let result;try{result=applyState(historyStack[index]);historyIndex=index;updateHistoryButtons();}catch(error){historyIndex=previous;updateHistoryButtons();throw error;}const generation=restoreGeneration;if(result?.then)result.catch(()=>{if(generation===restoreGeneration){historyIndex=previous;updateHistoryButtons();}});return result;}
+function undo(){if(historyIndex>0)return restoreHistory(historyIndex-1);}
+function redo(){if(historyIndex<historyStack.length-1)return restoreHistory(historyIndex+1);}
 function updateHistoryButtons() {
   document.getElementById('btn-undo').disabled = historyIndex <= 0;
   document.getElementById('btn-redo').disabled = historyIndex >= historyStack.length - 1;
 }
 
 // ─── Mannequin Factory ────────────────────────────────────────────────────────
-function createFullMannequin(profile) {
-  const m = createCharacter(profile);
+function createFullMannequin(profile,options) {
+  const m = createCharacter(profile,options);
+  // Main v1 keeps the same direct-lit surface in edit, preview and export.
+  // Its authored meshes receive shadows; props and legacy bodies still cast.
+  const bodyV1=getBodyV1(m);
+  if(bodyV1)for(const mesh of bodyV1.bodyMeshes)mesh.castShadow=false;
+  m.userData.studioId='actor-'+crypto.randomUUID();
   // Tag each joint with its poseConfig key
   Object.keys(poseConfig).forEach(key => {
     const target = poseConfig[key].target;
@@ -288,6 +246,7 @@ function createFullMannequin(profile) {
   // Propagate posePartKey down to every Mesh for click-selection
   m.traverse(obj => {
     if (!obj.isMesh) return;
+    if(getBodyV1(m)&&obj.userData.posePartKey)return;
     let tmp = obj;
     while (tmp) {
       if (tmp.userData._jointKey) {
@@ -373,11 +332,15 @@ function syncProxy() {
   connectionLine.computeLineDistances();
 }
 
+function highlightTargets(node){
+  const targets=[node.image||node];
+  for(let p=node;p;p=p.parent){const body=getBodyV1(p);if(body){targets.push(...body.bodyMeshes.filter(mesh=>mesh.userData.posePartNode===node));break;}}
+  return targets;
+}
 function setHighlight(node) {
   clearHighlight();
   selectedPartGroup = node;
-  const targetToHighlight = node.image ? node.image : node;
-  targetToHighlight.traverse(nc => {
+  for(const targetToHighlight of highlightTargets(node))targetToHighlight.traverse(nc => {
     if (nc.isMesh && nc.material && !nc.userData.bodyOutline) {
       if (Array.isArray(nc.material)) {
         if (!nc.userData.origEmissive) nc.userData.origEmissive = nc.material.map(m => m.emissive.clone());
@@ -392,8 +355,7 @@ function setHighlight(node) {
 
 function clearHighlight() {
   if (selectedPartGroup) {
-    const targetToClear = selectedPartGroup.image ? selectedPartGroup.image : selectedPartGroup;
-    targetToClear.traverse(nc => {
+    for(const targetToClear of highlightTargets(selectedPartGroup))targetToClear.traverse(nc => {
       if (nc.isMesh && nc.userData.origEmissive) {
         if (Array.isArray(nc.material)) nc.material.forEach((m, i) => m.emissive.copy(nc.userData.origEmissive[i]));
         else nc.material.emissive.copy(nc.userData.origEmissive);
@@ -498,6 +460,7 @@ function updateLayerWindow() {
             studioId: obj.userData.studioId,
             sceneNotes: obj.userData.sceneNotes,
             bodyProfile: obj.userData.bodyProfile,
+            ...(getBodyV1(obj)?{bodyAsset:obj.userData.bodyAsset,bodyV1Pose:getBodyV1(obj).snapshot()}:{bodyCompatibility:'legacy-male-v7'}),
             boneLayout: captureBoneLayout(obj),
             position: obj.position.toArray(),
             rotation: obj.rotation.toArray(),
@@ -624,7 +587,9 @@ function base64ToArrayBuffer(base64) {
 }
 
 function addMannequinFromData(data) {
-  const m = createFullMannequin(data.bodyProfile || null);
+  try{validateBodyV1State({...data,type:'mannequin'});}catch(error){error.scenePreserved=true;throw error;}
+  const m = createFullMannequin(data.bodyProfile || null,{legacy:!data.bodyAsset,driverNativeScale:data.bodyV1Pose?.driverNativeScale});
+  m.removeFromParent();try{
   m.userData.studioId=data.studioId;m.userData.sceneNotes=data.sceneNotes;
   m.position.fromArray(data.position || [0, GROUND_Y, 0]);
   m.rotation.fromArray(data.rotation || [0, 0, 0, 'XYZ']);
@@ -641,8 +606,10 @@ function addMannequinFromData(data) {
         }
       }
     }
-  } catch(err) {}
+  } catch(err) {throw err;}
+  getBodyV1(m)?.restore(data.bodyV1Pose);
   lockBoneLayout(m); constrainBody(m);
+  }catch(error){getBodyV1(m)?.full.dispose();m.removeFromParent();error.scenePreserved=true;throw error;}
   mannequins.push(m);
   stage.scene.add(m);
   activeMannequin = m;
@@ -719,14 +686,15 @@ function addMannequinFromPickedFile() {
 
 
 // ─── Save/Load Project ────────────────────────────────────────────────────────
-function saveProject() {
+async function saveProject() {
+  try{await whenSceneReady();}catch(error){studio?.showImportError(error);return;}
   if (studio) { studio.saveProject(snapshotState()); return; }
   const data = {
     mannequins: mannequins.map(m => ({
       position: m.position.toArray(),
       rotation: m.rotation.toArray(),
       scale: m.scale.toArray(),
-      posture: m.posture,
+      posture: readLegacyPosture(m),
     })),
     importedModels: importedModels.map(m => ({
       position: m.position.toArray(),
@@ -755,7 +723,7 @@ async function loadProject(file) {
   try {
     if(file.size>40_000_000)throw new Error('프로젝트 JSON은 40MB 이하로 넣어주세요.');
     text=await file.text();
-    studio.importText(text,file.name,false);
+    await studio.importText(text,file.name,false);
   }catch(error){studio?.showImportError(error,text,file.name);}
   finally{document.getElementById('btn-load').value='';}
 }
@@ -854,18 +822,24 @@ function setupSliderListeners() {
     const num = document.getElementById(`num-${id}`);
     if (!rng || !num) return;
     rng.addEventListener('input', () => {
+      const originalRequest=parseFloat(rng.value),from=read();
+      if(id.startsWith('rot-')&&cfg.target!=='self'&&getBodyV1(activeMannequin)){window.__bodyV1.commitJointInput({actorId:activeMannequin.userData.studioId,joint:cfg.target,property:id.slice(4),degrees:originalRequest});return;}
       const v = THREE.MathUtils.clamp(parseFloat(rng.value), +rng.min, +rng.max);
       write(v);
       if(activeMannequin.torso)constrainBody(activeMannequin);
       num.value = v.toFixed(2);
+      if(id.startsWith('rot-')&&getBodyV1(activeMannequin))window.__bodyV1?.recordJointInput({actorId:activeMannequin.userData.studioId,joint:cfg.target,property:id.slice(4),degrees:originalRequest,from});
     });
     num.addEventListener('input', () => {
       const entered = parseFloat(num.value);
       if (!Number.isFinite(entered)) return;
+      if(id.startsWith('rot-')&&cfg.target!=='self'&&getBodyV1(activeMannequin)){window.__bodyV1.commitJointInput({actorId:activeMannequin.userData.studioId,joint:cfg.target,property:id.slice(4),degrees:entered});return;}
+      const from=read();
       const v = THREE.MathUtils.clamp(entered, +rng.min, +rng.max);
       write(v);num.value=String(v);
       if(activeMannequin.torso)constrainBody(activeMannequin);
       rng.value = Math.max(parseFloat(rng.min), Math.min(parseFloat(rng.max), v));
+      if(id.startsWith('rot-')&&getBodyV1(activeMannequin))window.__bodyV1?.recordJointInput({actorId:activeMannequin.userData.studioId,joint:cfg.target,property:id.slice(4),degrees:entered,from});
     });
     rng.addEventListener('change', captureState);
     num.addEventListener('change', captureState);
@@ -987,6 +961,9 @@ function bodyProfilePanel() {
 }
 function bindBodyProfile() {
   if(!activeMannequin?.torso)return;
+  const common=!!getBodyV1(activeMannequin),status=document.getElementById('body-status');
+  if(status)status.textContent=common?'공통 인체: 키 조절 지원 · 기본 등신과 가슴 형태 유지':'기존 인체: 저장된 체형과 포즈 유지';
+  if(common){document.getElementById('body-head-units').disabled=true;document.getElementById('body-chest-enabled').disabled=true;document.querySelectorAll('[data-head-units],[data-body-preset]').forEach(button=>button.disabled=true);}
   document.querySelectorAll('[data-head-units]').forEach(button=>button.onclick=()=>{document.getElementById('body-head-units').value=button.dataset.headUnits;});
   document.querySelectorAll('[data-body-preset]').forEach(button=>button.onclick=()=>{const enabled=button.dataset.bodyPreset==='feminine';document.getElementById('body-chest-enabled').checked=enabled;if(enabled){document.getElementById('body-chest-height').value=65;document.getElementById('body-chest-spacing').value=46;document.getElementById('body-chest-projection').value=1;}document.getElementById('body-apply').click();});
   document.getElementById('body-chest-enabled').onchange=e=>{document.getElementById('body-chest-options').hidden=!e.target.checked;};
@@ -1187,7 +1164,8 @@ function onMouseUp() {
 }
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
-function init() {
+async function init() {
+  await prepareBodyV1();
   stage = getStage();
   stage.scene.background = new THREE.Color(0x1a1a1a);
   const cc = document.getElementById('canvas-container');
@@ -1328,6 +1306,8 @@ function init() {
     });
   }
 
+  // During asynchronous restore, keep the old scene coherent and reject edits until the transaction settles.
+  for(const event of ['pointerdown','click','input','change'])document.addEventListener(event,e=>{if(!pendingRestore||e.target.closest?.('#btn-save,#btn-load,#btn-undo,#btn-redo,#scene-restore-status'))return;e.preventDefault();e.stopImmediatePropagation();},true);
   // Mouse events
   stage.renderer.domElement.addEventListener('pointerdown', onMouseDown);
   window.addEventListener('pointermove', onMouseMove);
@@ -1368,6 +1348,8 @@ function init() {
   poseLibrary=installPoseLibrary(directEditor,{getSelection:()=>activeMannequin,refresh:updatePropertiesPanel,commit:captureState,thumbnail:()=>studio.poseThumbnail(activeMannequin),afterApply:view=>viewPerformance?.refocus(view)});
   viewPerformance=initViewPerformance({stage,getSelection:()=>activeMannequin,getMode:()=>interactionMode,objects:()=>[...mannequins,...importedModels],isDragging:()=>directDragging||isDraggingIK||!!transformControl.dragging,
     invalidatePreview:()=>studio.invalidatePreview(),tickPreview:paused=>studio.tick({paused}),updateWalls:()=>studio.updateEditingWalls()});
+  const bodyV1=installBodyV1Main({stage,mannequins,importedModels,studio,viewPerformance,snapshot:snapshotState,apply:applyState,whenReady:whenSceneReady,isRestoring:()=>!!pendingRestore,capture:captureState,undo,redo,create:createFullMannequin,selected:()=>activeMannequin,refresh:()=>{updatePropertiesPanel();updateLayerWindow();}});
+  installSceneFixedView(bodyV1);
   captureState();
 }
 
@@ -1384,8 +1366,9 @@ function addMannequin(poseName = 'Default') {
         }
       }
     }
-    m.updateMatrixWorld(true);
-    m.position.y -= new THREE.Box3().setFromObject(m).min.y;
+    constrainBody(m);const asset=getBodyV1(m);asset?.sync();m.updateMatrixWorld(true);
+    const bounds=displayedObjectBounds(m);
+    m.position.y-=bounds.min.y;asset?.sync();
     
     mannequins.push(m);
     activeMannequin = m;
