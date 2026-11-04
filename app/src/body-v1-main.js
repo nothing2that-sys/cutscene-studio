@@ -21,12 +21,12 @@ export function installBodyV1Main(api){
   get props(){return api.importedModels.map((p,i)=>({id:p.userData.primitive?.id||p.userData.studioId||'prop-'+i,root:p,meshes:meshes(p)}));},
   get renderers(){return [api.stage.renderer,api.studio.previewRenderer];},
   get cameras(){return {working:api.stage.camera,shot:api.studio.shotCamera};},
-  get displayCamera(){return fixed?.enabled?fixed.displayCamera:api.stage.camera;},
+  get displayCamera(){return fixed?fixed.displayCamera:api.stage.camera;},
   get cache(){return fixed?.cache||null;},
   installFixedView(controller){fixed=controller;return boundary;},
   get fixedController(){return fixed;},
   drive:{
-   applySource(id,source){if(api.isRestoring?.())throw Error('장면 복원 중입니다. 완료 후 편집하세요.');const m=model(id),a=getBodyV1(m),request=NATURAL_SOURCE_REQUESTS[source];if(!a||!request)throw Error('공통 인체와 추정 자세를 선택하세요.');const before=api.snapshot();try{m.position.fromArray(request.actorPlacement);m.updateMatrixWorld(true);a.source({source,sourceRequest:request,sourceRequestRevision:request.revision},()=>{for(const key of Object.keys(a.actor(id).joints))clampJoint(m,key);});constrainBody(m);boundary.drive.setMode('3d','working');api.viewPerformance.setWorkingCamera(request.camera);api.refresh?.();api.capture();fixed?.invalidate?.();return a.snapshot();}catch(error){api.apply(JSON.stringify(before));throw error;}},
+   applySource(id,source){if(api.isRestoring?.())throw Error('장면 복원 중입니다. 완료 후 편집하세요.');const m=model(id),a=getBodyV1(m),request=NATURAL_SOURCE_REQUESTS[source];if(!a||!request)throw Error('공통 인체와 추정 자세를 선택하세요.');const before=api.snapshot();try{m.position.fromArray(request.actorPlacement);m.updateMatrixWorld(true);a.source({source,sourceRequest:request,sourceRequestRevision:request.revision},()=>{for(const key of Object.keys(a.actor(id).joints))clampJoint(m,key);});constrainBody(m);boundary.drive.setMode('3d','working');api.viewPerformance.setWorkingCamera({...request.camera,zoom:1,view:null});api.refresh?.();api.capture();fixed?.invalidate?.();return a.snapshot();}catch(error){api.apply(JSON.stringify(before));throw error;}},
    async loadSource(source){const request=NATURAL_SOURCE_REQUESTS[source];if(!request)throw Error('지원하지 않는 공통 몸체 추정 자세');return boundary.drive.loadFixture({id:'source-'+source,source,sourceRequest:request,sourceRequestRevision:request.revision,actorId:'body-v1-primary',heightMeters:1.7,workingCamera:request.camera});},
    async loadFixture(f){
     const state=api.snapshot(),defs=f.actors||[{id:f.actorId||'body-v1-primary',position:f.sourceRequest?.actorPlacement||[0,0,0],pose:f.pose||{}}];state.mannequins=[];

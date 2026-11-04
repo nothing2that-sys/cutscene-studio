@@ -85,7 +85,7 @@ export function initViewPerformance(api){
     beforeRestore(){restoring=true;if(savedCamera){const original=savedCamera;savedCamera=null;soloModel=null;restoreCamera(original);}},
     afterRestore(){restoring=false;sync();invalidate();},
     setWorkingCamera(def){
-      if(savedCamera){const camera=new THREE.PerspectiveCamera(def.fov);camera.position.fromArray(def.position);camera.lookAt(new THREE.Vector3(...def.target));savedCamera={...savedCamera,position:[...def.position],target:[...def.target],rotation:camera.rotation.toArray(),fov:def.fov};}
+      if(savedCamera){const camera=new THREE.PerspectiveCamera(def.fov);camera.position.fromArray(def.position);camera.lookAt(new THREE.Vector3(...def.target));savedCamera={...savedCamera,position:[...def.position],target:[...def.target],rotation:camera.rotation.toArray(),fov:def.fov,...('zoom' in def?{zoom:def.zoom,view:def.view?{...def.view}:null}:{})};}
       else restoreCamera({...cameraState(),...def,rotation:cameraState().rotation});invalidate();
     },
     setWorkingFov(value){if(savedCamera)savedCamera.fov=value;else {stage.camera.fov=value;stage.camera.updateProjectionMatrix();}invalidate();}

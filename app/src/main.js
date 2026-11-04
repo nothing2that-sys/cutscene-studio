@@ -163,6 +163,8 @@ function applyState(json) {
   }catch(error){discard();throw error;}
   generation=++restoreGeneration;
   const commit=()=>{if(generation!==restoreGeneration){discard();return false;}const previousActors=[...mannequins],previousProps=[...importedModels],previousActive=activeMannequin,previousPart=selectedBodyPart,previousStudio=studio?.snapshot(),previousFixed=window.__bodyV1?.fixedController?.state,previousCamera={position:stage.camera.position.clone(),quaternion:stage.camera.quaternion.clone(),target:stage.controls.target.clone(),fov:stage.camera.fov,zoom:stage.camera.zoom,view:stage.camera.view?{...stage.camera.view}:null};restoringState=true;viewPerformance?.beforeRestore();try{
+    // Commit cached fixed-view pan/zoom to the outgoing camera so restore-time camera reads cannot bake it into the incoming one.
+    window.__bodyV1?.fixedController?.commitView?.();
     mannequins.forEach(m=>stage.scene.remove(m));mannequins.splice(0,mannequins.length,...preparedActors);for(const m of mannequins)stage.scene.add(m);
     importedModels.forEach(m=>stage.scene.remove(m));importedModels.splice(0,importedModels.length,...preparedProps);for(const m of importedModels)stage.scene.add(m);detachGizmo();activeMannequin=null;clearHighlight();
   if (state.camera) {
@@ -508,7 +510,7 @@ function updateLayerWindow() {
   });
 }
 function deleteSelected() {
-  if (!activeMannequin) return;
+  if (!activeMannequin || pendingRestore) return;
   const importIndex = importedModels.indexOf(activeMannequin);
   if (importIndex !== -1) {
     stage.scene.remove(activeMannequin);

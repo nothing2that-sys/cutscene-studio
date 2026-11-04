@@ -20,7 +20,7 @@ export function applyReferencePose(m,reference,ground=true){
   const before=ground?footY(m):null,saved=Object.fromEntries(Object.entries(snapshotBodyJoints(m)).map(([key,j])=>[key,j.rotation]));
   const position=m.position.clone();
   try{
-    if(adapter&&!reference.bodyAsset)adapter.neutral();for(const [key,q]of m.userData.bodyBase.rotations)m[key].quaternion.copy(q);
+    if(adapter&&!reference.bodyAsset)adapter.neutral();else for(const [key,q]of m.userData.bodyBase.rotations)m[key].quaternion.copy(q);
     if(reference.kind==='rotations')for(const [key,r]of Object.entries(reference.rotations))m[key].rotation.fromArray(r.length===3?[...r,'XYZ']:r);
     else {for(const source of [POSES[reference.pose],reference.joints])for(const [key,values]of Object.entries(source||{}))for(const [prop,v]of Object.entries(values))m[key][prop]=v;}
     if(reference.bodyAsset)adapter.restore(reference.bodyV1Pose);constrainBody(m);if(ground)m.position.y+=before-footY(m);m.updateMatrixWorld(true);

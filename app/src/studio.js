@@ -76,7 +76,7 @@ export function initCutsceneStudio(api) {
     setTimeout(()=>URL.revokeObjectURL(url),1000);
   };
   const feedback=createValidationPanel(panel.querySelector('.studio-scroll'),download,status);
-  function readCamera() { const original=api.workingCamera?.();return original?{position:original.position,target:original.target,fov:original.fov,zoom:original.zoom,view:original.view}:{position:stage.camera.position.toArray(),target:stage.controls.target.toArray(),fov:stage.camera.fov,zoom:stage.camera.zoom,view:stage.camera.view?{...stage.camera.view}:null}; }
+  function readCamera() { beforeReadCamera?.();const original=api.workingCamera?.();return original?{position:original.position,target:original.target,fov:original.fov,zoom:original.zoom,view:original.view}:{position:stage.camera.position.toArray(),target:stage.controls.target.toArray(),fov:stage.camera.fov,zoom:stage.camera.zoom,view:stage.camera.view?{...stage.camera.view}:null}; }
   function setCamera(camera,def) {
     camera.position.fromArray(def.position); camera.fov=def.fov;camera.zoom=def.zoom||1;camera.view=def.view?{...def.view}:null;camera.lookAt(new THREE.Vector3(...def.target)); camera.updateProjectionMatrix();
   }
@@ -105,7 +105,7 @@ export function initCutsceneStudio(api) {
     });
     try{return fn();}finally{hidden.forEach(([n,v])=>n.visible=v);materials.forEach(([m,c])=>m.emissive.copy(c));}
   }
-  let beforeCapture=null;
+  let beforeCapture=null,beforeReadCamera=null;
   function renderPNG(depth=false) {
     beforeCapture?.();updateShotCamera();
     const width=aspect>=1?1600:Math.round(1600*aspect),height=Math.round(width/aspect);
@@ -317,7 +317,7 @@ export function initCutsceneStudio(api) {
     updateShotCamera();cleanRender(()=>preview.render(stage.scene,shotCamera));
   }
   return {
-    setBeforeCapture(fn){beforeCapture=fn;},setCaptureObserver(fn){captureObserver=fn;},
+    setBeforeCapture(fn){beforeCapture=fn;},setBeforeReadCamera(fn){beforeReadCamera=fn;},setCaptureObserver(fn){captureObserver=fn;},
     rememberShotProjection(){shotProjection={key:JSON.stringify(currentShot().camera),zoom:shotCamera.zoom,view:shotCamera.view?{...shotCamera.view}:null};},
     environmentMeshes(role='working'){const meshes=[];const visible=(node)=>{for(let p=node;p;p=p.parent){if(role==='shot'&&p===node&&p.userData.editingWall)continue;if(!p.visible)return false;}return true;};environment.traverse(n=>{if(n.isMesh&&visible(n))meshes.push(n);});if(stage.ground?.isMesh&&visible(stage.ground))meshes.push(stage.ground);return [...new Set(meshes)];},
     shotCamera,previewRenderer:preview,updateShotCamera,cleanRender,renderPNG,createHandoffPacket,

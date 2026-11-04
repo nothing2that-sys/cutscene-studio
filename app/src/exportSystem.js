@@ -427,7 +427,7 @@ export function initExportSystem(stage, THREE) {
       if (isTransp) stage.scene.background = null;
       else stage.scene.background = new THREE.Color(bgVal);
 
-      stage.renderer.render(stage.scene, stage.camera);
+      window.__bodyV1?.fixedController?.commitView?.();stage.renderer.render(stage.scene, stage.camera);
       const imgData = stage.renderer.domElement.toDataURL(isTransp ? 'image/png' : 'image/jpeg', 1.0);
 
       const finalCanvas = document.createElement('canvas');

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Male } from 'mannequin-js/src/mannequin.js';
 import { JOINTS, chestIssues, normalizeChest } from './scene-format.js';
-import {setBodySurface,surfaceColor,invalidateBodySurface,suspendBodySurface,resumeBodySurface} from './body-surface.js';
+import {setBodySurface,surfaceColor,invalidateBodySurface,suspendBodySurface,resumeBodySurface,bodyPartBounds} from './body-surface.js';
 import {getBodyV1,installBodyV1} from './body-v1-adapter.js';
 
 const chestGuides=new WeakMap();
@@ -90,7 +90,7 @@ export function constrainBody(m) {
 }
 export function configureBody(m,profile,keepFeet=true) {
   profileValid(profile);
-  if(getBodyV1(m)){const current=m.userData.bodyProfile;if(profile.headUnits!==current.headUnits||JSON.stringify(profile.chest||null)!==JSON.stringify(current.chest||null))rigError('공통 인체는 현재 기본 등신·가슴 형태를 유지합니다. 다른 체형은 기존 인체 장면으로 불러와 사용하세요.');getBodyV1(m).configure(profile);lockBoneLayout(m);constrainBody(m);return;}
+  if(getBodyV1(m)){const current=m.userData.bodyProfile;if(profile.headUnits!==current.headUnits||JSON.stringify(profile.chest||null)!==JSON.stringify(current.chest||null))rigError('공통 인체는 현재 기본 등신·가슴 형태를 유지합니다. 다른 체형은 기존 인체 장면으로 불러와 사용하세요.');const sole=()=>{m.updateMatrixWorld(true);return Math.min(bodyPartBounds(m,'l_ankle').min.y,bodyPartBounds(m,'r_ankle').min.y);},before=keepFeet?sole():null;getBodyV1(m).configure(profile);lockBoneLayout(m);constrainBody(m);if(keepFeet){m.position.y+=before-sole();m.updateMatrixWorld(true);}return;}
   const oldMin=keepFeet?new THREE.Box3().setFromObject(m).min.y:null;
   const previousSurface=suspendBodySurface(m);
   // Box3 also measures invisible objects: detach references during neutral sizing.
