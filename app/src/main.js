@@ -13,6 +13,7 @@ import { analyzeEditorState } from './scene-feedback.js';
 import {prepareBodyV1,getBodyV1,validateBodyV1State} from './body-v1-adapter.js';
 import {installBodyV1Main} from './body-v1-main.js';
 import {installSceneFixedView} from './body-v1-fixed.js';
+import {installLayout} from './layout.js';
 import { SceneValidationError, JOINTS } from './scene-format.js';
 import { createCharacter, configureBody, captureBoneLayout, lockBoneLayout, enforceBoneLengths, constrainBody, clampJoint, manipulationChain, solveConstrainedIK, snapshotBodyJoints, readLegacyPosture } from './body-rig.js';
 
@@ -1352,6 +1353,7 @@ async function init() {
     invalidatePreview:()=>studio.invalidatePreview(),tickPreview:paused=>studio.tick({paused}),updateWalls:()=>studio.updateEditingWalls()});
   const bodyV1=installBodyV1Main({stage,mannequins,importedModels,studio,viewPerformance,snapshot:snapshotState,apply:applyState,whenReady:whenSceneReady,isRestoring:()=>!!pendingRestore,capture:captureState,undo,redo,create:createFullMannequin,selected:()=>activeMannequin,refresh:()=>{updatePropertiesPanel();updateLayerWindow();}});
   installSceneFixedView(bodyV1);
+  installLayout();
   captureState();
 }
 

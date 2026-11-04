@@ -4,7 +4,7 @@ import {bodySurfaceMode,setBodySurfaceMode,bodyGuidesVisible,setBodyGuides} from
 
 export function initViewPerformance(api){
   const {stage}=api,renderer=stage.renderer;
-  let dirty=true,revision=1,lastRender=0,lastControlsRevision=-1,savedCamera=null,soloModel=null,restoring=false,fixedController=null;
+  let ready=false,dirty=true,revision=1,lastRender=0,lastControlsRevision=-1,savedCamera=null,soloModel=null,restoring=false,fixedController=null;
   let lightweight=true;try{lightweight=localStorage.getItem('cutscene-lightweight')!=='false';}catch{}
   const options=document.createElement('div');options.className='view-performance';
   options.innerHTML='<label><input id="pose-solo" type="checkbox" checked> 포즈는 선택 인물만</label><label><input id="edit-lightweight" type="checkbox"> 가벼운 화면</label><details id="render-info"><summary>렌더링 정보</summary><pre id="render-info-text"></pre></details>';
@@ -42,9 +42,11 @@ export function initViewPerformance(api){
     }
   }
   function resize(){
-    const w=innerWidth,h=innerHeight,scale=lightweight?Math.min(1,1024/w,768/h):1;
+    const box=renderer.domElement.parentElement||renderer.domElement,w=Math.max(1,box.clientWidth||innerWidth),h=Math.max(1,box.clientHeight||innerHeight),scale=lightweight?Math.min(1,1024/w,768/h):1;
     renderer.setPixelRatio(1);renderer.setSize(Math.max(1,Math.round(w*scale)),Math.max(1,Math.round(h*scale)),false);
     stage.camera.aspect=w/h;stage.camera.updateProjectionMatrix();renderer.shadowMap.enabled=!lightweight;stage.controls.enableDamping=lightweight?false:originalDamping;invalidate();
+    // setSize clears the canvas; redraw now so a layout change never leaves a blank view.
+    if(!fixedController?.enabled&&ready)draw();
   }
   function draw(){
     const hidden=[];
@@ -61,7 +63,7 @@ export function initViewPerformance(api){
   const rendererName=extension?gl.getParameter(extension.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);
   function updateInfo(){if(!options.querySelector('#render-info').open)return;const output=options.querySelector('#render-info-text'),value=rendererName+'\n'+(/SwiftShader|llvmpipe|Software/i.test(rendererName)?'소프트웨어 렌더링 감지':'그래픽 장치 렌더링')+'\n편집 해상도: '+renderer.domElement.width+'×'+renderer.domElement.height+'\n편집 그림자: '+(lightweight?'끔':'켬')+'\n선택 인물 단독: '+(soloModel?'켬':'끔')+'\n최근 그리기 호출: '+stats.lastDrawCalls;if(output.textContent!==value)output.textContent=value;}
   options.querySelector('#render-info').ontoggle=updateInfo;
-  window.addEventListener('resize',resize);stage.controls.addEventListener('change',invalidate);
+  window.addEventListener('resize',resize);if(renderer.domElement.parentElement)new ResizeObserver(resize).observe(renderer.domElement.parentElement);stage.controls.addEventListener('change',invalidate);
   for(const event of ['click','input','change','keydown','pointerdown','pointerup','load'])window.addEventListener(event,invalidate,true);
   document.addEventListener('visibilitychange',invalidate);
   // Replace the library's unconditional full-scene loop with changed-frame rendering.
@@ -74,7 +76,7 @@ export function initViewPerformance(api){
     if((!dirty&&now-started>600)||now-lastRender<interval)return;
     dirty=false;lastRender=now-(now-lastRender)%interval;stage.animationLoop?.((now-started)/1000);api.updateWalls();draw();
   }
-  resize();requestAnimationFrame(frame);
+  resize();ready=true;requestAnimationFrame(frame);
   return {
     setFixedController(controller){fixedController=controller;},
     invalidate,revision:()=>revision,sync,stats,

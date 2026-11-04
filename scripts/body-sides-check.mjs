@@ -48,10 +48,14 @@ try{
   // Legacy-rig rotation files (image references) must reproduce the legacy limb directions.
   const legacy=JSON.parse(await readFile(new URL('./fixtures/legacy-rotation-pose.json',import.meta.url),'utf8'));
   await page.locator('.layer-item[data-imported="false"][data-idx="0"]').first().click();
+  const hipFacing=()=>page.evaluate(()=>{const m=window.__bodyV1.actors[0].driver,V=m.position.constructor,l=m.l_leg.getWorldPosition(new V()).sub(m.r_leg.getWorldPosition(new V()));return Math.atan2(-l.z,l.x)*180/Math.PI;});
+  const facingBefore=await hipFacing();
   await page.locator('#pose-reference-file').setInputFiles({name:'legacy-pose.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(legacy.pose))});
   await page.waitForTimeout(800);
   const legacyError=await page.evaluate(expected=>{const m=window.__bodyV1.actors[0].driver,V=m.position.constructor,W=k=>m[k].getWorldPosition(new V()),inv=m.getWorldQuaternion(m.quaternion.clone()).invert();m.updateMatrixWorld(true);
    return Math.max(...Object.entries(expected).map(([k,e])=>{const [a,b]=k.split('>'),d=W(b).sub(W(a)).normalize().applyQuaternion(inv);return Math.acos(Math.min(1,Math.max(-1,d.dot(new V(...e)))))*180/Math.PI;}));},legacy.expectedDirections);
+  // Applying a pose keeps the figure's current facing.
+  const facingTurn=Math.abs(((await hipFacing()-facingBefore+540)%360)-180);assert.ok(facingTurn<1,'pose changed the facing by '+facingTurn.toFixed(1)+'°');
   assert.ok(legacyError<8,'legacy rotation pose differs from the legacy rig by '+legacyError.toFixed(1)+'°');
   assert.deepEqual(errors,[]);
   console.log(JSON.stringify({passed:true,sideChecks:Object.keys(sides).length,preFixMaxVertexDiff:max,legacyPoseMaxDegrees:+legacyError.toFixed(2)},null,2));

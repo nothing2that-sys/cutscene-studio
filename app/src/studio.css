@@ -60,3 +60,27 @@ body:not([data-editor-mode=advanced]) #properties-panel{flex:0 1 auto!important;
 .object-info{padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid #ffffff25}.object-info h3{font-size:13px;margin:0 0 8px}.object-info .studio-label{margin-bottom:6px;font-size:11px}.object-info input,.object-info textarea{box-sizing:border-box;width:100%;font-size:11px;padding:6px;background:#10151d;color:#e2e8f0;border:1px solid #ffffff30;border-radius:5px}.object-info textarea{min-height:48px;resize:vertical}.object-info output{display:block;font-size:10px;white-space:pre-wrap;line-height:1.5;margin:6px 0;color:#93c5fd}#object-overlap-report[data-warning=true]{color:#fbbf24}.view-performance select{background:#10151d;color:#e2e8f0;border:1px solid #ffffff40;border-radius:5px;padding:4px}
 
 .direct-camera-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}.direct-camera-row .btn{font-size:10px;padding:4px 7px}.direct-camera-row span{font-size:10px;color:#94a3b8}body[data-camera-pan=true] #canvas-container{cursor:grab}body[data-camera-pan=true] #canvas-container::after{content:"+";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#a5b4fc;font:24px monospace;pointer-events:none;z-index:5}
+
+/* Docked layout: side panels and the top tool strip never cover the 3D view.
+   --top-h is measured by layout.js from the tool strip. */
+:root{--left-w:326px;--right-w:316px;--top-h:200px}
+body.left-collapsed{--left-w:0px}body.right-collapsed{--right-w:0px}
+body.body-v1-panels-hidden{--left-w:0px;--right-w:0px}
+@media(max-width:1100px){:root{--left-w:280px;--right-w:290px}}
+#canvas-container{left:var(--left-w);top:var(--top-h);width:calc(100vw - var(--left-w) - var(--right-w));height:calc(100vh - var(--top-h))}
+#canvas-container canvas{width:100%!important;height:100%!important}
+#body-v1-fixed-canvas{inset:auto;left:var(--left-w);top:var(--top-h);width:calc(100vw - var(--left-w) - var(--right-w));height:calc(100vh - var(--top-h))}
+#studio-panel{left:0;top:0;bottom:0;width:var(--left-w);box-sizing:border-box;border-radius:0}
+body.left-collapsed #studio-panel,body.right-collapsed #right-panels{display:none!important}
+#right-panels{top:0!important;right:0!important;bottom:0!important;width:var(--right-w)!important;box-sizing:border-box;padding:8px;gap:8px!important}
+#right-panels>.glass-panel{border-radius:8px}
+#ui-overlay{top:0;left:var(--left-w);right:var(--right-w);border-radius:0;box-sizing:border-box}
+#direct-editor{top:var(--direct-top,58px);left:var(--left-w);right:var(--right-w);border-radius:0;box-sizing:border-box;padding:6px 10px}
+#direct-editor #direct-help{margin:4px 0 0}
+#pose-library-panel,#image-references-panel{left:calc(var(--left-w) + 16px);right:calc(var(--right-w) + 16px);top:calc(var(--top-h) + 12px)}
+.layout-toggle{min-width:28px}
+#direct-editor:not(.tools-open) .direct-camera-row,#direct-editor:not(.tools-open) #direct-help,#direct-editor:not(.tools-open) .view-performance{display:none}
+.direct-yaw{display:flex;align-items:center;gap:5px;margin-left:auto;font-size:12px;color:#cbd5e1}.direct-yaw input[type=range]{width:150px}.direct-yaw input[type=number]{width:54px;background:#10151d;color:#fff;border:1px solid #ffffff40;border-radius:5px;padding:4px}
+#direct-more{font-size:11px;padding:6px 9px}
+#ui-overlay,#direct-editor{background:#161a22}#right-panels{background:#11151c;pointer-events:auto!important}
+#ui-overlay header h1{display:none}#ui-overlay{padding:8px 12px}

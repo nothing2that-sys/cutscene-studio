@@ -14,7 +14,7 @@ export function initDirectEditor(api){
   const {stage}=api,canvas=stage.renderer.domElement;
   let mode=null,cameraPan=false,drag=null,lastModel=null,lastTick=0,lastRevision=-1,frameRect=null,lastHover=0;
   const toolbar=document.createElement('section');toolbar.id='direct-editor';toolbar.className='glass-panel';
-  toolbar.innerHTML=`<div class="direct-mode-row"><button class="btn primary" data-edit-mode="move">인물 이동</button><button class="btn" data-edit-mode="pose">포즈 잡기</button><button class="btn" data-edit-mode="advanced">세부 조정</button><span id="direct-selection"></span></div>
+  toolbar.innerHTML=`<div class="direct-mode-row"><button class="btn primary" data-edit-mode="move">인물 이동</button><button class="btn" data-edit-mode="pose">포즈 잡기</button><button class="btn" data-edit-mode="advanced">세부 조정</button><span id="direct-selection"></span><label class="direct-yaw" title="선택한 인물·소품의 방향 · 화면에서 Alt+드래그 또는 Q/E 키로도 돌립니다">방향 <input id="direct-yaw-range" type="range" min="-180" max="180" step="1" aria-label="방향 슬라이더"><input id="direct-yaw" type="number" min="-180" max="180" step="5" aria-label="방향 각도">°</label><button class="btn" id="direct-more" aria-expanded="false">도구 더보기 ▾</button></div>
     <div class="direct-view-row"><span>보기</span><button class="btn" data-direct-view="front">정면</button><button class="btn" data-direct-view="side">옆면</button><button class="btn" data-direct-view="top">위</button><span id="direct-pose-slot"></span></div>
     <div class="direct-camera-row"><button class="btn" id="camera-pan-toggle" aria-pressed="false">화면 중심 이동</button><button class="btn" id="camera-focus-selected">선택 대상으로 중심</button><button class="btn" id="camera-frame-scene">전체 보기</button><span>빈 곳 왼쪽 드래그: 회전 · 오른쪽 드래그: 중심 이동 · 휠: 줌</span><span>캡처에 반영하려면 카메라 컷의 [갱신]을 누르세요.</span></div><p id="direct-help"></p><output id="direct-status" role="status"></output>`;
   document.getElementById('app').appendChild(toolbar);
@@ -33,7 +33,7 @@ export function initDirectEditor(api){
     stage.camera.getWorldDirection(normal);plane.setFromNormalAndCoplanarPoint(normal,p);
     cast(event);const hit=raycaster.ray.intersectPlane(plane,new THREE.Vector3());
     drag={id:event.pointerId,object,kind,key,startX:event.clientX,startY:event.clientY,startPosition:object.position.clone(),target:p.clone(),offset:hit?hit.sub(p):new THREE.Vector3(),moved:false,
-      needsSolve:true,lastError:Infinity,stalled:0,rotations:Object.entries(object).filter(([_key,v])=>v?.isObject3D&&v!==object.parent).map(([name,joint])=>[name,joint.quaternion.clone()])};
+      needsSolve:true,lastError:Infinity,stalled:0,startYaw:object.rotation.y,rotations:Object.entries(object).filter(([_key,v])=>v?.isObject3D&&v!==object.parent).map(([name,joint])=>[name,joint.quaternion.clone()])};
     api.invalidate();
     const r=canvas.getBoundingClientRect();drag.units=2*Math.max(0.1,stage.camera.position.distanceTo(p))*Math.tan(THREE.MathUtils.degToRad(stage.camera.fov/2))/r.height;
     drag.right=new THREE.Vector3().setFromMatrixColumn(stage.camera.matrixWorld,0);drag.right.y=0;drag.right.normalize();
@@ -41,15 +41,15 @@ export function initDirectEditor(api){
     if(drag.forward.lengthSq()<1e-8)drag.forward.set(0,0,-1);drag.forward.normalize();
     if(drag.right.lengthSq()<1e-8)drag.right.set(1,0,0);
     api.setDragging(true);canvas.style.cursor='grabbing';
-    status(kind==='joint'?'원을 끌어 목표를 지정하세요. 발목은 다리 전체가, 무릎은 아래 다리가 함께 따라옵니다.':'인물 전체 이동 · 위아래 드래그는 앞뒤 이동 · Shift를 누르면 높이 이동');
+    status(kind==='joint'?'원을 끌어 목표를 지정하세요. 발목은 다리 전체가, 무릎은 아래 다리가 함께 따라옵니다.':kind==='turn'?'좌우로 끌어 방향을 돌립니다.':'인물 전체 이동 · 위아래 드래그는 앞뒤 이동 · Shift를 누르면 높이 이동 · Alt를 누르면 회전');
   }
   function end(cancel=false){
     if(!drag)return;
     const current=drag;drag=null;aim.hidden=true;
-    if(cancel){current.object.position.copy(current.startPosition);for(const [key,q]of current.rotations)current.object[key].quaternion.copy(q);if(current.object.torso)constrainBody(current.object);}
+    if(cancel){current.object.position.copy(current.startPosition);current.object.rotation.y=current.startYaw;for(const [key,q]of current.rotations)current.object[key].quaternion.copy(q);if(current.object.torso)constrainBody(current.object);}
     api.setDragging(false);canvas.style.cursor='';api.refresh();api.invalidate();
     if(current.moved&&!cancel)api.commit();
-    status(cancel?'드래그를 취소했습니다.':current.kind==='joint'?'이 위치까지 포즈를 조정했습니다. 닿지 않는 목표에는 뼈를 늘리지 않습니다.':'인물 전체를 이동했습니다.');
+    status(cancel?'드래그를 취소했습니다.':current.kind==='joint'?'이 위치까지 포즈를 조정했습니다. 닿지 않는 목표에는 뼈를 늘리지 않습니다.':current.kind==='turn'?'방향을 바꿨습니다.':'인물 전체를 이동했습니다.');
   }
   function setMode(next){
     if(!['move','pose','advanced'].includes(next))return;
@@ -57,7 +57,7 @@ export function initDirectEditor(api){
     if(next===mode)return;
     end(true);mode=next;document.body.dataset.editorMode=mode;
     toolbar.querySelectorAll('[data-edit-mode]').forEach(btn=>{btn.classList.toggle('primary',btn.dataset.editMode===mode);btn.setAttribute('aria-pressed',String(btn.dataset.editMode===mode));});
-    toolbar.querySelector('#direct-help').textContent=mode==='move'?'인물의 어느 부분이든 잡아 통째로 옮기세요. 빈 곳을 끌면 화면이 회전합니다.':mode==='pose'?'이름이 붙은 원을 잡아 움직이세요. 좌우는 인물 기준입니다. 다른 방향은 정면·옆면·위 보기를 사용하세요.':'관절 수치와 이동·회전 기즈모로 미세 조정합니다.';
+    toolbar.querySelector('#direct-help').textContent=mode==='move'?'인물의 어느 부분이든 잡아 통째로 옮기세요. Alt+드래그나 Q/E 키로 방향을 돌립니다. 빈 곳을 끌면 화면이 회전합니다.':mode==='pose'?'이름이 붙은 원을 잡아 움직이세요. 좌우는 인물 기준입니다. 다른 방향은 정면·옆면·위 보기를 사용하세요.':'관절 수치와 이동·회전 기즈모로 미세 조정합니다.';
     api.modeChanged(mode);status('');
   }
   toolbar.querySelectorAll('[data-edit-mode]').forEach(btn=>btn.onclick=()=>setMode(btn.dataset.editMode));
@@ -90,13 +90,14 @@ export function initDirectEditor(api){
     cast(event);const objects=api.objects();const hit=raycaster.intersectObjects(objects,true)[0];if(!hit)return;
     let node=hit.object;while(node&&!objects.includes(node))node=node.parent;if(!node)return;
     stop(event);api.select(node,'Root');
-    if(mode==='move')captureStart(event,node,'object');else status('인물을 선택했습니다. 이름이 붙은 원을 잡아 포즈를 바꾸세요.');
+    if(mode==='move')captureStart(event,node,event.altKey?'turn':'object');else status('인물을 선택했습니다. 이름이 붙은 원을 잡아 포즈를 바꾸세요.');
   },true);
   canvas.addEventListener('pointermove',event=>{if(cameraPan){canvas.style.cursor='grab';return;}if(drag||mode==='advanced'||performance.now()-lastHover<50)return;lastHover=performance.now();cast(event);canvas.style.cursor=raycaster.intersectObjects(api.objects(),true).length?(mode==='move'?'grab':'pointer'):'';});
   window.addEventListener('pointermove',event=>{
     if(!drag||event.pointerId!==drag.id)return;stop(event);
     const dx=event.clientX-drag.startX,dy=event.clientY-drag.startY;drag.moved ||= Math.hypot(dx,dy)>2;
-    if(drag.kind==='object'){
+    if(drag.kind==='turn'){drag.object.rotation.y=drag.startYaw+THREE.MathUtils.degToRad(dx*.5);drag.object.updateMatrixWorld(true);}
+    else if(drag.kind==='object'){
       drag.object.position.copy(drag.startPosition).addScaledVector(drag.right,dx*drag.units);
       if(event.shiftKey)drag.object.position.y-=dy*drag.units;else drag.object.position.addScaledVector(drag.forward,-dy*drag.units);
       drag.object.updateMatrixWorld(true);
@@ -106,13 +107,29 @@ export function initDirectEditor(api){
   window.addEventListener('pointerup',event=>{if(drag&&event.pointerId===drag.id){stop(event);end();}},true);
   window.addEventListener('pointercancel',()=>end(true));window.addEventListener('blur',()=>end(true));
   window.addEventListener('keydown',event=>{if(event.key==='Escape'&&drag){stop(event);end(true);}},true);
+  // Direction: slider/number while watching the view, Q/E keys (Shift for fine steps).
+  const yawRange=toolbar.querySelector('#direct-yaw-range'),yawNumber=toolbar.querySelector('#direct-yaw');
+  const showYaw=m=>{const value=m?Math.round(THREE.MathUtils.radToDeg(Math.atan2(Math.sin(m.rotation.y),Math.cos(m.rotation.y)))):0;yawRange.value=value;if(document.activeElement!==yawNumber)yawNumber.value=value;yawRange.disabled=yawNumber.disabled=!m;};
+  function setYaw(degrees,commit){const m=api.getSelection();if(!m||!Number.isFinite(degrees))return;const wrapped=((degrees+180)%360+360)%360-180;m.rotation.y=THREE.MathUtils.degToRad(wrapped);m.updateMatrixWorld(true);showYaw(m);api.invalidate();if(commit){api.refresh();api.commit();}}
+  yawRange.oninput=()=>setYaw(Number(yawRange.value),false);yawRange.onchange=()=>setYaw(Number(yawRange.value),true);
+  yawNumber.onchange=()=>setYaw(Number(yawNumber.value),true);
+  window.addEventListener('keydown',event=>{
+    if(drag||event.ctrlKey||event.metaKey||event.altKey||!['q','e','Q','E'].includes(event.key))return;
+    if(['INPUT','TEXTAREA','SELECT'].includes(event.target.tagName)||event.target.isContentEditable)return;
+    const m=api.getSelection();if(!m)return;event.preventDefault();
+    setYaw(THREE.MathUtils.radToDeg(m.rotation.y)+(event.key.toLowerCase()==='q'?1:-1)*(event.shiftKey?5:15),true);
+  });
+  const more=toolbar.querySelector('#direct-more');
+  const showMore=open=>{toolbar.classList.toggle('tools-open',open);more.setAttribute('aria-expanded',String(open));more.textContent=open?'도구 접기 ▴':'도구 더보기 ▾';try{localStorage.setItem('cutscene-tools-open',open?'1':'0');}catch{}};
+  more.onclick=()=>showMore(!toolbar.classList.contains('tools-open'));
+  try{showMore(localStorage.getItem('cutscene-tools-open')==='1');}catch{showMore(false);}
   function tick(now){
     requestAnimationFrame(tick);if(now-lastTick<32)return;lastTick=now;const m=api.getSelection();
     const revision=api.revision();if(revision===lastRevision&&m===lastModel&&!drag?.needsSolve)return;lastRevision=revision;
     frameRect=canvas.getBoundingClientRect();stage.camera.updateMatrixWorld();
     if(drag&&drag.object!==m)end(true);
     if(m!==lastModel){lastModel=m;status('');}
-    toolbar.querySelector('#direct-selection').textContent=m?m.name||'선택한 인물':'인물을 클릭하세요';
+    toolbar.querySelector('#direct-selection').textContent=m?m.name||'선택한 인물':'인물을 클릭하세요';showYaw(m);
     outline.visible=!!m&&mode==='move';if(outline.visible)displayedObjectBounds(m,outline.box);
     if(drag?.kind==='joint'&&drag.needsSolve){
       const result=solveConstrainedIK(m,manipulationChain(drag.key),drag.target,{iterations:8});
@@ -125,7 +142,7 @@ export function initDirectEditor(api){
     const centerX=m?.torso?screen(world(m.torso)).x:0;
     for(const {btn,line,key,side}of buttons){
       btn.hidden=cameraPan||mode!=='pose'||!m?.[key];line.style.display='none';if(btn.hidden)continue;
-      const p=screen(world(m[key]));btn.hidden=p.z< -1||p.z>1||p.x<0||p.x>innerWidth||p.y<0||p.y>innerHeight;
+      const p=screen(world(m[key]));const r=frameRect||canvas.getBoundingClientRect();btn.hidden=p.z< -1||p.z>1||p.x<r.left||p.x>r.right||p.y<r.top||p.y>r.bottom;
       if(btn.hidden)continue;
       const display={x:p.x,y:p.y};let attempts=0;
       while(placed.some(other=>Math.hypot(other.x-display.x,other.y-display.y)<36)&&attempts++<8)display.x+=(side==='right'?-1:1)*38;

@@ -106,11 +106,14 @@
           <button id="btn-focus-center" class="btn icon-btn" title="장면 원점으로 보기 초기화" aria-label="장면 원점으로 보기 초기화">🎯</button>
           <div class="separator"></div>
           <button id="btn-export" class="btn success">Export</button>
+          <div class="separator"></div>
+          <button id="toggle-left-panel" class="btn icon-btn layout-toggle" title="왼쪽 장면 패널 접기/펴기" aria-pressed="true">◧</button>
+          <button id="toggle-right-panel" class="btn icon-btn layout-toggle" title="오른쪽 속성·레이어 패널 접기/펴기" aria-pressed="true">◨</button>
         </div>
       </div>
       
       <!-- Right Side Panels Container -->
-      <div style="position: absolute; top: 80px; right: 24px; bottom: 24px; width: 300px; display: flex; flex-direction: column; gap: 16px; z-index: 10; pointer-events: none;">
+      <div id="right-panels" style="position: absolute; top: 80px; right: 24px; bottom: 24px; width: 300px; display: flex; flex-direction: column; gap: 16px; z-index: 10; pointer-events: none;">
         
         <!-- Properties Panel -->
         <div id="properties-panel" class="glass-panel" style="position: relative; top: 0; right: 0; width: 100%; max-height: 60%; flex: 1; pointer-events: auto;">

@@ -47,6 +47,11 @@ function transferLegacyRotations(m,rotations){
     }
   }
 }
+// Horizontal facing of the hips (anatomical left x up); null when the hips stand on end.
+function hipFacing(m){m.updateMatrixWorld(true);const left=at(m,'l_leg').sub(at(m,'r_leg'));left.y=0;if(left.lengthSq()<1e-6)return null;return Math.atan2(-left.z,left.x);}
+// Poses keep the figure's current facing: the root turns about the pelvis by the
+// difference, so the pose's own facing (e.g. a back-view reference) does not reset it.
+// Returns the applied turn in radians.
 export function applyReferencePose(m,reference,ground=true){
   if(!m?.torso)throw Error('포즈를 적용할 인물을 선택하세요.');
   // Verify every source key before touching the target model.
@@ -54,14 +59,22 @@ export function applyReferencePose(m,reference,ground=true){
   if(reference.kind==='rotations')for(const key of Object.keys(reference.rotations))if(!Object.hasOwn(allowed,key))throw Error('이 인물에 없는 관절입니다: '+key);
   const adapter=getBodyV1(m);if(reference.bodyAsset){validateBodyV1State({...reference,type:'mannequin'});if(!adapter)throw Error('공통 인체 v1 포즈는 공통 인체에 적용하세요.');}const savedAdapter=adapter?.snapshot();
   const before=ground?footY(m):null,saved=Object.fromEntries(Object.entries(snapshotBodyJoints(m)).map(([key,j])=>[key,j.rotation]));
-  const position=m.position.clone();
+  const position=m.position.clone(),quaternion=m.quaternion.clone(),facing=hipFacing(m);let yawDelta=0;
   try{
     if(adapter&&!reference.bodyAsset)adapter.neutral();else for(const [key,q]of m.userData.bodyBase.rotations)m[key].quaternion.copy(q);
     if(reference.kind==='rotations'&&adapter&&!reference.bodyAsset)transferLegacyRotations(m,reference.rotations);
     else if(reference.kind==='rotations')for(const [key,r]of Object.entries(reference.rotations))m[key].rotation.fromArray(r.length===3?[...r,'XYZ']:r);
     else {for(const source of [POSES[reference.pose],reference.joints])for(const [key,values]of Object.entries(source||{}))for(const [prop,v]of Object.entries(values))m[key][prop]=v;}
-    if(reference.bodyAsset)adapter.restore(reference.bodyV1Pose);constrainBody(m);if(ground)m.position.y+=before-footY(m);m.updateMatrixWorld(true);
-  }catch(error){m.position.copy(position);for(const [key,r]of Object.entries(saved))m[key].rotation.fromArray(r);if(savedAdapter)adapter.restore(savedAdapter);constrainBody(m);throw error;}
+    if(reference.bodyAsset)adapter.restore(reference.bodyV1Pose);constrainBody(m);
+    const after=hipFacing(m);
+    if(facing!==null&&after!==null){
+      yawDelta=Math.atan2(Math.sin(facing-after),Math.cos(facing-after));
+      const pivot=at(m,'body');m.quaternion.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),yawDelta));m.updateMatrixWorld(true);
+      const moved=at(m,'body');m.position.x+=pivot.x-moved.x;m.position.z+=pivot.z-moved.z;
+    }
+    if(ground)m.position.y+=before-footY(m);m.updateMatrixWorld(true);
+    return yawDelta;
+  }catch(error){m.position.copy(position);m.quaternion.copy(quaternion);for(const [key,r]of Object.entries(saved))m[key].rotation.fromArray(r);if(savedAdapter)adapter.restore(savedAdapter);constrainBody(m);throw error;}
 }
 export function exportReferencePose(m){
   if(!m?.torso)throw Error('저장할 인물을 선택하세요.');constrainBody(m);
@@ -77,7 +90,9 @@ export function installPoseLibrary(editor,api){
   const run=fn=>{try{fn();}catch(error){editor.status(error.message);}};
   let store,records=[],ready=false;
   const known=new Set();let auto=true;try{auto=localStorage.getItem('pose-auto-record')!=='false';}catch{}
-  const apply=(reference,record,{groundVolume=false,referenceView=null}={})=>{editor.cancel();const model=api.getSelection(),ground=document.getElementById('pose-ground').checked,floor=ground&&groundVolume&&model?.torso?footY(model):null;applyReferencePose(model,reference,ground&&!groundVolume);
+  const apply=(reference,record,{groundVolume=false,referenceView=null}={})=>{editor.cancel();const model=api.getSelection(),ground=document.getElementById('pose-ground').checked,floor=ground&&groundVolume&&model?.torso?footY(model):null;const yawDelta=applyReferencePose(model,reference,ground&&!groundVolume);
+    // The reference camera turns with the figure so the preview still matches the picture.
+    if(referenceView&&yawDelta){const turn=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),yawDelta),rotate=v=>Array.isArray(v)?new THREE.Vector3(...v).applyQuaternion(turn).toArray():v;referenceView={direction:rotate(referenceView.direction),up:rotate(referenceView.up)};}
     if(floor!==null){model.updateMatrixWorld(true);model.position.y+=floor-displayedObjectBounds(model).min.y;model.updateMatrixWorld(true);}
     if(record){record.fingerprint=fingerprint(exportReferencePose(api.getSelection()));known.add(record.fingerprint);record.thumbnail=api.thumbnail();store?.put(record).catch(error=>editor.status('저장 실패: '+error.message));render();}
     editor.setMode('pose');api.afterApply?.(referenceView);api.refresh();api.commit();editor.status('선택한 인물에 「'+reference.name+'」 포즈를 적용했습니다. 체형·수평 위치를 유지합니다.');};
