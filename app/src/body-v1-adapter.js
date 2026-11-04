@@ -7,16 +7,28 @@ export const BODY_V1_ASSET=Object.freeze({id:'body-v1-default',version:1,rigVers
 const adapters=new WeakMap(),RAD=Math.PI/180;
 export const prepareBodyV1=()=>prepareFullDoll({profile:'default',protection:false,initialState:'rest'});
 export const getBodyV1=m=>adapters.get(m);
-const names={body:'pelvis',torso:'thorax',neck:'neck',head:'head',l_arm:'upperL',r_arm:'upperR',l_elbow:'foreL',r_elbow:'foreR',l_wrist:'wristL',r_wrist:'wristR',l_leg:'thighL',r_leg:'thighR',l_knee:'shinL',r_knee:'shinR',l_ankle:'ankleL',r_ankle:'ankleR'};
+// The asset's L/R bone names follow the front reference image, so its "L"
+// bones sit on the figure's anatomical right. Driver keys are anatomical
+// (scene JSON and UI say l_ = the figure's own left), hence the crossed map.
+const names={body:'pelvis',torso:'thorax',neck:'neck',head:'head',l_arm:'upperR',r_arm:'upperL',l_elbow:'foreR',r_elbow:'foreL',l_wrist:'wristR',r_wrist:'wristL',l_leg:'thighR',r_leg:'thighL',l_knee:'shinR',r_knee:'shinL',l_ankle:'ankleR',r_ankle:'ankleL'};
+export const DRIVER_SIDE_REVISION=2;
 const fullBoneNames=[...Object.values(names),'abdomen',...['L','R'].flatMap(side=>Array.from({length:5},(_,i)=>[...['','_1',...(i===4?[]:['_2']),'_tip'].map(s=>'finger'+side+i+s),...['','_1','_tip'].map(s=>'toe'+side+i+s)]).flat())];
-const parts={thorax:'Torso',head:'Head',neck:'Neck',upperL:'Left_Arm',upperR:'Right_Arm',foreL:'Left_Elbow',foreR:'Right_Elbow',handL:'Left_Wrist',handR:'Right_Wrist',thighL:'Left_Leg',thighR:'Right_Leg',shinL:'Left_Knee',shinR:'Right_Knee',footL:'Left_Ankle',footR:'Right_Ankle'};
-const legacyBasis=key=>new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),key.includes('elbow')?(key.startsWith('r_')?Math.PI:0):key.includes('knee')?Math.PI/2:-Math.PI/2);
-const basis=key=>/^[lr]_arm$/.test(key)?shoulderRestQuaternion(key==='l_arm'?'L':'R').invert().multiply(legacyBasis(key)):legacyBasis(key);
+const parts={thorax:'Torso',head:'Head',neck:'Neck',upperL:'Right_Arm',upperR:'Left_Arm',foreL:'Right_Elbow',foreR:'Left_Elbow',handL:'Right_Wrist',handR:'Left_Wrist',thighL:'Right_Leg',thighR:'Left_Leg',shinL:'Right_Knee',shinR:'Left_Knee',footL:'Right_Ankle',footR:'Left_Ankle'};
+// Bases were authored for the old same-letter pairing (l_ key on asset "L" bone).
+// Native Male DOFs of l_/r_ keys mirror each other across native Z, so a key now
+// reuses the opposite key's basis composed with a half turn about Z: every value
+// keeps its anatomical meaning (raise forward, straddle outward) on the correct side.
+const SIDE_FLIP=new THREE.Quaternion(0,0,1,0);
+const opposite=key=>key.startsWith('l_')?'r_'+key.slice(2):key.startsWith('r_')?'l_'+key.slice(2):key;
+const sided=fn=>key=>opposite(key)===key?fn(key):fn(opposite(key)).multiply(SIDE_FLIP);
+const sameLetterLegacyBasis=key=>new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),key.includes('elbow')?(key.startsWith('r_')?Math.PI:0):key.includes('knee')?Math.PI/2:-Math.PI/2);
+const legacyBasis=sided(sameLetterLegacyBasis);
+const basis=sided(key=>/^[lr]_arm$/.test(key)?shoulderRestQuaternion(key==='l_arm'?'L':'R').invert().multiply(sameLetterLegacyBasis(key)):sameLetterLegacyBasis(key));
 export function validateBodyV1State(state){
  const actors=state?.mannequins||(state?.type==='mannequin'?[state]:[]);
  for(const a of actors){if(a.bodyAsset!==undefined&&(!a.bodyAsset||Object.keys(a.bodyAsset).length!==3||Object.entries(BODY_V1_ASSET).some(([k,v])=>a.bodyAsset[k]!==v)))throw Error('지원하지 않는 인체 자산 또는 리그 버전입니다.');
   if(a.bodyV1Pose&&!a.bodyAsset)throw Error('인체 v1 포즈에는 자산·리그 버전이 필요합니다.');
-  if(a.bodyAsset){const d=a.bodyV1Pose,p=d?.basePose;if(p?.description!==undefined&&(typeof p.description!=='string'||p.description.length>12000))throw Error('인물 설명은 12000자 이하 문자열이어야 합니다.');if(p?.curls!==undefined){if(!p.curls||typeof p.curls!=='object'||Array.isArray(p.curls))throw Error('잘못된 손발 굽힘 값');for(const k of ['L','R','toeL','toeR'])if(!Number.isFinite(p.curls[k])||p.curls[k]<0||p.curls[k]>(k.startsWith('toe')?50:80))throw Error('잘못된 손발 굽힘 값');}if(d?.driverNativeScale!==undefined&&(!Number.isFinite(d.driverNativeScale)||d.driverNativeScale<=0))throw Error('잘못된 driver native scale');if(![1,2].includes(p?.restRevision??1)||![1,2].includes(d?.driverRestRevision??1)||(p?.restRevision??1)!==(d?.driverRestRevision??1))throw Error('지원하지 않는 인체 rest/driver revision입니다.');if(p?.sourceRequestRevision!=null&&!isSupportedSourceOrigin(p.sourceRequestRevision)||d?.sourceRequestRevision!=null&&(!isSupportedSourceOrigin(d.sourceRequestRevision)||d.sourceRequestRevision!==p?.sourceRequestRevision))throw Error('지원하지 않는 source request revision');if(p?.sourceRequestInterpretation!=null&&(typeof p.sourceRequestInterpretation!=='string'||p.sourceRequestInterpretation.length>2000))throw Error('잘못된 source 해석');const validQ=q=>Array.isArray(q)&&q.length===4&&q.every(Number.isFinite)&&Math.abs(Math.hypot(...q)-1)<.01;
+  if(a.bodyAsset){const d=a.bodyV1Pose,p=d?.basePose;if(p?.description!==undefined&&(typeof p.description!=='string'||p.description.length>12000))throw Error('인물 설명은 12000자 이하 문자열이어야 합니다.');if(p?.curls!==undefined){if(!p.curls||typeof p.curls!=='object'||Array.isArray(p.curls))throw Error('잘못된 손발 굽힘 값');for(const k of ['L','R','toeL','toeR'])if(!Number.isFinite(p.curls[k])||p.curls[k]<0||p.curls[k]>(k.startsWith('toe')?50:80))throw Error('잘못된 손발 굽힘 값');}if(d?.driverSideRevision!==undefined&&d.driverSideRevision!==DRIVER_SIDE_REVISION)throw Error('지원하지 않는 인체 좌우 revision입니다.');if(d?.driverNativeScale!==undefined&&(!Number.isFinite(d.driverNativeScale)||d.driverNativeScale<=0))throw Error('잘못된 driver native scale');if(![1,2].includes(p?.restRevision??1)||![1,2].includes(d?.driverRestRevision??1)||(p?.restRevision??1)!==(d?.driverRestRevision??1))throw Error('지원하지 않는 인체 rest/driver revision입니다.');if(p?.sourceRequestRevision!=null&&!isSupportedSourceOrigin(p.sourceRequestRevision)||d?.sourceRequestRevision!=null&&(!isSupportedSourceOrigin(d.sourceRequestRevision)||d.sourceRequestRevision!==p?.sourceRequestRevision))throw Error('지원하지 않는 source request revision');if(p?.sourceRequestInterpretation!=null&&(typeof p.sourceRequestInterpretation!=='string'||p.sourceRequestInterpretation.length>2000))throw Error('잘못된 source 해석');const validQ=q=>Array.isArray(q)&&q.length===4&&q.every(Number.isFinite)&&Math.abs(Math.hypot(...q)-1)<.01;
    if(a.bodyProfile?.headUnits!==8||a.bodyProfile.chest)throw Error('명시된 공통 인체 자산은 기본 등신·가슴 형태만 지원합니다.');
    if(d?.version!==1||p?.version!==1||p.kind!=='articulated-full-doll-pose'||p.rigProfile!=='default'||!Array.isArray(p.root)||p.root.length!==3||!p.root.every(v=>Number.isFinite(v)&&Math.abs(v)<=10)||!p.quaternions||Object.keys(p.quaternions).length!==fullBoneNames.length||fullBoneNames.some(k=>!validQ(p.quaternions[k]))||!d.driverBase||Object.keys(d.driverBase).length!==Object.keys(names).length||Object.keys(names).some(k=>!validQ(d.driverBase[k])))throw Error('인체 v1 포즈 데이터가 올바르지 않습니다.');
   }
@@ -70,12 +82,19 @@ export function installBodyV1(m,{profile=m.userData.bodyProfile||{height:1.75,he
  function source(f,clamp){
   canonicalMeshes();if(f.sourceRequest)full.applySourceRequest(f.sourceRequest);else{full.preset(f.fullPreset||'neutral');for(const [key,axes]of Object.entries(f.fullDegrees||{}))for(const [axis,degrees]of Object.entries(axes))full.bones.get(key).rotation[axis]=degrees*RAD;full.update();}
   for(const k of Object.keys(names)){const q=full.bones.get(names[k]).quaternion;m[k].quaternion.copy(bases[k].clone().invert().multiply(q).multiply(bases[k]));m[k].rotation.reorder('XYZ');}clamp?.();basePose=structuredClone(full.poseData());driverBase=Object.fromEntries(Object.keys(names).map(k=>[k,mapped(k).toArray()]));sourceMode=true;sync();alignFrames();}
- function snapshot(){sync();return {version:1,driverRestRevision:FULL_DOLL_REST_REVISION,driverNativeScale:nativeScale,basePose:basePose?structuredClone(basePose):full.poseData(),driverBase:driverBase?structuredClone(driverBase):Object.fromEntries(Object.keys(names).map(k=>[k,mapped(k).toArray()])),source:sourceMode,sourceRequestRevision:basePose?.sourceRequestRevision??full.sourceRequestRevision??null};}
+ function snapshot(){sync();return {version:1,driverRestRevision:FULL_DOLL_REST_REVISION,driverSideRevision:DRIVER_SIDE_REVISION,driverNativeScale:nativeScale,basePose:basePose?structuredClone(basePose):full.poseData(),driverBase:driverBase?structuredClone(driverBase):Object.fromEntries(Object.keys(names).map(k=>[k,mapped(k).toArray()])),source:sourceMode,sourceRequestRevision:basePose?.sourceRequestRevision??full.sourceRequestRevision??null};}
  function restore(data){if(!data){neutral();return;}let p=structuredClone(data.basePose),nextDriverBase=structuredClone(data.driverBase);
+  if(data.driverSideRevision!==DRIVER_SIDE_REVISION){
+   // Saved before the anatomical side fix: the l_ driver then drove the asset
+   // "L" bone. Move each driver value and residual to the key that now drives
+   // that bone; the flip keeps every DOF number and the displayed pose exact.
+   const flip=q=>SIDE_FLIP.clone().multiply(q).multiply(SIDE_FLIP.clone().invert()),before=Object.fromEntries(Object.keys(names).map(k=>[k,m[k].quaternion.clone()]));
+   for(const k of Object.keys(names))if(opposite(k)!==k){m[k].quaternion.copy(flip(before[opposite(k)]));m[k].rotation.reorder('XYZ');nextDriverBase[k]=data.driverBase[opposite(k)];}
+  }
   if((p.restRevision??1)<2){
    // Evaluate the old explicit saved pose and its driver residual before changing
    // rest coordinates. This preserves old world orientation, including edits.
-   for(const k of Object.keys(names)){const oldCurrent=legacyBasis(k).multiply(m[k].quaternion).multiply(legacyBasis(k).invert()),oldBase=new THREE.Quaternion().fromArray(p.quaternions[names[k]]),oldDriver=new THREE.Quaternion().fromArray(data.driverBase[k]);p.quaternions[names[k]]=oldBase.multiply(oldDriver.invert()).multiply(oldCurrent).toArray();}
+   for(const k of Object.keys(names)){const oldCurrent=legacyBasis(k).multiply(m[k].quaternion).multiply(legacyBasis(k).invert()),oldBase=new THREE.Quaternion().fromArray(p.quaternions[names[k]]),oldDriver=new THREE.Quaternion().fromArray(nextDriverBase[k]);p.quaternions[names[k]]=oldBase.multiply(oldDriver.invert()).multiply(oldCurrent).toArray();}
    p=migrateFullDollPose(p);nextDriverBase=Object.fromEntries(Object.keys(names).map(k=>[k,mapped(k).toArray()]));
   }
   canonicalMeshes();try{restoreFullDollMainPose(full,p);}finally{displayMeshes();alignFrames();}basePose=structuredClone(full.poseData());driverBase=nextDriverBase;sourceMode=!!data.source;sync();}
