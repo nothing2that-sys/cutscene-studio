@@ -45,7 +45,15 @@ try{
   assert.equal(reopened.side,2);
   // The old l_arm value drove the anatomical right arm; it now belongs to r_arm.
   assert.ok(Math.abs(reopened.r_arm-120)<1e-6&&Math.abs(reopened.r_elbow-60)<1e-6&&Math.abs(reopened.l_arm+5)<1e-6,JSON.stringify(reopened).slice(0,200));
+  // Legacy-rig rotation files (image references) must reproduce the legacy limb directions.
+  const legacy=JSON.parse(await readFile(new URL('./fixtures/legacy-rotation-pose.json',import.meta.url),'utf8'));
+  await page.locator('.layer-item[data-imported="false"][data-idx="0"]').first().click();
+  await page.locator('#pose-reference-file').setInputFiles({name:'legacy-pose.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(legacy.pose))});
+  await page.waitForTimeout(800);
+  const legacyError=await page.evaluate(expected=>{const m=window.__bodyV1.actors[0].driver,V=m.position.constructor,W=k=>m[k].getWorldPosition(new V()),inv=m.getWorldQuaternion(m.quaternion.clone()).invert();m.updateMatrixWorld(true);
+   return Math.max(...Object.entries(expected).map(([k,e])=>{const [a,b]=k.split('>'),d=W(b).sub(W(a)).normalize().applyQuaternion(inv);return Math.acos(Math.min(1,Math.max(-1,d.dot(new V(...e)))))*180/Math.PI;}));},legacy.expectedDirections);
+  assert.ok(legacyError<8,'legacy rotation pose differs from the legacy rig by '+legacyError.toFixed(1)+'°');
   assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({passed:true,sideChecks:Object.keys(sides).length,preFixMaxVertexDiff:max},null,2));
+  console.log(JSON.stringify({passed:true,sideChecks:Object.keys(sides).length,preFixMaxVertexDiff:max,legacyPoseMaxDegrees:+legacyError.toFixed(2)},null,2));
  }
 }finally{await browser.close();}

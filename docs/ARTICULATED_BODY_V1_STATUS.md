@@ -38,7 +38,7 @@ HGLOS 예산·검증 상태(확인만, 재개하지 않음): 새 pin A 폴더 `v
 - `body-v1-adapter.js`: driver 키를 반대 글자 뼈에 연결한다(`l_arm → upperR` …). 기존 basis는 반대 키의 것에 native Z 반바퀴를 합성해 재사용한다. mannequin.js의 l/r DOF가 native Z에 대해 거울 관계라, 각 값의 해부학적 의미(raise 앞, straddle 음수 바깥, 무릎 뒤로)가 그대로 올바른 쪽에 적용된다. 메시 클릭 부위 이름과 `body-surface.js` 부위 범위도 같은 기준으로 바꿨다.
 - 저장: `bodyV1Pose.driverSideRevision: 2`. 이 필드가 없는 이전 저장은 열 때 driver 값과 잔차를 반대 키로 옮긴다. 표시 인체는 그대로이고(정점 차 1e-15 수준), 이전 `l_arm` 값은 `r_arm`에 나타난다. 손목 `tilt`만 mannequin.js 규약상 거울 대칭이 아니어서 같은 자세가 부호 반대 숫자로 보인다.
 - 확인: `scripts/body-sides-check.mjs`(실제 브라우저). 양쪽 팔·다리 raise/straddle이 해당 쪽·앞·바깥으로 가는지, 수정 전 빌드로 저장한 `scripts/fixtures/pre-side-fix-project.json`이 같은 정점으로 열리는지 본다. 수정 전 빌드에서는 실패한다(음성 대조). 기존 테스트 27개, build, browser-check, validation-ui-check 통과. body-rig-check는 수정 전에도 같은 체형 높이 측정 오류로 실패한다.
-- 이미지 레퍼런스 변환 포즈(`app/public/local-pose-references`, 11-02 생성)는 인체 v1 이전 해부학 기준 키로 만들어져 이번 수정으로 다시 올바른 쪽에 적용된다. 실제 이미지 적용 화면은 다시 확인하지 않았다.
+- 이미지 레퍼런스 변환 포즈(`app/public/local-pose-references`)와 bodyAsset 없는 포즈 JSON은 legacy Male native 절대 회전값이다. 인체 v1은 큰 조합 회전을 legacy와 다르게 해석해, 좌우 수정 전에도 팔다리가 몸 안쪽으로 교차하는 자세가 나왔다(수정 전후 결과가 서로 거울상일 뿐 둘 다 원본과 다름). 이제 `pose-library.js`가 숨은 legacy 인형에서 자세를 평가한 뒤 몸통·어깨·팔다리의 world 방향을 인체 v1에 맞춘다(관절 한계 안에서 국소 탐색). POSE-0051 기준 legacy 대비 최대 4.5°, 이 변환 없이 128°. 실제 화면에서 POSE-0051·0002·0015·0041·0055가 원본 그림과 맞았다. POSE-0040은 legacy 인형에서도 다리가 틀린 `unresolved` 변환 자료다.
 
 ## 중단 원인
 

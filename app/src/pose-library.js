@@ -2,7 +2,7 @@ import {getBodyV1,validateBodyV1State} from './body-v1-adapter.js';
 import {displayedObjectBounds} from './body-surface.js';
 import * as THREE from 'three';
 import {POSES} from './scene-format.js';
-import {constrainBody,snapshotBodyJoints} from './body-rig.js';
+import {constrainBody,snapshotBodyJoints,clampJoint,createCharacter} from './body-rig.js';
 import {bodyPartBounds} from './body-surface.js';
 import {STARTER_POSES} from './starter-poses.js';
 import {openPoseStore} from './pose-store.js';
@@ -11,6 +11,42 @@ import {installImageReferences} from './image-references.js';
 import {POSE_NAMES,readReferencePoses} from './pose-format.js';
 export {readReferencePoses} from './pose-format.js';
 function footY(m){m.updateMatrixWorld(true);return Math.min(bodyPartBounds(m,'l_ankle').min.y,bodyPartBounds(m,'r_ankle').min.y);}
+// Rotation references without a body asset (image references, legacy pose files)
+// hold absolute native values of the legacy Male rig. The common v1 body reads
+// large combined native rotations differently, so evaluate the pose on a hidden
+// legacy figure and match its world body, shoulder and limb directions.
+const at=(m,key)=>m[key].getWorldPosition(new THREE.Vector3()),mid=(a,b)=>a.clone().add(b).multiplyScalar(.5);
+function directionBasis(first,second){const x=first.clone().normalize(),y=second.clone().addScaledVector(x,-second.dot(x));if(x.lengthSq()<.5||y.lengthSq()<1e-8)return null;y.normalize();return new THREE.Matrix4().makeBasis(x,y,x.clone().cross(y).normalize());}
+function rotateJoint(m,key,delta){const joint=m[key],world=joint.getWorldQuaternion(new THREE.Quaternion());joint.quaternion.copy(joint.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(delta.multiply(world)));clampJoint(m,key);m.updateMatrixWorld(true);}
+function alignJoint(m,key,fromA,fromB,toA,toB){
+  const a=directionBasis(fromA,fromB),b=directionBasis(toA,toB);
+  rotateJoint(m,key,a&&b?new THREE.Quaternion().setFromRotationMatrix(b).multiply(new THREE.Quaternion().setFromRotationMatrix(a).invert()):new THREE.Quaternion().setFromUnitVectors(fromA.clone().normalize(),toA.clone().normalize()));
+}
+function transferLegacyRotations(m,rotations){
+  const source=createCharacter(structuredClone(m.userData.bodyProfile||{height:1.75,headUnits:8}),{legacy:true});source.removeFromParent();
+  for(const [key,q]of source.userData.bodyBase.rotations)source[key].quaternion.copy(q);
+  const native=r=>r.length===3?[...r,'XYZ']:r;
+  for(const [key,r]of Object.entries(rotations))source[key]?.rotation.fromArray(native(r));
+  m.updateMatrixWorld(true);source.quaternion.copy(m.getWorldQuaternion(new THREE.Quaternion()));source.updateMatrixWorld(true);
+  // Small local joints keep their native values; their DOFs match on both rigs.
+  for(const key of ['neck','head','l_wrist','r_wrist','l_ankle','r_ankle'])if(rotations[key]){m[key].rotation.fromArray(native(rotations[key]));clampJoint(m,key);}
+  m.updateMatrixWorld(true);
+  alignJoint(m,'body',at(m,'neck').sub(mid(at(m,'l_leg'),at(m,'r_leg'))),at(m,'l_leg').sub(at(m,'r_leg')),at(source,'neck').sub(mid(at(source,'l_leg'),at(source,'r_leg'))),at(source,'l_leg').sub(at(source,'r_leg')));
+  alignJoint(m,'torso',at(m,'neck').sub(at(m,'torso')),at(m,'l_arm').sub(at(m,'r_arm')),at(source,'neck').sub(at(source,'torso')),at(source,'l_arm').sub(at(source,'r_arm')));
+  for(const [upper,hinge,end]of [['l_arm','l_elbow','l_wrist'],['r_arm','r_elbow','r_wrist'],['l_leg','l_knee','l_ankle'],['r_leg','r_knee','r_ankle']]){
+    const u=at(source,hinge).sub(at(source,upper)).normalize(),v=at(source,end).sub(at(source,hinge)).normalize();
+    m[hinge].bend=source[hinge].bend;clampJoint(m,hinge);m.updateMatrixWorld(true);
+    alignJoint(m,upper,at(m,hinge).sub(at(m,upper)),at(m,end).sub(at(m,hinge)),u,v);
+    // Joint limits can stop the exact solution; search the remaining error locally.
+    const loss=()=>2-at(m,hinge).sub(at(m,upper)).normalize().dot(u)-at(m,end).sub(at(m,hinge)).normalize().dot(v);
+    let best=loss();
+    for(const step of [12,5,2,.75])for(let pass=0;pass<3;pass++)for(const [key,axis]of [[upper,'x'],[upper,'y'],[upper,'z'],[hinge,'z']]){
+      const saved=m[key].rotation.toArray();let chosen=saved;
+      for(const sign of [-1,1]){m[key].rotation.fromArray(saved);m[key].rotation[axis]+=sign*step*Math.PI/180;clampJoint(m,key);m.updateMatrixWorld(true);const candidate=loss();if(candidate<best-1e-8){best=candidate;chosen=m[key].rotation.toArray();}}
+      m[key].rotation.fromArray(chosen);m.updateMatrixWorld(true);
+    }
+  }
+}
 export function applyReferencePose(m,reference,ground=true){
   if(!m?.torso)throw Error('포즈를 적용할 인물을 선택하세요.');
   // Verify every source key before touching the target model.
@@ -21,7 +57,8 @@ export function applyReferencePose(m,reference,ground=true){
   const position=m.position.clone();
   try{
     if(adapter&&!reference.bodyAsset)adapter.neutral();else for(const [key,q]of m.userData.bodyBase.rotations)m[key].quaternion.copy(q);
-    if(reference.kind==='rotations')for(const [key,r]of Object.entries(reference.rotations))m[key].rotation.fromArray(r.length===3?[...r,'XYZ']:r);
+    if(reference.kind==='rotations'&&adapter&&!reference.bodyAsset)transferLegacyRotations(m,reference.rotations);
+    else if(reference.kind==='rotations')for(const [key,r]of Object.entries(reference.rotations))m[key].rotation.fromArray(r.length===3?[...r,'XYZ']:r);
     else {for(const source of [POSES[reference.pose],reference.joints])for(const [key,values]of Object.entries(source||{}))for(const [prop,v]of Object.entries(values))m[key][prop]=v;}
     if(reference.bodyAsset)adapter.restore(reference.bodyV1Pose);constrainBody(m);if(ground)m.position.y+=before-footY(m);m.updateMatrixWorld(true);
   }catch(error){m.position.copy(position);for(const [key,r]of Object.entries(saved))m[key].rotation.fromArray(r);if(savedAdapter)adapter.restore(savedAdapter);constrainBody(m);throw error;}
