@@ -229,28 +229,38 @@ export function buildShotJson({shot,scene,camera,facts,description,labels,stats,
  };
  return {json,refFiles};
 }
+// Shaped by the 2026-11-06 comparison (docs/LLM_ABLATION_PROCEDURE.md): depth.png fixed
+// size and distance, light.png helped only where color.png cannot show the light, and
+// extra prose alone did not help. So the prompt is short, ranks the files, states the
+// depth order explicitly, and warns against copying mannequin bodies and their shadows.
 export function buildPrompt(json){
  const people=json.labels.filter(l=>l.kind==='person'),props=json.labels.filter(l=>l.kind==='prop');
- const line=l=>{const refs=l.references.length?l.references.map(r=>`${r.file}(${r.label}${r.note?': '+r.note:''})`).join(', '):'없음';return `- ${l.color} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}\n  설정화: ${refs}${l.pose?.text?`\n  포즈: ${l.pose.text}`:''}${l.lightCondition?`\n  조명: ${l.lightCondition.text}`:''}${l.visible?'':'\n  (이 컷에서는 화면에 보이지 않음)'}`;};
+ const hasRefs=json.labels.some(l=>l.references.length);
+ const refs=l=>l.references.length?`\n  설정화: ${l.references.map(r=>`${r.file}(${r.label}${r.note?': '+r.note:''})`).join(', ')}`:'';
+ const person=l=>`- ${l.color} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}${refs(l)}${l.visible?`${l.pose?.text?`\n  포즈: ${l.pose.text}`:''}${l.lightCondition?`\n  명암: ${l.lightCondition.text}`:''}`:'\n  (이 컷에서는 화면에 보이지 않음)'}`;
+ const prop=l=>`- ${l.color} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}${refs(l)}${l.visible?'':' (화면에 보이지 않음)'}`;
+ const order=people.filter(l=>l.visible).sort((a,b)=>a.distanceM.median-b.distanceM.median);
+ const cameraLine=String(json.shotDescription||'').split('\n').find(t=>t.startsWith('- 카메라:'));
  return [`# 컷 작화 지시 · ${json.scene.title} / ${json.shot.name}`,
  '','## 화풍 (가장 먼저 지킬 것)',json.style,
- '첨부 이미지들은 구도·거리·명암·포즈를 전달하는 구조 자료일 뿐 그림체 참고가 아닙니다. 회색 3D 렌더, 단색 라벨, 흑백 명암의 질감을 따라 그리지 말고 위 화풍으로 그리세요.','',
- `첨부 파일은 하나의 컷을 같은 카메라에서 분해한 자료입니다. 구도·원근·인물 위치·포즈·가림·명암은 아래 파일을 그대로 따르고, 얼굴·머리·복식은 ${json.labels.some(l=>l.references.length)?'각 인물의 설정화(없으면 인물 설명)':'아래 인물 설명'}을 따르세요.`,
+ '첨부 이미지들은 구도·거리·명암·포즈를 전달하는 구조 자료일 뿐 그림체 참고가 아닙니다. 회색 3D 렌더, 단색 라벨, 흑백 명암의 질감을 따라 그리지 말고 위 화풍으로 그리세요.',
+ '','## 지킬 순서',
+ '1. 구도: color.png와 같은 카메라 위치·화각·화면비. 인물·소품의 화면 위치를 옮기지 마세요.',
+ `2. 크기와 거리감: depth.png를 따르세요. 흰색일수록 가깝고 어두울수록 멉니다(${json.depth.depthPng.nearM}m → ${json.depth.depthPng.farM}m).${order.length>1?` 카메라에서 가까운 순서: ${order.map(l=>`${l.name}(${l.distanceM.median}m)`).join(' → ')}.`:''} 인물들의 화면 속 크기 비율은 color.png 그대로 두고, 멀리 있는 인물을 키우거나 가깝게 당기지 마세요.`,
+ '3. 명암과 그림자: light.png를 따르세요. 흰색은 빛을 정면으로 받는 면, 검은색은 빛을 등진 면이나 다른 물체의 그림자입니다. 광원 위치는 아래 「조명」과 pose.png의 노란 표시를 따르세요.',
+ '4. 포즈와 좌우: pose.png 뼈대를 따르세요. 인물 기준 왼쪽 팔다리는 밝은 색, 오른쪽은 어두운 색이고 L/R 표시가 있습니다. 빈 점·점선은 가려진 부위입니다.',
+ `5. 얼굴·머리·옷: ${hasRefs?'각 인물의 설정화(없으면 인물 설명)':'아래 인물 설명'}을 따르세요. label.png의 색은 아래 목록의 인물·소품을 가리킬 뿐 옷 색이 아닙니다.`,
  '',
- '## 파일 읽는 법',
- '- label.png: 객체별 단색 영역. 색과 대상은 아래 목록 및 shot.json의 labels 참조. 검은색은 배경.',
- `- depth.png: 카메라에서의 거리. 흰색일수록 가깝고 어두울수록 멂(${json.depth.depthPng.nearM}m → ${json.depth.depthPng.farM}m). 검은색은 배경.`,
- '- light.png: 주광의 직사광만 표시. 흰색은 빛을 정면으로 받는 면, 검은색은 빛을 등진 면이나 다른 물체의 그림자. 이 명암과 그림자 위치를 최종 그림에 유지하세요.',
- '- pose.png: 인물별 관절 뼈대. 인물 기준 왼쪽 팔다리는 밝은 색, 오른쪽은 어두운 색이고 L/R 표시가 있음. 속이 빈 점과 점선은 다른 물체에 가려진 부위. 노란 해 모양은 광원 위치, 가장자리 노란 화살표는 빛이 들어오는 방향.',
- '- color.png: 무채색 마네킹 작업 렌더(구도 확인용). 마네킹의 형태·색을 그대로 그리지 마세요.',
- '- shot.json: 위 내용의 수치 정보(카메라, 거리, 화면 내 위치, 관절 좌표, 조명 방향).',
+ '## 마네킹을 따라 그리지 말 것',
+ '- color.png와 light.png의 인물은 위치·자세용 무채색 마네킹입니다. 마네킹의 체형(가슴·엉덩이 곡선), 관절 구슬, 민머리를 그리지 마세요.',
+ '- 벽·바닥의 그림자도 마네킹 윤곽이 아니라 최종으로 그린 인물(옷·머리·소지품)의 실루엣으로 그리세요. 그림자의 위치·방향·크기만 light.png를 따릅니다.',
  '',
- `## 카메라와 조명`,`- 렌즈 약 ${json.camera.focal35mm}mm(35mm 환산), 카메라 높이 ${json.camera.heightM}m, 피치 ${json.camera.pitchDeg}°`,`- 광원 종류: ${json.lighting.typeText}`,`- ${json.lighting.text}. 빛 색 ${json.lighting.color}.`,
+ '## 카메라와 조명',...(cameraLine?[cameraLine]:[`- 렌즈 약 ${json.camera.focal35mm}mm(35mm 환산), 카메라 높이 ${json.camera.heightM}m`]),
+ `- 광원 종류: ${json.lighting.typeText}`,`- ${json.lighting.text}. 빛 색 ${json.lighting.color}.`,
  '',
- '## 인물',...people.map(line),...(props.length?['','## 소품',...props.map(line)]:[]),
- '','## 장면 설명',json.shotDescription,
+ '## 인물',...people.map(person),...(props.length?['','## 소품',...props.map(prop)]:[]),
  ...(json.scene.sourceText?['','## 원문',json.scene.sourceText]:[]),
- '','라벨 색·뼈대·글자는 최종 그림에 넣지 마세요. 말풍선·자막을 추가하지 마세요.'].join('\n');
+ '','라벨 색·뼈대·노란 광원 표시·글자는 최종 그림에 넣지 마세요. 말풍선·자막을 추가하지 마세요. 숫자 정보는 shot.json에 있습니다.'].join('\n');
 }
 
 export async function packageZip({folder,images,json,prompt,refFiles}){

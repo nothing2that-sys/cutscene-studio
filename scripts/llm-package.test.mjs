@@ -73,5 +73,16 @@ test('light source: depth relation to the people and screen position are spelled
  const among=lightSource({type:'lamp',position:[0,1.7,-1.5],target:[0,1.3,0]},camera,facts);assert.equal(among.relation,'among');
  const sun=lightSource({type:'sun',position:[-5,5,0],target:[0,0,0]},camera,facts);assert.ok(sun.screenDirection[0]<0,'sun from the left reads as screen left');const ahead=lightSource({type:'sun',position:[-3,1.6,-6],target:[0,1.2,-1]},camera,facts);assert.ok(ahead.inFrame,'low sun ahead of the camera is in frame');const back=lightSource({type:'sun',position:[3,3,10],target:[0,1,0]},camera,facts);assert.ok(back.behindCamera&&!back.inFrame);
  const prompt=buildPrompt({...buildShotJson({shot:{name:'c'},scene:{title:'t'},camera,facts,description:{text:'',structured:{actors:[],props:[]}},labels:[],stats:new Map(),range:{nearM:1,farM:2},lightNotes:new Map(),references:{},objectNotes:new Map(),width:1,height:1,lighting:{type:'lamp',position:[.8,1.7,2.5],target:[0,1.3,0],color:'#fff',intensity:1,ambient:.2}}).json});
- assert.ok(prompt.indexOf(DEFAULT_STYLE)>0&&prompt.indexOf(DEFAULT_STYLE)<prompt.indexOf('## 파일 읽는 법'),'style comes before everything else');assert.match(prompt,/카메라 쪽 앞에 있음/);
+ assert.ok(prompt.indexOf(DEFAULT_STYLE)>0&&prompt.indexOf(DEFAULT_STYLE)<prompt.indexOf('## 지킬 순서'),'style comes before everything else');assert.match(prompt,/카메라 쪽 앞에 있음/);
+});
+test('prompt ranks depth, spells out the distance order and warns against mannequin bodies and shadows',()=>{
+ const {facts,labels}=queue();const passes={width:3,height:1,label:new Uint8Array([1,2,3]),distance:new Float32Array([4,5,6]),direct:new Float32Array([1,0,0])};
+ const stats=analyzePasses(passes,labels),range=depthRange(passes,labels,stats),camera=new THREE.PerspectiveCamera();camera.position.set(3,1.6,4);camera.lookAt(0,1,0);camera.updateMatrixWorld(true);
+ const lighting={position:[0,1.4,8],target:[0,1.2,0],color:'#ffffff',intensity:2,ambient:.4};
+ const {json}=buildShotJson({shot:{name:'컷'},scene:{title:'줄',sourceText:'원문'},camera,facts,description:{text:'촬영 설명\n- 카메라: 풀샷 · 눈높이\n- 인물1: 중복 문장',structured:{actors:[],props:[]}},labels,stats,range,lightNotes:lightingNotes({facts,lighting,labels}),references:{},objectNotes:new Map(),width:3,height:1,lighting});
+ const prompt=buildPrompt(json);
+ assert.match(prompt,/2\. 크기와 거리감: depth\.png.*카메라에서 가까운 순서: 인물1\(4m\) → 인물2\(5m\) → 인물3\(6m\)/);
+ assert.match(prompt,/마네킹 윤곽이 아니라 최종으로 그린 인물/);
+ assert.match(prompt,/- 카메라: 풀샷 · 눈높이/);
+ assert.doesNotMatch(prompt,/중복 문장|## 장면 설명|설정화: 없음/,'no repeated shot description or empty reference lines');
 });
