@@ -51,7 +51,7 @@ try{
   await writeFile(path.join(dir,'control-color.png'),Buffer.from(result.color,'base64'));
   // Control: what a plain render + plain description gives, without the passes.
   const people=scene.actors.map(a=>`- ${a.name}${a.description?': '+a.description:''}`).join('\n');
-  await writeFile(path.join(dir,'control-prompt.txt'),`첨부 이미지(무채색 마네킹 렌더)의 구도로 아래 장면을 완성된 컬러 일러스트 한 컷으로 그려 주세요.\n\n장면: ${scene.title}\n${scene.sourceText}\n\n인물:\n${people}\n\n말풍선·글자는 넣지 마세요.`);
+  await writeFile(path.join(dir,'control-prompt.txt'),`첨부 이미지(무채색 마네킹 렌더)의 구도로 아래 장면을 한 컷으로 그려 주세요.\n\n## 화풍 (가장 먼저 지킬 것)\n${result.json.style}\n첨부 이미지는 구도 참고일 뿐 그림체 참고가 아닙니다. 회색 3D 렌더의 질감을 따라 그리지 마세요.\n\n장면: ${scene.title}\n${scene.sourceText}\n\n인물:\n${people}\n\n말풍선·글자는 넣지 마세요.`);
   await writeFile(path.join(dir,'prompt.txt'),result.prompt);
   const j=result.json,label=id=>j.labels.find(l=>l.id===id),checks=[];const check=(name,ok,detail='')=>checks.push({name,ok:!!ok,detail});
   const ex=sc.expect;

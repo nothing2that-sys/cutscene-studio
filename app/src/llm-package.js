@@ -7,6 +7,9 @@ import {encodePNG,createZip,dataUrlBytes} from './package-files.js';
 // Distinct, saturated colours that stay apart for a vision model. Index 0 is background.
 export const LABEL_PALETTE=['#e6194b','#3cb44b','#4363d8','#f58231','#911eb4','#42d4f4','#f032e6','#bfef45','#ffe119','#469990','#9a6324','#fabed4','#800000','#aaffc3','#000075','#dcbeff','#808000','#ffd8b1'];
 export const ENV_COLORS={floor:'#505050',wall:'#8c8c8c'};
+// Used when the scene names no style. Image generators otherwise copy the look of the
+// render-like attachments (3D / photo); the style line must come first and be explicit.
+export const DEFAULT_STYLE='2D 웹툰 일러스트: 깨끗한 검은 선화와 셀 채색(2~3단 명암). 사진·실사·3D 렌더·CG 질감으로 그리지 않음.';
 const hex=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16));
 const r2=v=>Math.round(v*100)/100,r3=v=>Math.round(v*1000)/1000;
 
@@ -99,11 +102,35 @@ export function passImages(passes,labels,range){
  return {rgba,depth8,depth16,light8};
 }
 
+// Where the light is, for the camera: screen position, distance, height and whether it
+// stands in front of, among or behind the people. For the sun, the screen direction
+// the light comes from.
+export function lightSource(lighting,camera,facts){
+ if(!lighting?.position)return null;
+ const type=lighting.type||'sun',L=new THREE.Vector3(...lighting.position),T=new THREE.Vector3(...(lighting.target||[0,0,0]));
+ camera.updateMatrixWorld(true);
+ const project=v=>{const n=v.clone().project(camera);return [(n.x+1)/2,(1-n.y)/2];},viewDepth=v=>-v.clone().applyMatrix4(camera.matrixWorldInverse).z;
+ // The sun is placed far along its direction so it can land in frame like a real sun.
+ const P=type==='sun'?T.clone().addScaledVector(L.clone().sub(T).normalize(),500):L,depth=viewDepth(P),xy=project(P);
+ const inFrame=depth>camera.near&&xy[0]>=0&&xy[0]<=1&&xy[1]>=0&&xy[1]<=1;
+ // Screen direction toward the light from the frame centre (camera frame: x right, y up).
+ const c=L.clone().sub(T).transformDirection(camera.matrixWorldInverse);let dir=depth>camera.near?[xy[0]-.5,xy[1]-.5]:[c.x,-c.y];const len=Math.hypot(...dir);dir=len>1e-6?dir.map(v=>v/len):null;
+ const out={type,inFrame,xy:inFrame?[r3(xy[0]),r3(xy[1])]:null,screenDirection:dir?dir.map(r3):null,behindCamera:depth<=camera.near};
+ const where=inFrame?`화면 안 위치 가로 ${Math.round(xy[0]*100)}%, 세로 ${Math.round(xy[1]*100)}% (pose.png의 노란 해 표시)`:out.behindCamera?'카메라 뒤쪽에서 비춤'+(dir?' (pose.png 가장자리 노란 화살표 방향)':''):'화면 밖에 있음 (pose.png 가장자리 노란 화살표 방향)';
+ if(type==='sun'){out.text=(inFrame?'해가 화면 안에 보임 · ':'')+where;return out;}
+ const people=(facts?.actors||[]).filter(x=>x.points?.pelvis?.inFrame).map(x=>({name:x.name,d:x.points.pelvis.depth,head:x.points.head?.world?.[1]}));
+ const nearer=people.filter(x=>x.d<depth).length,relation=!people.length?null:nearer===0?'front':nearer===people.length?'behind':'among';
+ const heads=people.map(x=>x.head).filter(Number.isFinite),headY=heads.length?heads.reduce((s,v)=>s+v,0)/heads.length:null;
+ Object.assign(out,{distanceFromCameraM:r2(depth),heightM:r2(L.y),relation,
+  text:[`광원(${type==='spot'?'스포트':'전등'})은 카메라에서 ${Math.round(depth*10)/10}m 거리, 바닥에서 ${Math.round(L.y*10)/10}m 높이`+(headY!=null?(L.y>headY+.4?'(인물 머리보다 위)':L.y<headY-.3?'(인물 머리보다 아래)':'(인물 머리 높이 정도)'):''),
+   relation==='front'?`모든 인물(카메라에서 ${Math.round(Math.min(...people.map(x=>x.d))*10)/10}m~)보다 카메라 쪽 앞에 있음 — 인물들 뒤나 배경에 두지 말 것`:relation==='behind'?'모든 인물보다 뒤(배경 쪽)에 있음':relation==='among'?`인물들 사이에 있음: ${people.filter(x=>x.d<depth).map(x=>x.name).join(', ')}보다 뒤, 나머지보다 앞`:'',where].filter(Boolean).join(' · ')});
+ return out;
+}
 const BONES=[['headTop','head'],['head','neck'],['neck','chest'],['chest','pelvis'],['neck','shoulderL'],['shoulderL','elbowL'],['elbowL','wristL'],['neck','shoulderR'],['shoulderR','elbowR'],['elbowR','wristR'],['pelvis','hipL'],['hipL','kneeL'],['kneeL','ankleL'],['pelvis','hipR'],['hipR','kneeR'],['kneeR','ankleR']];
 const mix=(c,t,w)=>c.map((v,i)=>Math.round(v+(t[i]-v)*w));
 // Stick figures in each person's label colour: figure-left limbs light, figure-right
 // limbs dark, hidden joints hollow.
-export function drawPose(canvas,facts,labels){
+export function drawPose(canvas,facts,labels,source=null){
  const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height,s=Math.max(2,Math.round(H/220));
  ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);ctx.lineCap='round';ctx.font=`bold ${s*7}px sans-serif`;ctx.textBaseline='middle';
  const names=[];
@@ -115,6 +142,15 @@ export function drawPose(canvas,facts,labels){
   ctx.fillStyle='#fff';for(const k of ['wristL','wristR','ankleL','ankleR'])if(P[k]){const [x,y]=xy(P[k]);ctx.fillText(k.endsWith('L')?'L':'R',x+s*4,y);}
   names.push({text:actor.name,color:label.color,x:xy(P.headTop)[0],y:xy(P.headTop)[1]-s*8});
  }
+ // Light marker: a yellow sun where the light is when it is in frame, otherwise an arrow
+ // on the frame edge pointing into the picture the way the light travels.
+ if(source){ctx.save();ctx.strokeStyle=ctx.fillStyle='#ffd400';ctx.lineWidth=s*1.5;
+  if(source.inFrame){const x=source.xy[0]*W,y=source.xy[1]*H,r=s*5;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();for(let i=0;i<8;i++){const a=i*Math.PI/4;ctx.beginPath();ctx.moveTo(x+Math.cos(a)*r*1.5,y+Math.sin(a)*r*1.5);ctx.lineTo(x+Math.cos(a)*r*2.3,y+Math.sin(a)*r*2.3);ctx.stroke();}
+   names.push({text:source.type==='sun'?'해':`광원 · 카메라에서 ${Math.round(source.distanceFromCameraM*10)/10}m`,color:'#ffd400',x,y:y+r*3.4});}
+  else if(source.screenDirection){const [dx,dy]=source.screenDirection,m=s*10,k=Math.min((W/2-m)/Math.max(Math.abs(dx),1e-6),(H/2-m)/Math.max(Math.abs(dy),1e-6)),ex=W/2+dx*k,ey=H/2+dy*k,len=s*22,hx=ex-dx*len,hy=ey-dy*len,nx=-dy,ny=dx;
+   ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(hx,hy);ctx.stroke();ctx.beginPath();ctx.moveTo(hx-dx*s*2,hy-dy*s*2);ctx.lineTo(hx+dx*s*5+nx*s*4,hy+dy*s*5+ny*s*4);ctx.lineTo(hx+dx*s*5-nx*s*4,hy+dy*s*5-ny*s*4);ctx.closePath();ctx.fill();
+   names.push({text:source.behindCamera?'빛 방향 (카메라 뒤에서)':'빛 방향 (화면 밖 광원)',color:'#ffd400',x:hx-dx*s*8,y:hy-dy*s*8+s*8});}
+  ctx.restore();}
  // Name tags: kept inside the image and stacked upward when they would overlap.
  const lineH=s*9,placed=[];
  for(const n of names.sort((a,b)=>b.y-a.y)){const w=ctx.measureText(n.text).width,x=Math.min(Math.max(n.x-w/2,2),W-w-2);let y=Math.max(n.y,lineH/2);
@@ -166,8 +202,7 @@ const ext=mime=>({'image/png':'png','image/jpeg':'jpg','image/webp':'webp'}[mime
 
 export function buildShotJson({shot,scene,camera,facts,description,labels,stats,range,lightNotes,references,objectNotes,width,height,lighting}){
  const type=lighting.type||'sun',toLight=new THREE.Vector3(...lighting.position).sub(new THREE.Vector3(...(lighting.target||[0,0,0]))).normalize().toArray(),camDir=cameraFrameDirection(camera,toLight);
- let source=null;
- if(type!=='sun'){const p=new THREE.Vector3(...lighting.position),ndc=p.clone().project(camera),depth=-p.clone().applyMatrix4(camera.matrixWorldInverse).z;source={xy:[r3((ndc.x+1)/2),r3((1-ndc.y)/2)],inFrame:depth>0&&Math.abs(ndc.x)<=1&&Math.abs(ndc.y)<=1,distanceFromCameraM:r2(p.distanceTo(camera.getWorldPosition(new THREE.Vector3())))};}
+ const source=lightSource(lighting,camera,facts);
  const refFiles=[];
  const entries=labels.map(l=>{
   const s=stats.get(l.index),notes=objectNotes.get(l.id)||{},actor=facts.actors.find(a=>a.id===l.id),descActor=description?.structured?.actors?.find(a=>a.id===l.id),descProp=description?.structured?.props?.find(p=>p.id===l.id);
@@ -179,13 +214,14 @@ export function buildShotJson({shot,scene,camera,facts,description,labels,stats,
    ...(descProp?{placement:descProp.text}:{})};
  });
  const json={format:'cutscene-shot-package',version:1,
+  style:scene.style||DEFAULT_STYLE,
   scene:{title:scene.title,sourceText:scene.sourceText||'',assumptions:scene.assumptions||''},
   shot:{name:shot.name,purpose:shot.purpose||''},
   image:{width,height,aspect:r3(width/height),origin:'top-left, x right, y down, coordinates normalized 0..1'},
   files:{color:'color.png',label:'label.png',depth:'depth.png',depth16:'depth16.png',light:'light.png',pose:'pose.png'},
   camera:{...facts.camera,lookAt:shot.camera?.target||null},
   depth:{metric:'euclidean distance from the camera centre to the surface, metres',depthPng:{nearM:range.nearM,farM:range.farM,mapping:`linear: nearM=${DEPTH_NEAR_VALUE} (white), farM and beyond=${DEPTH_FAR_VALUE}, background=0`},depth16Png:{unit:'millimetres',background:0}},
-  lighting:{type,typeText:LIGHT_TYPE_TEXT[type],positionWorld:lighting.position,targetWorld:lighting.target,...(type==='spot'?{coneDeg:lighting.coneDeg,softness:lighting.softness}:{}),...(source?{source}:{}),directionToLightCamera:camDir,cameraFrame:'+x screen right, +y screen up, +z toward the viewer; direction measured from the lit target point',text:(type==='sun'?'':'비추는 곳 기준으로 ')+lightDirectionText(camDir)+(source?.inFrame?` · 광원이 화면 안 (${source.xy.map(v=>Math.round(v*100)+'%').join(', ')})에 보임`:''),color:lighting.color,intensity:lighting.intensity,intensityMeaning:'brightness reached at targetWorld',ambient:lighting.ambient,
+  lighting:{type,typeText:LIGHT_TYPE_TEXT[type],positionWorld:lighting.position,targetWorld:lighting.target,...(type==='spot'?{coneDeg:lighting.coneDeg,softness:lighting.softness}:{}),...(source?{source}:{}),directionToLightCamera:camDir,cameraFrame:'+x screen right, +y screen up, +z toward the viewer; direction measured from the lit target point',text:(type==='sun'?'':'비추는 곳 기준으로 ')+lightDirectionText(camDir)+(source?.text?' · '+source.text:''),color:lighting.color,intensity:lighting.intensity,intensityMeaning:'brightness reached at targetWorld',ambient:lighting.ambient,
    lightPng:'direct light only: surface facing the light with nothing in between = white; turned away or in a cast shadow = black. Ambient light is excluded. Background is also black; use label.png to tell them apart.'+(type==='sun'?'':' A lamp/spot fades with distance: the lit target reads white, nearer surfaces clip to white, farther ones are greyer.')},
   labels:entries,
   shotDescription:description?.text||'',
@@ -196,13 +232,15 @@ export function buildPrompt(json){
  const people=json.labels.filter(l=>l.kind==='person'),props=json.labels.filter(l=>l.kind==='prop');
  const line=l=>{const refs=l.references.length?l.references.map(r=>`${r.file}(${r.label}${r.note?': '+r.note:''})`).join(', '):'없음';return `- ${l.color} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}\n  설정화: ${refs}${l.pose?.text?`\n  포즈: ${l.pose.text}`:''}${l.lightCondition?`\n  조명: ${l.lightCondition.text}`:''}${l.visible?'':'\n  (이 컷에서는 화면에 보이지 않음)'}`;};
  return [`# 컷 작화 지시 · ${json.scene.title} / ${json.shot.name}`,
+ '','## 화풍 (가장 먼저 지킬 것)',json.style,
+ '첨부 이미지들은 구도·거리·명암·포즈를 전달하는 구조 자료일 뿐 그림체 참고가 아닙니다. 회색 3D 렌더, 단색 라벨, 흑백 명암의 질감을 따라 그리지 말고 위 화풍으로 그리세요.','',
  `첨부 파일은 하나의 컷을 같은 카메라에서 분해한 자료입니다. 구도·원근·인물 위치·포즈·가림·명암은 아래 파일을 그대로 따르고, 얼굴·머리·복식은 ${json.labels.some(l=>l.references.length)?'각 인물의 설정화(없으면 인물 설명)':'아래 인물 설명'}을 따르세요.`,
  '',
  '## 파일 읽는 법',
  '- label.png: 객체별 단색 영역. 색과 대상은 아래 목록 및 shot.json의 labels 참조. 검은색은 배경.',
  `- depth.png: 카메라에서의 거리. 흰색일수록 가깝고 어두울수록 멂(${json.depth.depthPng.nearM}m → ${json.depth.depthPng.farM}m). 검은색은 배경.`,
  '- light.png: 주광의 직사광만 표시. 흰색은 빛을 정면으로 받는 면, 검은색은 빛을 등진 면이나 다른 물체의 그림자. 이 명암과 그림자 위치를 최종 그림에 유지하세요.',
- '- pose.png: 인물별 관절 뼈대. 인물 기준 왼쪽 팔다리는 밝은 색, 오른쪽은 어두운 색이고 L/R 표시가 있음. 속이 빈 점과 점선은 다른 물체에 가려진 부위.',
+ '- pose.png: 인물별 관절 뼈대. 인물 기준 왼쪽 팔다리는 밝은 색, 오른쪽은 어두운 색이고 L/R 표시가 있음. 속이 빈 점과 점선은 다른 물체에 가려진 부위. 노란 해 모양은 광원 위치, 가장자리 노란 화살표는 빛이 들어오는 방향.',
  '- color.png: 무채색 마네킹 작업 렌더(구도 확인용). 마네킹의 형태·색을 그대로 그리지 마세요.',
  '- shot.json: 위 내용의 수치 정보(카메라, 거리, 화면 내 위치, 관절 좌표, 조명 방향).',
  '',

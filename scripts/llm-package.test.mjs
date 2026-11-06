@@ -64,3 +64,14 @@ test('lamp: brightness falls with distance, spot reports people outside its cone
  const spot=lightingNotes({facts,lighting:{type:'spot',position:[0,3,3],target:[0,1.3,0],coneDeg:16,softness:.3},labels});
  assert.equal(spot.get('p0').inCone,'inside');assert.equal(spot.get('p1').inCone,'edge');assert.equal(spot.get('p2').inCone,'outside');assert.match(spot.get('p2').text,/스포트 빛 원 밖/);
 });
+test('light source: depth relation to the people and screen position are spelled out',async()=>{
+ const {lightSource,DEFAULT_STYLE}=await import('../app/src/llm-package.js');
+ const {facts}=queue();const camera=new THREE.PerspectiveCamera(40,16/9,.1,50);camera.position.set(3,1.6,5);camera.lookAt(0,1.2,-1);camera.updateMatrixWorld(true);
+ facts.actors.forEach((a,i)=>{for(const p of Object.values(a.points)){p.inFrame=true;p.depth=-new THREE.Vector3(...p.world).applyMatrix4(camera.matrixWorldInverse).z;}});
+ const front=lightSource({type:'lamp',position:[.8,1.7,2.5],target:[0,1.3,0]},camera,facts);assert.equal(front.relation,'front');assert.match(front.text,/모든 인물.*보다 카메라 쪽 앞에 있음/);assert.ok(front.inFrame);
+ const behind=lightSource({type:'lamp',position:[0,2,-6],target:[0,1.3,0]},camera,facts);assert.equal(behind.relation,'behind');
+ const among=lightSource({type:'lamp',position:[0,1.7,-1.5],target:[0,1.3,0]},camera,facts);assert.equal(among.relation,'among');
+ const sun=lightSource({type:'sun',position:[-5,5,0],target:[0,0,0]},camera,facts);assert.ok(sun.screenDirection[0]<0,'sun from the left reads as screen left');const ahead=lightSource({type:'sun',position:[-3,1.6,-6],target:[0,1.2,-1]},camera,facts);assert.ok(ahead.inFrame,'low sun ahead of the camera is in frame');const back=lightSource({type:'sun',position:[3,3,10],target:[0,1,0]},camera,facts);assert.ok(back.behindCamera&&!back.inFrame);
+ const prompt=buildPrompt({...buildShotJson({shot:{name:'c'},scene:{title:'t'},camera,facts,description:{text:'',structured:{actors:[],props:[]}},labels:[],stats:new Map(),range:{nearM:1,farM:2},lightNotes:new Map(),references:{},objectNotes:new Map(),width:1,height:1,lighting:{type:'lamp',position:[.8,1.7,2.5],target:[0,1.3,0],color:'#fff',intensity:1,ambient:.2}}).json});
+ assert.ok(prompt.indexOf(DEFAULT_STYLE)>0&&prompt.indexOf(DEFAULT_STYLE)<prompt.indexOf('## 파일 읽는 법'),'style comes before everything else');assert.match(prompt,/카메라 쪽 앞에 있음/);
+});

@@ -10,7 +10,7 @@ import {describeObjects,inspectObjectOverlaps} from './scene-object-info.js';
 import {serializeBodyV1} from './body-v1-main.js';
 import {extractShotFacts,describeShot} from './shot-description.js';
 import {objectNotes} from './scene-object-info.js';
-import {buildLabels,renderPasses,analyzePasses,depthRange,passImages,drawPose,lightingNotes,buildShotJson,buildPrompt,packageZip,encodePNG} from './llm-package.js';
+import {buildLabels,renderPasses,analyzePasses,depthRange,passImages,drawPose,lightingNotes,lightSource,buildShotJson,buildPrompt,packageZip,encodePNG,DEFAULT_STYLE} from './llm-package.js';
 import {dataUrlBytes} from './package-files.js';
 
 export function initCutsceneStudio(api) {
@@ -61,6 +61,7 @@ export function initCutsceneStudio(api) {
       <div class="studio-row"><button id="studio-example" class="btn primary">예제 장면</button><label class="btn">장면 JSON 열기<input id="studio-file" type="file" accept=".json" hidden></label></div>
       <details><summary>LLM JSON 붙여넣기</summary><textarea id="studio-json" aria-label="LLM 장면 JSON" placeholder="LLM이 만든 장면 JSON을 붙여넣으세요"></textarea><div class="studio-row"><button id="studio-check" class="btn">검사만</button><button id="studio-apply" class="btn">장면 적용</button></div></details>
       <label class="studio-label">장면 제목<input id="studio-title" maxlength="200"></label>
+      <label class="studio-label">화풍 (LLM 패키지 지시문 맨 앞에 들어감)<textarea id="studio-style" rows="2" maxlength="2000"></textarea></label>
       <details><summary>원문과 연출 의도</summary><label class="studio-label">소설 원문<textarea id="studio-source"></textarea></label><label class="studio-label">연출을 위해 추정한 정보<textarea id="studio-assumptions"></textarea></label></details>
       <details open><summary>공간과 조명</summary>
         <div class="studio-row"><span>방 크기 m</span><input id="studio-room-x" type="number" aria-label="방 너비" min="1" max="30" step="0.5"><input id="studio-room-y" type="number" aria-label="방 높이" min="1" max="30" step="0.5"><input id="studio-room-z" type="number" aria-label="방 깊이" min="1" max="30" step="0.5"></div>
@@ -159,7 +160,7 @@ export function initCutsceneStudio(api) {
     if(kind==='label')return canvasFrom(width,height,d=>d.set(r.images.rgba));
     if(kind==='depth')return grayCanvas(width,height,r.images.depth8);
     if(kind==='light')return grayCanvas(width,height,r.images.light8);
-    const c=window.document.createElement('canvas');c.width=width;c.height=height;drawPose(c,r.facts,r.labels);return c;
+    const c=window.document.createElement('canvas');c.width=width;c.height=height;drawPose(c,r.facts,r.labels,lightSource(document.lighting,shotCamera,r.facts));return c;
   }
   function renderPNG(depth=false) {
     if(depth){const {width,height}=exportSize(),r=computePasses(width,height);lastDepthRange=r.range;captureObserver?.('depth');return passCanvas('depth',r).toDataURL('image/png');}
@@ -313,7 +314,7 @@ export function initCutsceneStudio(api) {
     $('studio-caption').textContent=`${currentShot().name} · 인물과 포즈는 공유 · ${aspect.toFixed(2)}:1`;
   }
   function syncUI() {
-    $('studio-title').value=document.title;$('studio-source').value=document.sourceText;$('studio-assumptions').value=document.assumptions;
+    $('studio-title').value=document.title;$('studio-style').value=document.style||'';$('studio-style').placeholder=DEFAULT_STYLE;$('studio-source').value=document.sourceText;$('studio-assumptions').value=document.assumptions;
     ['x','y','z'].forEach((a,i)=>$(`studio-room-${a}`).value=document.room.size[i]);
     $('studio-walls').checked=document.room.walls;$('studio-light').value=document.lighting.intensity;
     $('studio-light-color').value=document.lighting.color;$('studio-ambient').value=document.lighting.ambient;
@@ -353,7 +354,7 @@ export function initCutsceneStudio(api) {
     catch(error){showImportError(error,'',f.name);}
     finally{e.target.value='';}
   };
-  for(const [id,key]of [['studio-title','title'],['studio-source','sourceText'],['studio-assumptions','assumptions']])$(id).onchange=()=>{document[key]=$(id).value;api.commit();};
+  for(const [id,key]of [['studio-title','title'],['studio-style','style'],['studio-source','sourceText'],['studio-assumptions','assumptions']])$(id).onchange=()=>{document[key]=$(id).value;api.commit();};
   for(const axis of ['x','y','z'])$(`studio-room-${axis}`).onchange=()=>run(()=>{
     const room={...document.room,size:['x','y','z'].map(a=>Number($(`studio-room-${a}`).value))};
     document=validateScene({...document,room});rebuildRoom();api.commit();

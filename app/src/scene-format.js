@@ -72,7 +72,7 @@ export function validateCamera(input,path='camera') {
 export function analyzeScene(input) {
   const c=collector(),{error,warn,obj,keys,num,vec,str,color,list,camera}=c;
   const raw=obj(input,'$');
-  keys(raw,['version','units','title','sourceText','assumptions','room','actors','props','camera','lighting','shots'],'');
+  keys(raw,['version','units','title','style','sourceText','assumptions','room','actors','props','camera','lighting','shots'],'');
   if(raw.version!==1)error('version','VERSION_REQUIRED','장면 버전은 1이어야 합니다.',1,raw.version);
   if(raw.units!=='meters')error('units','UNITS_REQUIRED','길이 단위는 meters만 지원합니다.','meters',raw.units);
   if(raw.room===undefined)warn('room','DEFAULT_ROOM','방 정보가 없어 기본 방 6×3×5m를 사용합니다.');
@@ -109,7 +109,7 @@ export function analyzeScene(input) {
   });
   const light=raw.lighting===undefined?{}:obj(raw.lighting,'lighting');keys(light,['type','position','target','color','intensity','ambient','coneDeg','softness'],'lighting');
   const lightType=light.type===undefined?'sun':light.type;if(!LIGHT_TYPES.includes(lightType))error('lighting.type','UNSUPPORTED_LIGHT','지원하지 않는 조명 종류입니다. sun(태양·평행광), lamp(전등·점광원), spot(스포트) 중 하나를 쓰세요.',LIGHT_TYPES,light.type);
-  const scene={version:1,units:'meters',title:str(raw.title,'title','새 장면'),sourceText:str(raw.sourceText,'sourceText'),assumptions:str(raw.assumptions,'assumptions'),
+  const scene={version:1,units:'meters',title:str(raw.title,'title','새 장면'),style:str(raw.style,'style',''),sourceText:str(raw.sourceText,'sourceText'),assumptions:str(raw.assumptions,'assumptions'),
     room:{size:vec(room.size===undefined?[6,3,5]:room.size,'room.size',1,30),color:color(room.color,'room.color','#b9b5ac'),walls:room.walls!==false},actors,props,camera:camera(raw.camera),shots,
     lighting:{position:vec(light.position===undefined?[-3,5,3]:light.position,'lighting.position'),target:vec(light.target===undefined?[0,1,0]:light.target,'lighting.target'),color:color(light.color,'lighting.color','#fff0d6'),intensity:num(light.intensity===undefined?2:light.intensity,'lighting.intensity',0,10),ambient:num(light.ambient===undefined?0.6:light.ambient,'lighting.ambient',0,3),type:lightType,...(lightType==='spot'?{coneDeg:num(light.coneDeg===undefined?50:light.coneDeg,'lighting.coneDeg',5,170),softness:num(light.softness===undefined?.3:light.softness,'lighting.softness',0,1)}:{})}};
   if(lightType!=='sun'&&scene.lighting.position.every((v,i)=>Math.abs(v-scene.lighting.target[i])<1e-6))error('lighting.target','LIGHT_NO_DIRECTION','전등·스포트의 위치와 목표점은 달라야 합니다. 목표점은 밝기 기준이 되는 지점입니다.','position != target',light.target);
