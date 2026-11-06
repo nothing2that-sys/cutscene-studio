@@ -29,7 +29,7 @@ export function initCutsceneStudio(api) {
   // Character sheets / references per object id. Kept out of undo history (large images);
   // saved with the project file.
   let references={};
-  let passView='color',lastDepthRange=null;
+  let passView='color',lastDepthRange=null,passTimer=0;
   const environment = new THREE.Group();
   environment.name = 'Cutscene room';
   stage.scene.add(environment);
@@ -136,23 +136,26 @@ export function initCutsceneStudio(api) {
     return {actors,props};
   }
   // Label, camera distance, direct light and pose all come from one shot-camera evaluation.
-  function computePasses(width,height,{commit=true}={}){
+  // only: a preview view ('label'|'depth'|'light'|'pose') computes just what it shows;
+  // the package (only=null) computes everything.
+  function computePasses(width,height,{commit=true,only=null}={}){
     if(commit)beforeCapture?.();updateShotCamera();
     const {actors,props}=sceneItems();
     return cleanRender(()=>{
       const environmentMeshes=[];environment.traverse(n=>{if(!n.isMesh)return;for(let q=n;q;q=q.parent)if(!q.visible)return;environmentMeshes.push(n);});
-      const facts=extractShotFacts({camera:shotCamera,aspect,actors,props,environmentMeshes,lighting:document.lighting});
-      const description=describeShot(facts,{shotName:currentShot().name,purpose:currentShot().purpose});
       const labels=buildLabels({actors,props,environmentMeshes});
+      const facts=!only||only==='pose'?extractShotFacts({camera:shotCamera,aspect,actors,props,environmentMeshes,lighting:document.lighting}):null;
+      if(only==='pose')return {width,height,facts,labels};
+      const description=facts?describeShot(facts,{shotName:currentShot().name,purpose:currentShot().purpose}):null;
       const passes=renderPasses({renderer:preview,scene:stage.scene,camera:shotCamera,width,height,labels,light:keyLight(),lightTarget:document.lighting.target,ambient});
       const stats=analyzePasses(passes,labels),range=depthRange(passes,labels,stats);
-      return {facts,description,labels,passes,stats,range,images:passImages(passes,labels,range),lightNotes:lightingNotes({facts,lighting:document.lighting,labels}),actors,props};
+      return {width,height,facts,description,labels,passes,stats,range,images:passImages(passes,labels,range),lightNotes:facts?lightingNotes({facts,lighting:document.lighting,labels}):null,actors,props};
     });
   }
   function canvasFrom(width,height,fill){const c=window.document.createElement('canvas');c.width=width;c.height=height;const ctx=c.getContext('2d'),img=ctx.createImageData(width,height);fill(img.data);ctx.putImageData(img,0,0);return c;}
   const grayCanvas=(w,h,g)=>canvasFrom(w,h,d=>{for(let i=0;i<g.length;i++){d[i*4]=d[i*4+1]=d[i*4+2]=g[i];d[i*4+3]=255;}});
   function passCanvas(kind,r){
-    const {width,height}=r.passes;
+    const {width,height}=r;
     if(kind==='label')return canvasFrom(width,height,d=>d.set(r.images.rgba));
     if(kind==='depth')return grayCanvas(width,height,r.images.depth8);
     if(kind==='light')return grayCanvas(width,height,r.images.light8);
@@ -428,7 +431,7 @@ export function initCutsceneStudio(api) {
   function showPassView(){
     const img=$('studio-pass-image');
     if(passView==='color'){img.hidden=true;preview.domElement.hidden=false;return;}
-    const w=576,h=Math.round(w/aspect),r=computePasses(w,h,{commit:false});
+    const w=576,h=Math.round(w/aspect),r=computePasses(w,h,{commit:false,only:passView});
     img.src=passCanvas(passView,r).toDataURL('image/png');img.hidden=false;preview.domElement.hidden=true;
   }
   $('studio-pass-view').onchange=()=>run(()=>{passView=$('studio-pass-view').value;showPassView();});
@@ -458,7 +461,7 @@ export function initCutsceneStudio(api) {
     if(!force&&performance.now()-lastFrame<250)return;lastFrame=performance.now();previewDirty=false;
     const w=288,h=Math.round(w/aspect);if(preview.domElement.width!==w||preview.domElement.height!==h)preview.setSize(w,h,false);
     updateShotCamera();cleanRender(()=>preview.render(stage.scene,shotCamera));
-    if(passView!=='color')try{showPassView();}catch(e){console.error(e);}
+    if(passView!=='color'){clearTimeout(passTimer);passTimer=setTimeout(()=>{try{showPassView();}catch(e){console.error(e);}},500);}
   }
   return {
     setBeforeCapture(fn){beforeCapture=fn;},setBeforeReadCamera(fn){beforeReadCamera=fn;},setCaptureObserver(fn){captureObserver=fn;},

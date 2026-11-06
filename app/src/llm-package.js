@@ -69,11 +69,14 @@ export function renderPasses({renderer,scene,camera,width,height,labels,light,li
 
 // Per-label screen statistics from the pass buffers.
 export function analyzePasses(passes,labels){
- const {width,height,label,distance,direct}=passes,stats=new Map(labels.map(l=>[l.index,{pixels:0,x0:width,y0:height,x1:-1,y1:-1,depths:[],lit:0,shadow:0,sum:0}]));
- for(let y=0;y<height;y++)for(let x=0;x<width;x++){const i=y*width+x,s=stats.get(label[i]);if(!s)continue;s.pixels++;if(x<s.x0)s.x0=x;if(y<s.y0)s.y0=y;if(x>s.x1)s.x1=x;if(y>s.y1)s.y1=y;s.depths.push(distance[i]);s.sum+=direct[i];if(direct[i]>.25)s.lit++;if(direct[i]<.05)s.shadow++;}
- const total=width*height,out=new Map();
- for(const [index,s]of stats){if(!s.pixels){out.set(index,null);continue;}s.depths.sort((a,b)=>a-b);const q=f=>s.depths[Math.min(s.depths.length-1,Math.floor(f*s.depths.length))];
-  out.set(index,{pixelShare:r3(s.pixels/total),bbox:[r3(s.x0/width),r3(s.y0/height),r3((s.x1+1)/width),r3((s.y1+1)/height)],depthM:{min:r2(q(0)),median:r2(q(.5)),max:r2(q(.999))},direct:{mean:r2(s.sum/s.pixels),litShare:r2(s.lit/s.pixels),darkShare:r2(s.shadow/s.pixels)}});}
+ const {width,height,label,distance,direct}=passes,n=width*height,stats=new Map(labels.map(l=>[l.index,{pixels:0,x0:width,y0:height,x1:-1,y1:-1,lit:0,shadow:0,sum:0}]));
+ for(let y=0;y<height;y++)for(let x=0;x<width;x++){const i=y*width+x,s=stats.get(label[i]);if(!s)continue;s.pixels++;if(x<s.x0)s.x0=x;if(y<s.y0)s.y0=y;if(x>s.x1)s.x1=x;if(y>s.y1)s.y1=y;s.sum+=direct[i];if(direct[i]>.25)s.lit++;if(direct[i]<.05)s.shadow++;}
+ // Typed arrays sort numerically in native code; far faster than Array#sort for every pixel.
+ const depths=new Map();for(const [index,s]of stats)if(s.pixels)depths.set(index,{values:new Float32Array(s.pixels),n:0});
+ for(let i=0;i<n;i++){const d=depths.get(label[i]);if(d)d.values[d.n++]=distance[i];}
+ const out=new Map();
+ for(const [index,s]of stats){if(!s.pixels){out.set(index,null);continue;}const v=depths.get(index).values.sort(),q=f=>v[Math.min(v.length-1,Math.floor(f*v.length))];
+  out.set(index,{pixelShare:r3(s.pixels/n),bbox:[r3(s.x0/width),r3(s.y0/height),r3((s.x1+1)/width),r3((s.y1+1)/height)],depthM:{min:r2(q(0)),median:r2(q(.5)),max:r2(q(.999))},direct:{mean:r2(s.sum/s.pixels),litShare:r2(s.lit/s.pixels),darkShare:r2(s.shadow/s.pixels)}});}
  return out;
 }
 // Near/far for the 8-bit depth view are fitted to the people and props, so the
@@ -103,14 +106,20 @@ const mix=(c,t,w)=>c.map((v,i)=>Math.round(v+(t[i]-v)*w));
 export function drawPose(canvas,facts,labels){
  const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height,s=Math.max(2,Math.round(H/220));
  ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);ctx.lineCap='round';ctx.font=`bold ${s*7}px sans-serif`;ctx.textBaseline='middle';
+ const names=[];
  for(const actor of facts.actors){const label=labels.find(l=>l.kind==='person'&&l.id===actor.id);if(!label)continue;const base=hex(label.color),P=actor.points,xy=p=>[p.screen[0]*W,p.screen[1]*H];
   const side=k=>k.endsWith('L')?mix(base,[255,255,255],.45):k.endsWith('R')?mix(base,[0,0,0],.45):base;
   for(const [a,b]of BONES){const pa=P[a],pb=P[b];if(!pa||!pb)continue;const c=side(b.endsWith('L')||b.endsWith('R')?b:a);ctx.strokeStyle=`rgb(${c})`;ctx.lineWidth=s*2;ctx.setLineDash(pa.occludedBy||pb.occludedBy?[s*3,s*3]:[]);ctx.beginPath();ctx.moveTo(...xy(pa));ctx.lineTo(...xy(pb));ctx.stroke();}
   ctx.setLineDash([]);
   for(const [k,p]of Object.entries(P)){const [x,y]=xy(p),c=side(k);ctx.beginPath();ctx.arc(x,y,s*2.2,0,Math.PI*2);if(p.occludedBy){ctx.strokeStyle=`rgb(${c})`;ctx.lineWidth=s;ctx.stroke();}else{ctx.fillStyle=`rgb(${c})`;ctx.fill();}}
   ctx.fillStyle='#fff';for(const k of ['wristL','wristR','ankleL','ankleR'])if(P[k]){const [x,y]=xy(P[k]);ctx.fillText(k.endsWith('L')?'L':'R',x+s*4,y);}
-  const top=xy(P.headTop);ctx.fillStyle=label.color;ctx.textAlign='center';ctx.fillText(actor.name,top[0],top[1]-s*8);ctx.textAlign='left';
+  names.push({text:actor.name,color:label.color,x:xy(P.headTop)[0],y:xy(P.headTop)[1]-s*8});
  }
+ // Name tags: kept inside the image and stacked upward when they would overlap.
+ const lineH=s*9,placed=[];
+ for(const n of names.sort((a,b)=>b.y-a.y)){const w=ctx.measureText(n.text).width,x=Math.min(Math.max(n.x-w/2,2),W-w-2);let y=Math.max(n.y,lineH/2);
+  for(let guard=0;guard<20&&placed.some(r=>x<r.x+r.w+4&&r.x<x+w+4&&Math.abs(r.y-y)<lineH);guard++)y-=lineH;
+  y=Math.max(lineH/2,y);placed.push({x,y,w});ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(x-2,y-lineH/2,w+4,lineH);ctx.fillStyle=n.color;ctx.fillText(n.text,x,y);}
 }
 
 // Light condition per person: which side faces the light, whether the camera sees the
@@ -134,7 +143,8 @@ export function lightingNotes({facts,lighting,labels}){
   for(const key of Object.keys(JOINT)){const p=actor.points[key];if(!p)continue;const from=new THREE.Vector3(...p.world);ray.set(from,toLight(from));ray.far=type==='sun'?40:Math.max(0,L.distanceTo(from)-.05);const hit=ray.intersectObjects(meshes,false).find(h=>meshOwner.get(h.object)!==self&&h.distance>.02);if(hit)(shadowed[meshOwner.get(hit.object).name]??=[]).push(key);}
   const facingText=facing==null?'빛이 거의 바로 위에서 내려옴':facing>.5?'빛을 정면으로 받음(얼굴·가슴 쪽이 밝고 등은 어두움)':facing<-.5?'빛을 등지고 있음(등·뒤통수가 밝고 얼굴 쪽은 그늘)':'빛을 옆에서 받음(한쪽 옆면만 밝음)';
   const seenText=seen==null?'':seen>.3?'카메라는 빛을 받는 면을 봄':seen<-.3?'카메라는 그늘진 면을 봄(역광, 윤곽만 밝음)':'카메라는 밝은 면과 그늘의 경계를 봄';
-  const shadowText=Object.entries(shadowed).map(([name,keys])=>`${keys.map(k=>JOINT[k]).join('·')}은 ${name}의 그림자 안`).join(', ');
+  const josa=w=>{const c=w.charCodeAt(w.length-1)-0xac00;return c>=0&&c<11172&&c%28?'은':'는';};
+  const shadowText=Object.entries(shadowed).map(([name,keys])=>{const words=keys.map(k=>JOINT[k]).join('·');return `${words}${josa(words)} ${name}의 그림자 안`;}).join(', ');
   const extra={},texts=[];
   if(type!=='sun'){
    const distance=L.distanceTo(chest),relative=(reference/distance)**2;extra.distanceToLightM=r2(distance);extra.brightnessVsTarget=r2(relative);
@@ -186,7 +196,7 @@ export function buildPrompt(json){
  const people=json.labels.filter(l=>l.kind==='person'),props=json.labels.filter(l=>l.kind==='prop');
  const line=l=>{const refs=l.references.length?l.references.map(r=>`${r.file}(${r.label}${r.note?': '+r.note:''})`).join(', '):'없음';return `- ${l.color} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}\n  설정화: ${refs}${l.pose?.text?`\n  포즈: ${l.pose.text}`:''}${l.lightCondition?`\n  조명: ${l.lightCondition.text}`:''}${l.visible?'':'\n  (이 컷에서는 화면에 보이지 않음)'}`;};
  return [`# 컷 작화 지시 · ${json.scene.title} / ${json.shot.name}`,
- '첨부 파일은 하나의 컷을 같은 카메라에서 분해한 자료입니다. 구도·원근·인물 위치·포즈·가림·명암은 아래 파일을 그대로 따르고, 얼굴·머리·복식·화풍은 각 인물의 설정화를 따르세요.',
+ `첨부 파일은 하나의 컷을 같은 카메라에서 분해한 자료입니다. 구도·원근·인물 위치·포즈·가림·명암은 아래 파일을 그대로 따르고, 얼굴·머리·복식은 ${json.labels.some(l=>l.references.length)?'각 인물의 설정화(없으면 인물 설명)':'아래 인물 설명'}을 따르세요.`,
  '',
  '## 파일 읽는 법',
  '- label.png: 객체별 단색 영역. 색과 대상은 아래 목록 및 shot.json의 labels 참조. 검은색은 배경.',

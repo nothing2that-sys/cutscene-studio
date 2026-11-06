@@ -1,0 +1,15 @@
+{"version":1,"units":"meters","title":"검증 S3 · 펜던트 조명 아래 식탁",
+ "sourceText":"어두운 부엌, 식탁 위에 매달린 펜던트 조명 하나만 켜져 있다. 마주 앉은 두 사람 중 오른팔을 식탁 너머로 뻗은 사람이 상대에게 무언가를 건네려 한다.",
+ "assumptions":"검증용 장면. 펜던트는 아래로 향한 스포트로 근사. 의자 좌판 높이와 앉은 자세는 근사.",
+ "room":{"size":[6,3,6],"color":"#5b5048","walls":true},
+ "actors":[
+  {"id":"d1","name":"안쪽 · 흰 셔츠 여자","position":[0,0,-0.85],"yaw":0,"height":1.65,"pose":"sitting","description":"흰 셔츠, 긴 머리를 묶은 30대 여성"},
+  {"id":"d2","name":"바깥 · 녹색 니트 남자","position":[0,0,0.85],"yaw":180,"height":1.78,"pose":"sitting","joints":{"r_arm":{"raise":70},"r_elbow":{"bend":15},"torso":{"bend":15}},"description":"녹색 니트, 짧은 머리 30대 남성. 오른팔을 식탁 위로 뻗음"}],
+ "props":[
+  {"id":"table","name":"식탁","type":"table","position":[0,0,0],"size":[1.4,0.75,0.8],"color":"#7a5c3e"},
+  {"id":"chair-in","name":"안쪽 의자","type":"chair","position":[0,0,-0.95],"size":[0.45,0.95,0.45],"color":"#4a3a2a"},
+  {"id":"chair-out","name":"바깥 의자","type":"chair","position":[0,0,0.95],"yaw":180,"size":[0.45,0.95,0.45],"color":"#4a3a2a"},
+  {"id":"cup","name":"머그컵","type":"box","position":[0.2,0.75,0.05],"size":[0.09,0.11,0.09],"color":"#d0d0d0"}],
+ "camera":{"position":[2.6,1.35,1.7],"target":[0,0.9,0],"fov":40},
+ "lighting":{"type":"spot","position":[0,2.4,0],"target":[0,0.75,0],"coneDeg":70,"softness":0.35,"color":"#ffe2b0","intensity":2.6,"ambient":0.15},
+ "shots":[{"id":"dinner","name":"S3 식탁","purpose":"앉은 자세·식탁 가림·스포트 원 확인","camera":{"position":[2.6,1.35,1.7],"target":[0,0.9,0],"fov":40}}]}

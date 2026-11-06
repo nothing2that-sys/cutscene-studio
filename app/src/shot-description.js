@@ -23,6 +23,12 @@ function actorFrame(m,P){
   forward=new THREE.Vector3();
   for(const foot of feet){foot.geometry.computeBoundingBox();const c=foot.geometry.boundingBox.getCenter(new THREE.Vector3());foot.localToWorld(c);const ankle=[P.a0,P.a1].sort((x,y)=>x.distanceTo(c)-y.distanceTo(c))[0];forward.add(c.sub(ankle));}
  }
+ // A bent knee always juts out in front of its hip–ankle line. When the knees are bent
+ // (kneeling, sitting, squatting) the feet can point backward, so the knees decide.
+ const knees=new THREE.Vector3();
+ for(const side of ['l','r']){if(!m[side+'_knee']||!m[side+'_leg']||!m[side+'_ankle'])continue;const hip=m[side+'_leg'].getWorldPosition(new THREE.Vector3()),knee=m[side+'_knee'].getWorldPosition(new THREE.Vector3()),ankle=m[side+'_ankle'].getWorldPosition(new THREE.Vector3());knees.add(knee.sub(hip.add(ankle).multiplyScalar(.5)));}
+ knees.addScaledVector(up,-knees.dot(up));
+ if(knees.length()>.08*(P.neck.distanceTo(P.pelvis)||.5))forward=knees;
  if(!forward||forward.lengthSq()<1e-8)forward=new THREE.Vector3(0,0,1).applyQuaternion(m.getWorldQuaternion(new THREE.Quaternion()));
  forward.addScaledVector(up,-forward.dot(up)).normalize();
  return {up,forward,left:new THREE.Vector3().crossVectors(up,forward).normalize()};

@@ -64,3 +64,12 @@ test('occlusion, contacts, depth order, props and light are described',()=>{
  assert.match(d.text,/빛: 주광은 화면 왼쪽 위, 카메라 쪽\(앞\)에서 비춤 → 그림자는 화면 오른쪽 인물 뒤쪽으로 떨어짐/);
  assert.ok(d.structured.actors.every(a=>a.inFrame));
 });
+test('kneeling: bent knees decide facing even when the feet point backward',()=>{
+ // Faces +Z: thighs vertical, shins lying back along -Z, toes pointing back.
+ const kneel={...STAND,body:[0,.55,0],torso:[0,.75,0],neck:[0,1.05,0],head:[0,1.1,0],l_arm:[-.2,1,0],l_elbow:[-.22,.75,0],l_wrist:[-.23,.55,0],r_arm:[.2,1,0],r_elbow:[.22,.75,0],r_wrist:[.23,.55,0],l_leg:[-.1,.5,0],l_knee:[-.1,.06,.02],l_ankle:[-.1,.06,-.42],r_leg:[.1,.5,0],r_knee:[.1,.06,.02],r_ankle:[.1,.06,-.42]};
+ // Root turned 180° with joints authored mirrored: the root orientation fallback would
+ // say -Z, so only the knee cue can get +Z right.
+ const turned=Object.fromEntries(Object.entries(kneel).map(([k,[x,y,z]])=>[k,[-x,y,-z]]));
+ const front=describe(camera([0,1,4],[0,.6,0]),[actor('K',turned,{yaw:Math.PI})]);assert.match(lineOf(front,'K'),/몸이 카메라 정면을 향함/);
+ const back=describe(camera([0,1,-4],[0,.6,0]),[actor('K',turned,{yaw:Math.PI})]);assert.match(lineOf(back,'K'),/뒷모습/);
+});
