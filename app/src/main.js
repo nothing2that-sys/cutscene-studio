@@ -179,6 +179,7 @@ function applyState(json) {
     stage.controls.update();
   }
   studio?.restore(state.studio);
+  if(state.characterReferences)studio?.restoreReferences(state.characterReferences);
 
   if (state.activeIndex !== -1 && mannequins[state.activeIndex]) {
     activeMannequin = mannequins[state.activeIndex];

@@ -9,6 +9,9 @@ import {bodySurfaceMode} from './body-surface.js';
 import {describeObjects,inspectObjectOverlaps} from './scene-object-info.js';
 import {serializeBodyV1} from './body-v1-main.js';
 import {extractShotFacts,describeShot} from './shot-description.js';
+import {objectNotes} from './scene-object-info.js';
+import {buildLabels,renderPasses,analyzePasses,depthRange,passImages,drawPose,lightingNotes,buildShotJson,buildPrompt,packageZip,encodePNG} from './llm-package.js';
+import {dataUrlBytes} from './package-files.js';
 
 export function initCutsceneStudio(api) {
   const { THREE, stage } = api;
@@ -23,6 +26,10 @@ export function initCutsceneStudio(api) {
   let previewDirty=true;
   let captureObserver=null;
   let shotProjection=null;
+  // Character sheets / references per object id. Kept out of undo history (large images);
+  // saved with the project file.
+  let references={};
+  let passView='color',lastDepthRange=null;
   const environment = new THREE.Group();
   environment.name = 'Cutscene room';
   stage.scene.add(environment);
@@ -59,8 +66,10 @@ export function initCutsceneStudio(api) {
         <div class="studio-row"><label>화각 <input id="studio-fov" type="number" min="10" max="100" value="40"></label><select id="studio-aspect" aria-label="촬영 화면비"><option value="1.7777777777777777">16:9</option><option value="1.3333333333333333">4:3</option><option value="1">1:1</option><option value="0.75">3:4</option><option value="0.5625">9:16</option></select></div>
         <div id="studio-shots"></div>
       </div>
-      <div class="studio-section"><h3>촬영 미리보기</h3><div id="studio-preview"></div><p id="studio-caption" class="studio-help">컷을 저장하면 이곳에 촬영 구도가 표시됩니다.</p><p id="studio-preview-state" class="studio-help"></p><button id="studio-preview-refresh" class="btn">미리보기 갱신</button>
+      <details id="studio-refs-section"><summary>설정화 · 레퍼런스 연결</summary><p class="studio-help">인물·소품마다 설정화(얼굴·전신·의상 등)를 연결하면 LLM 패키지에 함께 들어가고 라벨 색과 짝지어집니다.</p><div id="studio-refs"></div></details>
+      <div class="studio-section"><h3>촬영 미리보기</h3><label class="studio-label">미리보기 패스 <select id="studio-pass-view" aria-label="미리보기 패스"><option value="color">컬러</option><option value="label">라벨</option><option value="depth">뎁스(카메라 거리)</option><option value="light">직사광·그림자</option><option value="pose">포즈 뼈대</option></select></label><div id="studio-preview"><img id="studio-pass-image" alt="패스 미리보기" hidden></div><p id="studio-caption" class="studio-help">컷을 저장하면 이곳에 촬영 구도가 표시됩니다.</p><p id="studio-preview-state" class="studio-help"></p><button id="studio-preview-refresh" class="btn">미리보기 갱신</button>
         <div class="studio-row"><button id="studio-color" class="btn primary">PNG 캡처</button><button id="studio-depth" class="btn">Depth PNG</button></div>
+        <div class="studio-row"><button id="studio-llm-package" class="btn primary">LLM 패키지 (zip)</button></div>
         <div class="studio-row"><button id="studio-packet" class="btn">LLM 전달 묶음</button><button id="studio-prompt" class="btn">작화 지시문</button></div>
       </div>
       <p class="studio-help">프로젝트 Save는 정밀 관절·공간·컷을 함께 저장합니다. LLM 연결 없이 오프라인으로 편집합니다.</p>
@@ -107,7 +116,37 @@ export function initCutsceneStudio(api) {
     try{return fn();}finally{hidden.forEach(([n,v])=>n.visible=v);materials.forEach(([m,c])=>m.emissive.copy(c));}
   }
   let beforeCapture=null,beforeReadCamera=null;
+  function exportSize(){const width=aspect>=1?1600:Math.round(1600*aspect);return {width,height:Math.round(width/aspect)};}
+  function sceneItems(){
+    const actors=api.mannequins.map((m,i)=>({id:m.userData.studioId||'actor-'+(i+1),name:m.name||'인물 '+(i+1),root:m,height:m.userData.bodyProfile?.height,headUnits:m.userData.bodyProfile?.headUnits}));
+    const props=api.importedModels.map((p,i)=>({id:p.userData.primitive?.id||'prop-'+(i+1),name:p.name||'소품 '+(i+1),root:p}));
+    return {actors,props};
+  }
+  // Label, camera distance, direct light and pose all come from one shot-camera evaluation.
+  function computePasses(width,height,{commit=true}={}){
+    if(commit)beforeCapture?.();updateShotCamera();
+    const {actors,props}=sceneItems();
+    return cleanRender(()=>{
+      const environmentMeshes=[];environment.traverse(n=>{if(!n.isMesh)return;for(let q=n;q;q=q.parent)if(!q.visible)return;environmentMeshes.push(n);});
+      const facts=extractShotFacts({camera:shotCamera,aspect,actors,props,environmentMeshes,lighting:document.lighting});
+      const description=describeShot(facts,{shotName:currentShot().name,purpose:currentShot().purpose});
+      const labels=buildLabels({actors,props,environmentMeshes});
+      const passes=renderPasses({renderer:preview,scene:stage.scene,camera:shotCamera,width,height,labels,light:stage.light,ambient});
+      const stats=analyzePasses(passes,labels),range=depthRange(passes,labels,stats);
+      return {facts,description,labels,passes,stats,range,images:passImages(passes,labels,range),lightNotes:lightingNotes({facts,lighting:document.lighting,labels}),actors,props};
+    });
+  }
+  function canvasFrom(width,height,fill){const c=window.document.createElement('canvas');c.width=width;c.height=height;const ctx=c.getContext('2d'),img=ctx.createImageData(width,height);fill(img.data);ctx.putImageData(img,0,0);return c;}
+  const grayCanvas=(w,h,g)=>canvasFrom(w,h,d=>{for(let i=0;i<g.length;i++){d[i*4]=d[i*4+1]=d[i*4+2]=g[i];d[i*4+3]=255;}});
+  function passCanvas(kind,r){
+    const {width,height}=r.passes;
+    if(kind==='label')return canvasFrom(width,height,d=>d.set(r.images.rgba));
+    if(kind==='depth')return grayCanvas(width,height,r.images.depth8);
+    if(kind==='light')return grayCanvas(width,height,r.images.light8);
+    const c=window.document.createElement('canvas');c.width=width;c.height=height;drawPose(c,r.facts,r.labels);return c;
+  }
   function renderPNG(depth=false) {
+    if(depth){const {width,height}=exportSize(),r=computePasses(width,height);lastDepthRange=r.range;captureObserver?.('depth');return passCanvas('depth',r).toDataURL('image/png');}
     beforeCapture?.();updateShotCamera();
     const width=aspect>=1?1600:Math.round(1600*aspect),height=Math.round(width/aspect);
     const previousSize=preview.getSize(new THREE.Vector2());
@@ -124,7 +163,9 @@ export function initCutsceneStudio(api) {
         });
         stage.scene.overrideMaterial=depthMaterial; stage.scene.background=new THREE.Color(0x000000);
       }
-      cleanRender(()=>preview.render(stage.scene,shotCamera));
+      // Captures let people cast shadows (editing view keeps them off) so color.png matches light.png.
+      const casters=[];for(const m of api.mannequins)m.traverse(n=>{if(n.isMesh&&!n.castShadow&&!n.userData.bodyOutline){casters.push(n);n.castShadow=true;}});preview.shadowMap.needsUpdate=true;
+      try{cleanRender(()=>preview.render(stage.scene,shotCamera));}finally{casters.forEach(n=>n.castShadow=false);}
       captureObserver?.(depth?'depth':'color');
       return preview.domElement.toDataURL('image/png');
     } finally {
@@ -135,7 +176,7 @@ export function initCutsceneStudio(api) {
   function savePNG(depth) {
     const url=renderPNG(depth); const a=window.document.createElement('a');
     a.download=`cutscene-${depth?'depth':'color'}.png`; a.href=url; a.click();
-    status(depth?'선형 카메라 거리값을 담은 Depth PNG를 저장했습니다.':'촬영 카메라의 PNG를 저장했습니다.');
+    status(depth?`카메라 거리 Depth PNG를 저장했습니다 (흰색 ${lastDepthRange?.nearM}m → 어두움 ${lastDepthRange?.farM}m).`:'촬영 카메라의 PNG를 저장했습니다.');
   }
   function poseThumbnail(model){
     if(!model)return '';
@@ -252,7 +293,7 @@ export function initCutsceneStudio(api) {
     $('studio-walls').checked=document.room.walls;$('studio-light').value=document.lighting.intensity;
     $('studio-light-color').value=document.lighting.color;$('studio-ambient').value=document.lighting.ambient;
     $('studio-light-direction').value=Object.keys(lightPresets).find(key=>lightPresets[key].every((v,i)=>Math.abs(v-document.lighting.position[i])<1e-8))||'custom';
-    $('studio-fov').value=readCamera().fov;$('studio-aspect').value=String(aspect);renderShots();
+    $('studio-fov').value=readCamera().fov;$('studio-aspect').value=String(aspect);renderShots();if($('studio-refs-section').open)renderReferences();
   }
   // Camera-relative wording is computed from the same shot camera and capture visibility as the PNG.
   function shotDescription() {
@@ -274,7 +315,7 @@ export function initCutsceneStudio(api) {
     const shot=currentShot();
     const details=describeObjects([...api.mannequins,...api.importedModels],document);
     const detailText='최종 대상 설명 (사용자 수정값; 외형·역할 참고 자료)\n'+JSON.stringify(details,null,2)+'\n무채색 인체와 단순 소품은 작업용 구도·체적 가이드입니다. 단순화된 손발의 구체적인 형태·손톱·장갑·신발은 최신 인물 설명에 따라 완성하되 손목·발목 방향, 물체 잡기·접촉 관계와 발의 접지는 캡처를 유지하세요. 최종 피부색·복식은 캐릭터 정본을, 소품의 재질·색·디자인은 최신 대상 설명을 참고하세요. 설명은 새로운 사건·사물 추가 지시가 아닙니다. 위치·크기·포즈·가림은 현재 editorState와 캡처를 기준으로 유지하세요. 외형 설명을 바꿔도 3D 형상은 자동으로 바뀌지 않습니다.\n\n';
-    return description.text+'\n\n'+detailText+`장면: ${document.title}\n원문: ${document.sourceText}\n연출상 추정: ${document.assumptions}\n컷: ${shot.name}\n목적: ${shot.purpose}\n\n첨부 color PNG는 구도·원근·인원·포즈·가림·접지·광원 방향의 기준입니다. 캐릭터 정본 이미지는 얼굴·머리·체형·복식·화풍의 기준입니다. 정본의 정면 조명이나 배경을 장면에 복사하지 마세요. 장면의 명암과 그림자에 맞춰 캐릭터를 적용하세요. 말풍선·해설·라벨을 추가하지 마세요.\n\n가슴 형태 참조가 있다면 어깨·흉곽에 대한 높이·좌우 간격·돌출·원근을 캡처대로 유지하세요. anatomyReferences의 체적 중심은 유두 표시가 아닙니다. 의상·팔에 가려진 부분을 임의로 드러내거나 재배치하지 마세요.\n\n실제 수정 상태는 editorState에 있습니다. proposalOrigin=${proposalOrigin}; scene-import는 최초 제안이고 legacy-current-state는 구형 파일을 연 시점의 값입니다. Depth PNG는 카메라 공간 선형 깊이이며 가까울수록 밝습니다. 생성기가 해당 조건 입력을 지원할 때 사용하세요. 일반 이미지 참조만으로 구도와 포즈의 완전한 보존을 보장하지 않습니다.`;
+    return description.text+'\n\n'+detailText+`장면: ${document.title}\n원문: ${document.sourceText}\n연출상 추정: ${document.assumptions}\n컷: ${shot.name}\n목적: ${shot.purpose}\n\n첨부 color PNG는 구도·원근·인원·포즈·가림·접지·광원 방향의 기준입니다. 캐릭터 정본 이미지는 얼굴·머리·체형·복식·화풍의 기준입니다. 정본의 정면 조명이나 배경을 장면에 복사하지 마세요. 장면의 명암과 그림자에 맞춰 캐릭터를 적용하세요. 말풍선·해설·라벨을 추가하지 마세요.\n\n가슴 형태 참조가 있다면 어깨·흉곽에 대한 높이·좌우 간격·돌출·원근을 캡처대로 유지하세요. anatomyReferences의 체적 중심은 유두 표시가 아닙니다. 의상·팔에 가려진 부분을 임의로 드러내거나 재배치하지 마세요.\n\n실제 수정 상태는 editorState에 있습니다. proposalOrigin=${proposalOrigin}; scene-import는 최초 제안이고 legacy-current-state는 구형 파일을 연 시점의 값입니다. Depth PNG는 카메라에서 표면까지의 거리를 장면 범위로 정규화한 값이며 가까울수록 밝습니다. 생성기가 해당 조건 입력을 지원할 때 사용하세요. 일반 이미지 참조만으로 구도와 포즈의 완전한 보존을 보장하지 않습니다.`;
   }
   $('studio-example').onclick=()=>importText(JSON.stringify(EXAMPLE_SCENE,null,2),'예제 장면',true);
   $('studio-check').onclick=()=>importText($('studio-json').value,'붙여넣기',true,false);
@@ -307,6 +348,62 @@ export function initCutsceneStudio(api) {
   $('studio-color').onclick=()=>run(()=>savePNG(false));$('studio-depth').onclick=()=>run(()=>savePNG(true));
   $('studio-preview-refresh').onclick=()=>run(()=>{previewDirty=true;tickPreview({force:true});});
   $('studio-prompt').onclick=()=>download('cutscene-direction.txt',promptText(),'text/plain;charset=utf-8');
+  const REF_LABELS=['전신','얼굴','의상','헤어','표정','소품','기타'];
+  async function loadReference(file){
+    if(!/^image\/(png|jpeg|webp)$/.test(file.type))throw new Error('PNG·JPEG·WEBP 이미지만 연결할 수 있습니다: '+file.name);
+    const url=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(file);});
+    const img=await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=()=>reject(new Error('이미지를 읽지 못했습니다: '+file.name));i.src=url;});
+    const scale=Math.min(1,2048/Math.max(img.naturalWidth,img.naturalHeight));
+    if(scale===1&&file.size<=3_000_000)return {dataUrl:url,mime:file.type};
+    const c=window.document.createElement('canvas');c.width=Math.round(img.naturalWidth*scale);c.height=Math.round(img.naturalHeight*scale);c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    return {dataUrl:c.toDataURL('image/jpeg',.92),mime:'image/jpeg'};
+  }
+  function renderReferences(){
+    const host=$('studio-refs');if(!host)return;host.replaceChildren();
+    const {actors,props}=sceneItems(),targets=[...actors.map(a=>({...a,kind:'인물'})),...props.map(p=>({...p,kind:'소품'}))];
+    if(!targets.length){host.textContent='장면에 인물이나 소품이 없습니다.';return;}
+    for(const t of targets){
+      const item=window.document.createElement('div');item.className='studio-ref-item';item.dataset.refTarget=t.id;
+      const head=window.document.createElement('div');head.className='studio-ref-head';head.textContent=`${t.kind} · ${t.name}`;item.appendChild(head);
+      const list=references[t.id]||[];
+      list.forEach((ref,i)=>{
+        const row=window.document.createElement('div');row.className='studio-ref-row';
+        const thumb=window.document.createElement('img');thumb.src=ref.dataUrl;thumb.alt=ref.name;thumb.title=ref.name;
+        const kind=window.document.createElement('select');kind.setAttribute('aria-label','설정화 종류');for(const l of REF_LABELS){const o=window.document.createElement('option');o.value=o.textContent=l;kind.appendChild(o);}kind.value=ref.label;kind.onchange=()=>{ref.label=kind.value;};
+        const note=window.document.createElement('input');note.placeholder='메모 (예: 비 오는 장면 의상)';note.value=ref.note||'';note.maxLength=500;note.setAttribute('aria-label','설정화 메모');note.onchange=()=>{ref.note=note.value;};
+        const remove=window.document.createElement('button');remove.className='btn';remove.textContent='×';remove.setAttribute('aria-label',ref.name+' 연결 해제');remove.onclick=()=>{list.splice(i,1);if(!list.length)delete references[t.id];renderReferences();};
+        row.append(thumb,kind,note,remove);item.appendChild(row);
+      });
+      const add=window.document.createElement('label');add.className='btn';add.textContent='+ 설정화 이미지';
+      const input=window.document.createElement('input');input.type='file';input.accept='image/png,image/jpeg,image/webp';input.multiple=true;input.hidden=true;input.dataset.refInput=t.id;
+      input.onchange=async()=>{try{for(const file of input.files){const loaded=await loadReference(file);(references[t.id]??=[]).push({id:crypto.randomUUID(),name:file.name,label:(references[t.id]?.length)?'기타':'전신',note:'',...loaded});}status(`${t.name}에 설정화 ${references[t.id]?.length||0}장 연결됨 · 프로젝트 Save에 함께 저장됩니다.`);}catch(e){status(e.message,true);}finally{input.value='';renderReferences();}};
+      add.appendChild(input);item.appendChild(add);host.appendChild(item);
+    }
+  }
+  $('studio-refs-section').ontoggle=()=>{if($('studio-refs-section').open)renderReferences();};
+  async function createShotPackage(){
+    const {width,height}=exportSize(),shot=currentShot();
+    const color=renderPNG(false),r=computePasses(width,height);lastDepthRange=r.range;
+    const notes=new Map([...r.actors,...r.props].map(item=>[item.id,objectNotes(item.root,document)]));
+    const {json,refFiles}=buildShotJson({shot,scene:document,camera:shotCamera,facts:r.facts,description:r.description,labels:r.labels,stats:r.stats,range:r.range,lightNotes:r.lightNotes,references,objectNotes:notes,width,height,lighting:document.lighting});
+    const images={'color.png':dataUrlBytes(color),'label.png':await encodePNG({width,height,channels:4,data:r.images.rgba}),'depth.png':await encodePNG({width,height,channels:1,data:r.images.depth8}),'depth16.png':await encodePNG({width,height,channels:1,bitDepth:16,data:r.images.depth16}),'light.png':await encodePNG({width,height,channels:1,data:r.images.light8}),'pose.png':dataUrlBytes(passCanvas('pose',r).toDataURL('image/png'))};
+    const folder='shot-'+String(shot.name||'cut').replace(/[\\/:*?"<>|\s]+/g,'_').slice(0,40);
+    const prompt=buildPrompt(json);
+    return {zip:await packageZip({folder,images,json,prompt,refFiles}),json,prompt,folder};
+  }
+  $('studio-llm-package').onclick=async()=>{
+    try{status('LLM 패키지를 만드는 중…');const {zip,folder,json}=await createShotPackage();download(folder+'.zip',zip,'application/zip');
+      const missing=json.labels.filter(l=>l.kind==='person'&&!l.references.length).map(l=>l.name);
+      status(`${folder}.zip 저장 · 라벨 ${json.labels.length}개 · 설정화 ${json.labels.reduce((n,l)=>n+l.references.length,0)}장`+(missing.length?` · 설정화 없는 인물: ${missing.join(', ')}`:''));
+    }catch(e){status(e.message,true);console.error(e);}
+  };
+  function showPassView(){
+    const img=$('studio-pass-image');
+    if(passView==='color'){img.hidden=true;preview.domElement.hidden=false;return;}
+    const w=576,h=Math.round(w/aspect),r=computePasses(w,h,{commit:false});
+    img.src=passCanvas(passView,r).toDataURL('image/png');img.hidden=false;preview.domElement.hidden=true;
+  }
+  $('studio-pass-view').onchange=()=>run(()=>{passView=$('studio-pass-view').value;showPassView();});
   function createHandoffPacket(){
     const color=renderPNG(),depth=renderPNG(true);
     const anatomyReferences=api.mannequins.flatMap((m,actorIndex)=>{
@@ -317,7 +414,7 @@ export function initCutsceneStudio(api) {
     const description=shotDescription();
     const objectDescriptions=describeObjects([...api.mannequins,...api.importedModels],document),spatialReview=inspectObjectOverlaps([...api.mannequins,...api.importedModels]);
     spatialReview.issues.forEach(issue=>issue.objectIds=issue.objects.map(index=>objectDescriptions[index].id));
-    const packet={version:1,objectDescriptions,spatialReview,proposal:structuredClone(initialProposal),proposalOrigin,editorState:api.getState(),anatomyReferences,activeShot:{...currentShot(),camera:{...currentShot().camera,position:shotCamera.position.toArray(),fov:shotCamera.fov,zoom:shotCamera.zoom,view:shotCamera.view?{...shotCamera.view}:null}},render:{figureSurface:bodySurfaceMode(),aspect,near:shotCamera.near,far:shotCamera.far,depthEncoding:'linear-view-z-near-white-far-black',resolution:[preview.domElement.width,preview.domElement.height]},images:{color,depth},shotDescription:description.structured,...(description.error?{shotDescriptionError:description.error}:{}),direction:promptText(description)};
+    const packet={version:1,objectDescriptions,spatialReview,proposal:structuredClone(initialProposal),proposalOrigin,editorState:api.getState(),anatomyReferences,activeShot:{...currentShot(),camera:{...currentShot().camera,position:shotCamera.position.toArray(),fov:shotCamera.fov,zoom:shotCamera.zoom,view:shotCamera.view?{...shotCamera.view}:null}},render:{figureSurface:bodySurfaceMode(),aspect,near:shotCamera.near,far:shotCamera.far,depthEncoding:'euclidean-camera-distance; nearM=255 (white), farM and beyond=40, background=0',depthRangeM:lastDepthRange,resolution:[preview.domElement.width,preview.domElement.height]},images:{color,depth},shotDescription:description.structured,...(description.error?{shotDescriptionError:description.error}:{}),direction:promptText(description)};
     // Actual export size is independent from the on-screen preview dimensions.
     packet.render.resolution=aspect>=1?[1600,Math.round(1600/aspect)]:[Math.round(1600*aspect),1600];
     captureObserver?.('handoff');
@@ -333,16 +430,19 @@ export function initCutsceneStudio(api) {
     if(!force&&performance.now()-lastFrame<250)return;lastFrame=performance.now();previewDirty=false;
     const w=288,h=Math.round(w/aspect);if(preview.domElement.width!==w||preview.domElement.height!==h)preview.setSize(w,h,false);
     updateShotCamera();cleanRender(()=>preview.render(stage.scene,shotCamera));
+    if(passView!=='color')try{showPassView();}catch(e){console.error(e);}
   }
   return {
     setBeforeCapture(fn){beforeCapture=fn;},setBeforeReadCamera(fn){beforeReadCamera=fn;},setCaptureObserver(fn){captureObserver=fn;},
     rememberShotProjection(){shotProjection={key:JSON.stringify(currentShot().camera),zoom:shotCamera.zoom,view:shotCamera.view?{...shotCamera.view}:null};},
     environmentMeshes(role='working'){const meshes=[];const visible=(node)=>{for(let p=node;p;p=p.parent){if(role==='shot'&&p===node&&p.userData.editingWall)continue;if(!p.visible)return false;}return true;};environment.traverse(n=>{if(n.isMesh&&visible(n))meshes.push(n);});if(stage.ground?.isMesh&&visible(stage.ground))meshes.push(stage.ground);return [...new Set(meshes)];},
-    shotCamera,previewRenderer:preview,updateShotCamera,cleanRender,renderPNG,createHandoffPacket,
+    shotCamera,previewRenderer:preview,updateShotCamera,cleanRender,renderPNG,createHandoffPacket,createShotPackage,computePasses,
+    references:()=>references,
+    restoreReferences(value){if(!value||typeof value!=='object')return;const next={};for(const [id,list]of Object.entries(value)){if(!Array.isArray(list))continue;const ok=list.filter(r=>r&&typeof r.dataUrl==='string'&&/^data:image\/(png|jpeg|webp);base64,/.test(r.dataUrl)).map(r=>({id:String(r.id||crypto.randomUUID()),name:String(r.name||'reference'),label:REF_LABELS.includes(r.label)?r.label:'기타',note:String(r.note||'').slice(0,500),mime:r.dataUrl.slice(5,r.dataUrl.indexOf(';')),dataUrl:r.dataUrl}));if(ok.length)next[id]=ok;}references=next;renderReferences();},
     snapshot:()=>structuredClone({document,initialProposal,proposalOrigin,shots,activeShot,aspect,shotProjection}),
     restore(state) {if(!state)return;document=validateScene(state.document);initialProposal=validateScene(state.initialProposal||state.document);proposalOrigin=state.initialProposal?(state.proposalOrigin||'scene-import'):'legacy-current-state';shots=structuredClone(state.shots||[]);activeShot=state.activeShot ?? -1;aspect=state.aspect||16/9;shotProjection=state.shotProjection?structuredClone(state.shotProjection):null;rebuildRoom();syncUI();updateShotCamera();},
     createProp,loadScene,importText,showImportError,poseThumbnail,
-    saveProject(state) {download('cutscene-project.json',JSON.stringify(state,null,2));status('정밀 프로젝트를 저장했습니다. Load로 다시 열 수 있습니다.');},
+    saveProject(state) {state.characterReferences=structuredClone(references);download('cutscene-project.json',JSON.stringify(state,null,2));status('정밀 프로젝트를 저장했습니다. Load로 다시 열 수 있습니다.');},
     invalidatePreview(){previewDirty=true;},updateEditingWalls,tick:tickPreview,
   };
 }

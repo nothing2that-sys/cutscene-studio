@@ -84,3 +84,12 @@ body.left-collapsed #studio-panel,body.right-collapsed #right-panels{display:non
 #direct-more{font-size:11px;padding:6px 9px}
 #ui-overlay,#direct-editor{background:#161a22}#right-panels{background:#11151c;pointer-events:auto!important}
 #ui-overlay header h1{display:none}#ui-overlay{padding:8px 12px}
+
+/* LLM package: pass preview and character references */
+#studio-pass-image{display:block;max-width:100%;max-height:250px;object-fit:contain;background:#000}
+#studio-pass-image[hidden],#studio-preview canvas[hidden]{display:none!important}
+.studio-ref-item{border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px;margin:6px 0;display:flex;flex-direction:column;gap:6px}
+.studio-ref-head{font-weight:600;font-size:12px}
+.studio-ref-row{display:grid;grid-template-columns:48px 72px 1fr auto;gap:6px;align-items:center}
+.studio-ref-row img{width:48px;height:48px;object-fit:cover;border-radius:4px;background:#111}
+.studio-ref-row input,.studio-ref-row select{min-width:0}
