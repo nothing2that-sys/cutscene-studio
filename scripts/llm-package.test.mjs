@@ -55,3 +55,12 @@ test('shot.json links each label colour to its character references and the prom
  assert.match(json.lighting.text,/카메라 쪽/);
  const prompt=buildPrompt(json);assert.match(prompt,new RegExp(labels[1].color+' = 인물2[\\s\\S]*refs/p1/1-face.png\\(얼굴: 흉터\\)'));assert.match(prompt,/인물1의 그림자 안/);
 });
+test('lamp: brightness falls with distance, spot reports people outside its cone',()=>{
+ const {facts,labels}=queue();
+ const lamp=lightingNotes({facts,lighting:{type:'lamp',position:[1.5,1.4,2.5],target:[0,1.3,0]},labels});
+ assert.ok(lamp.get('p0').brightnessVsTarget>lamp.get('p1').brightnessVsTarget&&lamp.get('p1').brightnessVsTarget>lamp.get('p2').brightnessVsTarget);
+ assert.match(lamp.get('p2').text,/광원에서 .*m · 비추는 곳 대비 밝기 \d+%/);
+ const low=lightingNotes({facts,lighting:{type:'lamp',position:[0,.3,3],target:[0,1.3,0]},labels});assert.match(low.get('p0').text,/아래에서 올려 비춤/);
+ const spot=lightingNotes({facts,lighting:{type:'spot',position:[0,3,3],target:[0,1.3,0],coneDeg:16,softness:.3},labels});
+ assert.equal(spot.get('p0').inCone,'inside');assert.equal(spot.get('p1').inCone,'edge');assert.equal(spot.get('p2').inCone,'outside');assert.match(spot.get('p2').text,/스포트 빛 원 밖/);
+});

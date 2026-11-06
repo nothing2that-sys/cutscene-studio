@@ -28,7 +28,7 @@ const VERTEX='#include <common>\n#include <skinning_pars_vertex>\nvarying vec3 v
 const FRAGMENT='uniform float labelId; varying vec3 viewPos; void main(){gl_FragColor=vec4(labelId,length(viewPos),0.,1.);}';
 
 // Renders into float targets (no MSAA) so label ids and distances are exact.
-export function renderPasses({renderer,scene,camera,width,height,labels,light,ambient}){
+export function renderPasses({renderer,scene,camera,width,height,labels,light,lightTarget=null,ambient}){
  const target=new THREE.WebGLRenderTarget(width,height,{type:THREE.FloatType,depthBuffer:true,samples:0});
  const swaps=[],hidden=[],materials=[];const owned=new Set();
  for(const label of labels)for(const mesh of labelMeshes(label)){owned.add(mesh);swaps.push([mesh,mesh.material,mesh.castShadow,mesh.receiveShadow,label]);}
@@ -43,11 +43,13 @@ export function renderPasses({renderer,scene,camera,width,height,labels,light,am
   for(const [mesh,, , ,label]of swaps){let m=byLabel.get(label);if(!m){m=new THREE.ShaderMaterial({uniforms:{labelId:{value:label.index}},vertexShader:VERTEX,fragmentShader:FRAGMENT,side:THREE.DoubleSide});byLabel.set(label,m);materials.push(m);}mesh.material=m;}
   renderer.clear();renderer.render(scene,camera);const ids=read();
   // Direct light only: N·L × shadow visibility, ambient excluded. Intensity π makes a
-  // surface facing the light read exactly 1 with Lambert's 1/π BRDF.
+  // surface facing the light read exactly 1 with Lambert's 1/π BRDF; a lamp or spot is
+  // scaled by distance² so a surface at the target reads 1 and nearer/farther ones differ.
   const lit=new THREE.MeshLambertMaterial({color:0xffffff});materials.push(lit);
   for(const [mesh,, , ,label]of swaps){mesh.material=lit;mesh.castShadow=label.kind==='person'||label.kind==='prop';mesh.receiveShadow=true;}
-  if(ambient)ambient.visible=false;light.intensity=Math.PI;light.color.set(0xffffff);light.castShadow=true;
-  if(light.shadow.mapSize.x<2048){light.shadow.map?.dispose();light.shadow.map=null;light.shadow.mapSize.set(2048,2048);}
+  if(ambient)ambient.visible=false;const reference=light.isDirectionalLight||!lightTarget?1:light.getWorldPosition(new THREE.Vector3()).distanceTo(new THREE.Vector3(...lightTarget))||1;
+  light.intensity=Math.PI*reference*reference;light.color.set(0xffffff);light.castShadow=true;
+  if(!light.isPointLight&&light.shadow.mapSize.x<2048){light.shadow.map?.dispose();light.shadow.map=null;light.shadow.mapSize.set(2048,2048);}
   renderer.shadowMap.enabled=true;renderer.shadowMap.needsUpdate=true;
   renderer.clear();renderer.render(scene,camera);const shade=read();
   // Flip rows to top-left origin.
@@ -112,36 +114,50 @@ export function drawPose(canvas,facts,labels){
 }
 
 // Light condition per person: which side faces the light, whether the camera sees the
-// lit or the dark side, and which joints sit in another object's cast shadow.
+// lit or the dark side, which joints sit in another object's cast shadow, and for a
+// lamp/spot how far the light is and whether the person is inside the cone.
+const JOINT={head:'머리',chest:'가슴',pelvis:'골반',wristL:'왼손',wristR:'오른손',kneeL:'왼무릎',kneeR:'오른무릎'};
 export function lightingNotes({facts,lighting,labels}){
  if(!lighting?.position)return new Map();
- const toLight=new THREE.Vector3(...lighting.position).sub(new THREE.Vector3(...(lighting.target||[0,0,0]))).normalize();
+ const type=lighting.type||'sun',L=new THREE.Vector3(...lighting.position),T=new THREE.Vector3(...(lighting.target||[0,0,0])),sunDir=L.clone().sub(T).normalize(),reference=L.distanceTo(T)||1,axis=T.clone().sub(L).normalize();
+ const half=(lighting.coneDeg??50)*Math.PI/360,inner=half*(1-(lighting.softness??.3));
+ const toLight=p=>type==='sun'?sunDir.clone():L.clone().sub(p).normalize();
  const cam=new THREE.Vector3(...facts.camera.position),ray=new THREE.Raycaster(),out=new Map();
  const meshOwner=new Map();for(const l of labels)if(l.kind==='person'||l.kind==='prop')for(const m of labelMeshes(l))meshOwner.set(m,l);const meshes=[...meshOwner.keys()];
  for(const actor of facts.actors){
   const self=labels.find(l=>l.kind==='person'&&l.id===actor.id);if(!self)continue;
-  const forward=new THREE.Vector3(...actor.forward),flatL=toLight.clone().setY(0),flatF=forward.clone().setY(0);
-  const facing=flatL.lengthSq()<.02||flatF.lengthSq()<.02?null:flatF.normalize().dot(flatL.normalize());
-  const pelvis=new THREE.Vector3(...actor.points.pelvis.world),toCam=cam.clone().sub(pelvis).setY(0).normalize(),seen=flatL.lengthSq()<.02?null:toCam.dot(flatL.clone().normalize());
+  const V=k=>new THREE.Vector3(...actor.points[k].world),pelvis=V('pelvis'),chest=actor.points.chest?V('chest'):pelvis;
+  const forward=new THREE.Vector3(...actor.forward),flatL=toLight(chest).setY(0),flatF=forward.clone().setY(0);
+  const facing=flatL.lengthSq()<.02||flatF.lengthSq()<.02?null:flatF.normalize().dot(flatL.clone().normalize());
+  const toCam=cam.clone().sub(pelvis).setY(0).normalize(),seen=flatL.lengthSq()<.02?null:toCam.dot(flatL.clone().normalize());
   const shadowed={};
-  for(const key of ['head','chest','pelvis','wristL','wristR','kneeL','kneeR']){const p=actor.points[key];if(!p)continue;ray.set(new THREE.Vector3(...p.world),toLight);ray.far=40;const hit=ray.intersectObjects(meshes,false).find(h=>meshOwner.get(h.object)!==self&&h.distance>.02);if(hit)(shadowed[meshOwner.get(hit.object).name]??=[]).push(key);}
+  for(const key of Object.keys(JOINT)){const p=actor.points[key];if(!p)continue;const from=new THREE.Vector3(...p.world);ray.set(from,toLight(from));ray.far=type==='sun'?40:Math.max(0,L.distanceTo(from)-.05);const hit=ray.intersectObjects(meshes,false).find(h=>meshOwner.get(h.object)!==self&&h.distance>.02);if(hit)(shadowed[meshOwner.get(hit.object).name]??=[]).push(key);}
   const facingText=facing==null?'빛이 거의 바로 위에서 내려옴':facing>.5?'빛을 정면으로 받음(얼굴·가슴 쪽이 밝고 등은 어두움)':facing<-.5?'빛을 등지고 있음(등·뒤통수가 밝고 얼굴 쪽은 그늘)':'빛을 옆에서 받음(한쪽 옆면만 밝음)';
   const seenText=seen==null?'':seen>.3?'카메라는 빛을 받는 면을 봄':seen<-.3?'카메라는 그늘진 면을 봄(역광, 윤곽만 밝음)':'카메라는 밝은 면과 그늘의 경계를 봄';
-  const JOINT={head:'머리',chest:'가슴',pelvis:'골반',wristL:'왼손',wristR:'오른손',kneeL:'왼무릎',kneeR:'오른무릎'};
   const shadowText=Object.entries(shadowed).map(([name,keys])=>`${keys.map(k=>JOINT[k]).join('·')}은 ${name}의 그림자 안`).join(', ');
-  out.set(actor.id,{facingLight:facing==null?null:r2(facing),cameraSeesLitSide:seen==null?null:r2(seen),castShadowFrom:Object.fromEntries(Object.entries(shadowed)),text:[facingText,seenText,shadowText].filter(Boolean).join(' · ')});
+  const extra={},texts=[];
+  if(type!=='sun'){
+   const distance=L.distanceTo(chest),relative=(reference/distance)**2;extra.distanceToLightM=r2(distance);extra.brightnessVsTarget=r2(relative);
+   texts.push(`광원에서 ${Math.round(distance*10)/10}m · 비추는 곳 대비 밝기 ${Math.round(Math.min(relative,9.99)*100)}%`);
+   if(actor.points.head&&L.y<V('head').y-.15)texts.push('광원이 머리보다 낮아 아래에서 올려 비춤');
+   if(type==='spot'){const angle=axis.angleTo(chest.clone().sub(L));extra.inCone=angle<=inner?'inside':angle<=half?'edge':'outside';if(extra.inCone==='outside')texts.push('스포트 빛 원 밖(직사광 없음)');else if(extra.inCone==='edge')texts.push('스포트 빛 원 가장자리(약하게 받음)');}
+  }
+  out.set(actor.id,{facingLight:facing==null?null:r2(facing),cameraSeesLitSide:seen==null?null:r2(seen),castShadowFrom:Object.fromEntries(Object.entries(shadowed)),...extra,text:[facingText,seenText,...texts,shadowText].filter(Boolean).join(' · ')});
  }
  return out;
 }
 
 function cameraFrameDirection(camera,world){const v=new THREE.Vector3(...world).transformDirection(camera.matrixWorldInverse);return v.toArray().map(r2);}
+export const LIGHT_TYPE_TEXT={sun:'태양광(평행광): 장면 전체에 같은 방향·같은 세기로 비추고 그림자가 서로 평행하게 떨어짐',lamp:'전등(점광원): 광원에서 사방으로 퍼짐. 광원에 가까울수록 밝고 멀수록 어두워지며, 그림자는 광원 반대쪽으로 방사형으로 퍼지고 멀수록 커짐',spot:'스포트: 광원에서 원뿔 모양으로만 비춤. 원 밖은 직사광이 없고, 원 안도 거리에 따라 어두워짐'};
 function lightDirectionText(d){const [x,y,z]=d,h=x>.3?'화면 오른쪽':x<-.3?'화면 왼쪽':'화면 가운데',v=y>.5?' 위':y<-.2?' 아래':'',f=z>.3?'카메라 쪽(순광)':z<-.3?'피사체 뒤쪽(역광)':'옆쪽';return `빛은 ${h}${v}, ${f}에서 들어옴`;}
 const REF_SLUG={전신:'fullbody',얼굴:'face',의상:'costume',헤어:'hair',표정:'expression',소품:'prop',기타:'other'};
 const safe=s=>String(s||'item').replace(/[^\w.-]+/g,'_').slice(0,48);
 const ext=mime=>({'image/png':'png','image/jpeg':'jpg','image/webp':'webp'}[mime]||'bin');
 
 export function buildShotJson({shot,scene,camera,facts,description,labels,stats,range,lightNotes,references,objectNotes,width,height,lighting}){
- const toLight=new THREE.Vector3(...lighting.position).sub(new THREE.Vector3(...(lighting.target||[0,0,0]))).normalize().toArray(),camDir=cameraFrameDirection(camera,toLight);
+ const type=lighting.type||'sun',toLight=new THREE.Vector3(...lighting.position).sub(new THREE.Vector3(...(lighting.target||[0,0,0]))).normalize().toArray(),camDir=cameraFrameDirection(camera,toLight);
+ let source=null;
+ if(type!=='sun'){const p=new THREE.Vector3(...lighting.position),ndc=p.clone().project(camera),depth=-p.clone().applyMatrix4(camera.matrixWorldInverse).z;source={xy:[r3((ndc.x+1)/2),r3((1-ndc.y)/2)],inFrame:depth>0&&Math.abs(ndc.x)<=1&&Math.abs(ndc.y)<=1,distanceFromCameraM:r2(p.distanceTo(camera.getWorldPosition(new THREE.Vector3())))};}
  const refFiles=[];
  const entries=labels.map(l=>{
   const s=stats.get(l.index),notes=objectNotes.get(l.id)||{},actor=facts.actors.find(a=>a.id===l.id),descActor=description?.structured?.actors?.find(a=>a.id===l.id),descProp=description?.structured?.props?.find(p=>p.id===l.id);
@@ -159,8 +175,8 @@ export function buildShotJson({shot,scene,camera,facts,description,labels,stats,
   files:{color:'color.png',label:'label.png',depth:'depth.png',depth16:'depth16.png',light:'light.png',pose:'pose.png'},
   camera:{...facts.camera,lookAt:shot.camera?.target||null},
   depth:{metric:'euclidean distance from the camera centre to the surface, metres',depthPng:{nearM:range.nearM,farM:range.farM,mapping:`linear: nearM=${DEPTH_NEAR_VALUE} (white), farM and beyond=${DEPTH_FAR_VALUE}, background=0`},depth16Png:{unit:'millimetres',background:0}},
-  lighting:{type:'directional (sun-like, parallel rays)',positionWorld:lighting.position,targetWorld:lighting.target,directionToLightCamera:camDir,cameraFrame:'+x screen right, +y screen up, +z toward the viewer',text:lightDirectionText(camDir),color:lighting.color,intensity:lighting.intensity,ambient:lighting.ambient,
-   lightPng:'direct light only: surface facing the light with nothing in between = white; turned away or in a cast shadow = black. Ambient light is excluded. Background is also black; use label.png to tell them apart.'},
+  lighting:{type,typeText:LIGHT_TYPE_TEXT[type],positionWorld:lighting.position,targetWorld:lighting.target,...(type==='spot'?{coneDeg:lighting.coneDeg,softness:lighting.softness}:{}),...(source?{source}:{}),directionToLightCamera:camDir,cameraFrame:'+x screen right, +y screen up, +z toward the viewer; direction measured from the lit target point',text:(type==='sun'?'':'비추는 곳 기준으로 ')+lightDirectionText(camDir)+(source?.inFrame?` · 광원이 화면 안 (${source.xy.map(v=>Math.round(v*100)+'%').join(', ')})에 보임`:''),color:lighting.color,intensity:lighting.intensity,intensityMeaning:'brightness reached at targetWorld',ambient:lighting.ambient,
+   lightPng:'direct light only: surface facing the light with nothing in between = white; turned away or in a cast shadow = black. Ambient light is excluded. Background is also black; use label.png to tell them apart.'+(type==='sun'?'':' A lamp/spot fades with distance: the lit target reads white, nearer surfaces clip to white, farther ones are greyer.')},
   labels:entries,
   shotDescription:description?.text||'',
  };
@@ -180,7 +196,7 @@ export function buildPrompt(json){
  '- color.png: 무채색 마네킹 작업 렌더(구도 확인용). 마네킹의 형태·색을 그대로 그리지 마세요.',
  '- shot.json: 위 내용의 수치 정보(카메라, 거리, 화면 내 위치, 관절 좌표, 조명 방향).',
  '',
- `## 카메라와 조명`,`- 렌즈 약 ${json.camera.focal35mm}mm(35mm 환산), 카메라 높이 ${json.camera.heightM}m, 피치 ${json.camera.pitchDeg}°`,`- ${json.lighting.text}. 빛 색 ${json.lighting.color}.`,
+ `## 카메라와 조명`,`- 렌즈 약 ${json.camera.focal35mm}mm(35mm 환산), 카메라 높이 ${json.camera.heightM}m, 피치 ${json.camera.pitchDeg}°`,`- 광원 종류: ${json.lighting.typeText}`,`- ${json.lighting.text}. 빛 색 ${json.lighting.color}.`,
  '',
  '## 인물',...people.map(line),...(props.length?['','## 소품',...props.map(line)]:[]),
  '','## 장면 설명',json.shotDescription,

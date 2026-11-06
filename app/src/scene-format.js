@@ -22,6 +22,10 @@ export const POSES = {
   reaching: { torso: { bend: 18 }, r_arm: { raise: 65 }, r_elbow: { bend: 15 } },
 };
 export const PROP_TYPES = ['box', 'table', 'chair', 'sphere'];
+// sun: parallel rays from position toward target. lamp: point light at position.
+// spot: cone from position toward target. For lamp/spot, intensity is the brightness
+// reached at the target, so the same number looks alike across types.
+export const LIGHT_TYPES = ['sun', 'lamp', 'spot'];
 export const CHEST_DEFAULTS = {height:0.65,spacing:0.46,projection:1};
 export const CHEST_LIMITS = {height:[0.55,0.78],spacing:[0.3,0.6],projection:[0.4,1.6]};
 export function chestIssues(value,path='chest') {
@@ -103,10 +107,12 @@ export function analyzeScene(input) {
     if(!/^[A-Za-z0-9_-]{1,64}$/.test(sid)||shotIds.has(sid))error(p+'.id','DUPLICATE_OR_INVALID_SHOT_ID','고유한 영문·숫자 ID가 필요합니다.','unique shot id',s.id);
     shotIds.add(sid);return {id:sid,name:str(s.name,p+'.name','컷 '+(i+1)),purpose:str(s.purpose,p+'.purpose'),camera:camera(s.camera,p+'.camera')};
   });
-  const light=raw.lighting===undefined?{}:obj(raw.lighting,'lighting');keys(light,['position','target','color','intensity','ambient'],'lighting');
+  const light=raw.lighting===undefined?{}:obj(raw.lighting,'lighting');keys(light,['type','position','target','color','intensity','ambient','coneDeg','softness'],'lighting');
+  const lightType=light.type===undefined?'sun':light.type;if(!LIGHT_TYPES.includes(lightType))error('lighting.type','UNSUPPORTED_LIGHT','지원하지 않는 조명 종류입니다. sun(태양·평행광), lamp(전등·점광원), spot(스포트) 중 하나를 쓰세요.',LIGHT_TYPES,light.type);
   const scene={version:1,units:'meters',title:str(raw.title,'title','새 장면'),sourceText:str(raw.sourceText,'sourceText'),assumptions:str(raw.assumptions,'assumptions'),
     room:{size:vec(room.size===undefined?[6,3,5]:room.size,'room.size',1,30),color:color(room.color,'room.color','#b9b5ac'),walls:room.walls!==false},actors,props,camera:camera(raw.camera),shots,
-    lighting:{position:vec(light.position===undefined?[-3,5,3]:light.position,'lighting.position'),target:vec(light.target===undefined?[0,1,0]:light.target,'lighting.target'),color:color(light.color,'lighting.color','#fff0d6'),intensity:num(light.intensity===undefined?2:light.intensity,'lighting.intensity',0,10),ambient:num(light.ambient===undefined?0.6:light.ambient,'lighting.ambient',0,3)}};
+    lighting:{position:vec(light.position===undefined?[-3,5,3]:light.position,'lighting.position'),target:vec(light.target===undefined?[0,1,0]:light.target,'lighting.target'),color:color(light.color,'lighting.color','#fff0d6'),intensity:num(light.intensity===undefined?2:light.intensity,'lighting.intensity',0,10),ambient:num(light.ambient===undefined?0.6:light.ambient,'lighting.ambient',0,3),type:lightType,...(lightType==='spot'?{coneDeg:num(light.coneDeg===undefined?50:light.coneDeg,'lighting.coneDeg',5,170),softness:num(light.softness===undefined?.3:light.softness,'lighting.softness',0,1)}:{})}};
+  if(lightType!=='sun'&&scene.lighting.position.every((v,i)=>Math.abs(v-scene.lighting.target[i])<1e-6))error('lighting.target','LIGHT_NO_DIRECTION','전등·스포트의 위치와 목표점은 달라야 합니다. 목표점은 밝기 기준이 되는 지점입니다.','position != target',light.target);
   if(!c.errors.length){
     const [w,h,d]=scene.room.size;
     for(const [i,a]of actors.entries()){

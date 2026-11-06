@@ -74,7 +74,7 @@ export function extractShotFacts({camera,aspect,actors=[],props=[],environmentMe
  if(lighting?.position){
   const focus=facts.actors.length?new THREE.Vector3(...facts.actors.reduce((s,a)=>s.map((v,i)=>v+a.points.chest.world[i]/facts.actors.length),[0,0,0])):new THREE.Vector3(...(lighting.target||[0,1,0]));
   const L=new THREE.Vector3(...lighting.position).applyMatrix4(view),F=focus.clone().applyMatrix4(view);
-  facts.lighting={offset:L.sub(F).toArray().map(r2)};
+  facts.lighting={offset:L.sub(F).toArray().map(r2),type:lighting.type||'sun'};
  }
  return facts;
 }
@@ -176,7 +176,8 @@ function lightText(l){
  if(!l)return null;const [x,y,z]=l.offset,len=Math.hypot(x,y,z)||1;
  const side=x/len>.3?'화면 오른쪽':x/len<-.3?'화면 왼쪽':'화면 정면 쪽',depth=z>0?'카메라 쪽(앞)':'인물 뒤쪽(역광)',height=y/len>.4?' 위':'';
  const shadow=[x/len>.3?'화면 왼쪽':x/len<-.3?'화면 오른쪽':null,z>0?'인물 뒤쪽':'카메라 쪽'].filter(Boolean).join(' ');
- return `주광은 ${side}${height}, ${depth}에서 비춤 → 그림자는 ${shadow}으로 떨어짐`;
+ const name={lamp:'전등',spot:'스포트 조명'}[l.type]||'주광';
+ return `${name}은 ${side}${height}, ${depth}에서 비춤 → 그림자는 ${shadow}으로 ${l.type==='lamp'||l.type==='spot'?'퍼지며 ':''}떨어짐`;
 }
 export function describeShot(facts,{shotName='',purpose=''}={}){
  const actors=facts.actors.map(a=>({a,framing:framingText(a)}));

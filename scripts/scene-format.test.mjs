@@ -39,3 +39,11 @@ test('bad LLM proposals are rejected before reaching the editor',()=>{
   ];
   for(const change of cases){const s=structuredClone(EXAMPLE_SCENE);change(s);assert.throws(()=>validateScene(s));}
 });
+
+test('lighting type: sun default, lamp and spot accepted, unknown rejected',()=>{
+ assert.equal(validateScene({...EXAMPLE_SCENE}).lighting.type,'sun');
+ const lamp=validateScene({...EXAMPLE_SCENE,lighting:{...EXAMPLE_SCENE.lighting,type:'lamp'}}).lighting;assert.equal(lamp.type,'lamp');assert.equal(lamp.coneDeg,undefined);
+ const spot=validateScene({...EXAMPLE_SCENE,lighting:{...EXAMPLE_SCENE.lighting,type:'spot',coneDeg:40}}).lighting;assert.equal(spot.coneDeg,40);assert.equal(spot.softness,.3);
+ assert.throws(()=>validateScene({...EXAMPLE_SCENE,lighting:{...EXAMPLE_SCENE.lighting,type:'neon'}}),/조명 종류/);
+ assert.throws(()=>validateScene({...EXAMPLE_SCENE,lighting:{...EXAMPLE_SCENE.lighting,type:'lamp',position:[0,1,0],target:[0,1,0]}}),/목표점/);
+});
