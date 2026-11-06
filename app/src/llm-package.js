@@ -168,7 +168,8 @@ export function lightingNotes({facts,lighting,labels}){
  const half=(lighting.coneDeg??50)*Math.PI/360,inner=half*(1-(lighting.softness??.3));
  const toLight=p=>type==='sun'?sunDir.clone():L.clone().sub(p).normalize();
  const cam=new THREE.Vector3(...facts.camera.position),ray=new THREE.Raycaster(),out=new Map();
- const meshOwner=new Map();for(const l of labels)if(l.kind==='person'||l.kind==='prop')for(const m of labelMeshes(l))meshOwner.set(m,l);const meshes=[...meshOwner.keys()];
+ const owned=new Map();for(const l of labels)if(l.kind==='person'||l.kind==='prop')for(const m of labelMeshes(l))owned.set(m,l);const meshes=[...owned.keys()];
+ const rootOf=new Map(labels.filter(l=>l.root).map(l=>[l.root,l])),meshOwner={get(object){for(let n=object;n;n=n.parent){if(owned.has(n))return owned.get(n);if(rootOf.has(n))return rootOf.get(n);}return undefined;}};
  for(const actor of facts.actors){
   const self=labels.find(l=>l.kind==='person'&&l.id===actor.id);if(!self)continue;
   const V=k=>new THREE.Vector3(...actor.points[k].world),pelvis=V('pelvis'),chest=actor.points.chest?V('chest'):pelvis;
@@ -176,7 +177,7 @@ export function lightingNotes({facts,lighting,labels}){
   const facing=flatL.lengthSq()<.02||flatF.lengthSq()<.02?null:flatF.normalize().dot(flatL.clone().normalize());
   const toCam=cam.clone().sub(pelvis).setY(0).normalize(),seen=flatL.lengthSq()<.02?null:toCam.dot(flatL.clone().normalize());
   const shadowed={};
-  for(const key of Object.keys(JOINT)){const p=actor.points[key];if(!p)continue;const from=new THREE.Vector3(...p.world);ray.set(from,toLight(from));ray.far=type==='sun'?40:Math.max(0,L.distanceTo(from)-.05);const hit=ray.intersectObjects(meshes,false).find(h=>meshOwner.get(h.object)!==self&&h.distance>.02);if(hit)(shadowed[meshOwner.get(hit.object).name]??=[]).push(key);}
+  for(const key of Object.keys(JOINT)){const p=actor.points[key];if(!p)continue;const from=new THREE.Vector3(...p.world);ray.set(from,toLight(from));ray.far=type==='sun'?40:Math.max(0,L.distanceTo(from)-.05);const hit=ray.intersectObjects(meshes,false).find(h=>{const o=meshOwner.get(h.object);return o&&o!==self&&h.distance>.02;});if(hit)(shadowed[meshOwner.get(hit.object).name]??=[]).push(key);}
   const facingText=facing==null?'빛이 거의 바로 위에서 내려옴':facing>.5?'빛을 정면으로 받음(얼굴·가슴 쪽이 밝고 등은 어두움)':facing<-.5?'빛을 등지고 있음(등·뒤통수가 밝고 얼굴 쪽은 그늘)':'빛을 옆에서 받음(한쪽 옆면만 밝음)';
   const seenText=seen==null?'':seen>.3?'카메라는 빛을 받는 면을 봄':seen<-.3?'카메라는 그늘진 면을 봄(역광, 윤곽만 밝음)':'카메라는 밝은 면과 그늘의 경계를 봄';
   const josa=w=>{const c=w.charCodeAt(w.length-1)-0xac00;return c>=0&&c<11172&&c%28?'은':'는';};

@@ -1,0 +1,11 @@
+{"version":1,"units":"meters","title":"비교 E2 · 주차장의 아이와 어른",
+ "sourceText":"텅 빈 주차장에 아이 하나와 키 큰 어른 하나가 서 있다.",
+ "assumptions":"비교 실험용 장면. 화면 크기만으로는 앞뒤가 헷갈리도록 배치.",
+ "room":{"size":[14,3,14],"color":"#6f7276","walls":false},
+ "actors":[
+  {"id":"e2child","name":"아이 · 노란 모자","position":[-0.45,0,0.8],"yaw":10,"height":1.15,"headUnits":5.5,"pose":"standing","description":"노란 모자와 하늘색 우비를 입은 7살 아이"},
+  {"id":"e2adult","name":"어른 · 회색 롱코트","position":[0.7,0,-1.75],"yaw":-10,"height":1.9,"pose":"standing","description":"회색 롱코트, 키 190cm 정도의 마른 50대 남성"}],
+ "props":[],
+ "camera":{"position":[0,1.0,4.2],"target":[0.1,0.95,0],"fov":38},
+ "lighting":{"type":"sun","position":[-3,8,4],"target":[0,0,0],"color":"#f4f1ea","intensity":2.2,"ambient":0.5},
+ "shots":[{"id":"e2","name":"E2 앞뒤 거리","purpose":"화면 크기가 비슷한 두 인물의 앞뒤 거리","camera":{"position":[0,1.0,4.2],"target":[0.1,0.95,0],"fov":38}}]}

@@ -40,7 +40,10 @@ export function extractShotFacts({camera,aspect,actors=[],props=[],environmentMe
  actors=actors.filter(shown);props=props.filter(shown);
  for(const item of [...actors,...props])for(const mesh of visibleMeshes(item.root))owners.push([mesh,item]);
  const environment={name:'벽·바닥'};for(const mesh of environmentMeshes)owners.push([mesh,environment]);
- const ownerOf=new Map(owners),meshes=owners.map(o=>o[0]);
+ const owned=new Map(owners),roots=new Map([...actors,...props].map(item=>[item.root,item])),meshes=owners.map(o=>o[0]);
+ // Some rigs raycast nested parts that are not in the mesh list (legacy mannequin
+ // shapes); walk up to the owning mesh or object root.
+ const ownerOf={get(object){for(let n=object;n;n=n.parent){if(owned.has(n))return owned.get(n);if(roots.has(n))return roots.get(n);}return undefined;}};
  const camPos=camera.getWorldPosition(new THREE.Vector3()),view=camera.matrixWorldInverse;
  function point(world,self){
   const ndc=world.clone().project(camera),cam=world.clone().applyMatrix4(view),depth=-cam.z;
@@ -48,7 +51,7 @@ export function extractShotFacts({camera,aspect,actors=[],props=[],environmentMe
   let occludedBy=null;
   if(inFrame){
    const dir=world.clone().sub(camPos),dist=dir.length();raycaster.set(camPos,dir.normalize());raycaster.far=dist;
-   const hit=raycaster.intersectObjects(meshes,false).find(h=>ownerOf.get(h.object)!==self&&h.distance<dist-.05);
+   const hit=raycaster.intersectObjects(meshes,false).find(h=>{const o=ownerOf.get(h.object);return o&&o!==self&&h.distance<dist-.05;});
    if(hit){const o=ownerOf.get(hit.object);occludedBy=o.name||o.id;}
   }
   return {world:world.toArray().map(r2),screen:[r2((ndc.x+1)/2),r2((1-ndc.y)/2)],depth:r2(depth),inFrame,occludedBy};

@@ -73,3 +73,12 @@ test('kneeling: bent knees decide facing even when the feet point backward',()=>
  const front=describe(camera([0,1,4],[0,.6,0]),[actor('K',turned,{yaw:Math.PI})]);assert.match(lineOf(front,'K'),/몸이 카메라 정면을 향함/);
  const back=describe(camera([0,1,-4],[0,.6,0]),[actor('K',turned,{yaw:Math.PI})]);assert.match(lineOf(back,'K'),/뒷모습/);
 });
+test('a hit on a nested part outside the mesh list is credited to its owner (legacy rig)',()=>{
+ const front=actor('앞사람',STAND,{z:2}),back=actor('뒷사람');
+ // Legacy mannequin shapes raycast inner parts that the visible-mesh list does not hold.
+ const inner=new THREE.Mesh(new THREE.BoxGeometry(.1,.1,.1));inner.visible=false;const shell=front.root.children.find(c=>c.isMesh);shell.add(inner);
+ const raycast=shell.raycast.bind(shell);shell.raycast=(r,hits)=>{const n=hits.length;raycast(r,hits);for(let i=n;i<hits.length;i++)hits[i].object=inner;};
+ front.root.updateMatrixWorld(true);
+ const d=describe(camera([0,1.5,6],[0,1,0]),[front,back]);
+ assert.match(lineOf(d,'뒷사람'),/앞사람에 가려짐/);
+});
