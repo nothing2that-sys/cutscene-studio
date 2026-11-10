@@ -33,5 +33,6 @@ function applyBodyForm(d,f){
  for(const name of ['thorax','abdomen','pelvis'])d[name].sections=scale(d[name].sections);
  d.thorax.relief={...d.thorax.relief,projection:d.thorax.relief.projection*(f.chest??1)};
  if(f.hipHalfSpan)d.pelvis.sockets=d.pelvis.sockets.map(s=>s.name.startsWith('hip')?{...s,center:[Math.sign(s.center[0])*f.hipHalfSpan,s.center[1],s.center[2]]}:s);
- d.previewBundle='none';
+ // Prebuilt torsos for the body types live in one bundle (scripts/build-doll-full-preview.mjs body-types).
+ d.previewBundle='body-types';
 }
