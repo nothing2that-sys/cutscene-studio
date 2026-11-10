@@ -16,7 +16,7 @@ export const BODY_FORMS={
  child:{label:'아이 · 약 5.5등신',metrics:{upperLength:138,foreLength:108,thighLength:218,shinLength:224,shoulderHalfSpan:80,shoulderRadius:28,headOffset:26,headShiftX:0,headScale:1.4,headWidth:1.4,headGrowsUp:true,armWidth:.86,legWidth:.88,thighUpper:.88,
   form:{chest:0,thoraxWidth:.9,thoraxDepth:1,waistWidth:1.08,pelvisWidth:.84,glutes:.78,hipHalfSpan:58}}},
  'male-heavy':{label:'성인 남성 · 큰 체격',metrics:{...MALE,armWidth:1.18,legWidth:1.16,thighUpper:.96,shoulderRadius:39,shoulderHalfSpan:118,
-  form:{...MALE.form,thoraxWidth:1.1,thoraxDepth:1.25,waistWidth:1.42,abdomenFront:1.4,pelvisWidth:1.08,glutes:.95,hipHalfSpan:72}}},
+  form:{...MALE.form,thoraxWidth:1.1,thoraxDepth:1.25,waistWidth:1.42,abdomenFront:1.4,pelvisWidth:1.08,glutes:.95,hipHalfSpan:72,waistSmooth:{sigma:18,from:440,to:560}}}},
 };
 // Body types offered in the editor and scene JSON. Each maps to a doll profile; the
 // nominal head units feed camera wording (the rig itself stays the 8-head v1 driver).
