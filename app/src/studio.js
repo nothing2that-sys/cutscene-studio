@@ -13,6 +13,7 @@ import {objectNotes} from './scene-object-info.js';
 import {buildLabels,renderPasses,analyzePasses,depthRange,passImages,drawPose,lightingNotes,lightSource,buildShotJson,buildPrompt,packageZip,encodePNG,DEFAULT_STYLE} from './llm-package.js';
 import {dataUrlBytes} from './package-files.js';
 import {drawRange,drawPlan} from './depth-views.js';
+import {fitViewToAspect} from './camera-view.js';
 
 export function initCutsceneStudio(api) {
   const { THREE, stage } = api;
@@ -110,6 +111,7 @@ export function initCutsceneStudio(api) {
     setCamera(shotCamera,currentShot().camera);
     if(shotProjection?.key===JSON.stringify(currentShot().camera)){shotCamera.zoom=shotProjection.zoom;shotCamera.view=shotProjection.view?{...shotProjection.view}:null;}
     shotCamera.aspect=aspect;
+    if(shotCamera.view?.enabled)shotCamera.view=fitViewToAspect(shotCamera.view,aspect);
     shotCamera.far=Math.max(20,shotCamera.position.length()+Math.hypot(...document.room.size)*2);
     shotCamera.updateProjectionMatrix();
   }

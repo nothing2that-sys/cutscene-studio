@@ -57,7 +57,16 @@ try{
   // Applying a pose keeps the figure's current facing.
   const facingTurn=Math.abs(((await hipFacing()-facingBefore+540)%360)-180);assert.ok(facingTurn<1,'pose changed the facing by '+facingTurn.toFixed(1)+'°');
   assert.ok(legacyError<8,'legacy rotation pose differs from the legacy rig by '+legacyError.toFixed(1)+'°');
+  // Re-applying the same reference after an edit gives back exactly the first result
+  // (no rest-pose drift or pelvis twist building up).
+  const bodyVerts=()=>page.evaluate(()=>window.__sides.vertices()[0]);
+  const firstApply=await bodyVerts();
+  await page.evaluate(()=>{const b=window.__bodyV1,a=b.actors[0];b.drive.setJoint(a.id,'l_elbow','bend',80);b.drive.setJoint(a.id,'torso','turn',25);});
+  await page.locator('#pose-reference-file').setInputFiles({name:'legacy-pose-again.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(legacy.pose))});
+  await page.waitForTimeout(800);
+  const again=await bodyVerts();let reapplyDiff=0;for(const [name,points]of Object.entries(firstApply))points.forEach((p,j)=>{const o=again[name][j];reapplyDiff=Math.max(reapplyDiff,Math.hypot(p[0]-o[0],p[1]-o[1],p[2]-o[2]));});
+  assert.ok(reapplyDiff<1e-6,'re-applying the reference changed the body by '+reapplyDiff);
   assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({passed:true,sideChecks:Object.keys(sides).length,preFixMaxVertexDiff:max,legacyPoseMaxDegrees:+legacyError.toFixed(2)},null,2));
+  console.log(JSON.stringify({passed:true,sideChecks:Object.keys(sides).length,preFixMaxVertexDiff:max,legacyPoseMaxDegrees:+legacyError.toFixed(2),reapplyMaxVertexDiff:reapplyDiff},null,2));
  }
 }finally{await browser.close();}

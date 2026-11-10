@@ -1,5 +1,6 @@
 import {displayedObjectBounds} from './body-surface.js';
 import * as THREE from 'three';
+import {fitViewToAspect} from './camera-view.js';
 import {bodySurfaceMode,setBodySurfaceMode,bodyGuidesVisible,setBodyGuides} from './body-surface.js';
 
 export function initViewPerformance(api){
@@ -18,7 +19,7 @@ export function initViewPerformance(api){
   const originalDamping=stage.controls.enableDamping,stats={renders:0,lastDrawCalls:0,lastTriangles:0,lastVisibleActors:0};
   function invalidate(){dirty=true;revision++;api.invalidatePreview();fixedController?.invalidate();}
   function cameraState(){return {position:stage.camera.position.toArray(),rotation:stage.camera.rotation.toArray(),target:stage.controls.target.toArray(),fov:stage.camera.fov,up:stage.camera.up.toArray(),zoom:stage.camera.zoom,view:stage.camera.view?{...stage.camera.view}:null};}
-  function restoreCamera(state){stage.camera.position.fromArray(state.position);stage.camera.rotation.fromArray(state.rotation);stage.camera.up.fromArray(state.up||[0,1,0]);stage.camera.fov=state.fov;stage.camera.zoom=state.zoom||1;stage.camera.view=state.view?{...state.view}:null;stage.camera.updateProjectionMatrix();stage.controls.target.fromArray(state.target);stage.controls.update();}
+  function restoreCamera(state){stage.camera.position.fromArray(state.position);stage.camera.rotation.fromArray(state.rotation);stage.camera.up.fromArray(state.up||[0,1,0]);stage.camera.fov=state.fov;stage.camera.zoom=state.zoom||1;stage.camera.view=state.view?fitViewToAspect({...state.view},stage.camera.aspect):null;stage.camera.updateProjectionMatrix();stage.controls.target.fromArray(state.target);stage.controls.update();}
   function focus(model,view){
     model.updateMatrixWorld(true);const box=displayedObjectBounds(model),center=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3());center.y+=size.y*0.12;
     const valid=a=>Array.isArray(a)&&a.length===3&&a.every(Number.isFinite)&&a.some(n=>Math.abs(n)>1e-8);
@@ -44,7 +45,7 @@ export function initViewPerformance(api){
   function resize(){
     const box=renderer.domElement.parentElement||renderer.domElement,w=Math.max(1,box.clientWidth||innerWidth),h=Math.max(1,box.clientHeight||innerHeight),scale=lightweight?Math.min(1,1024/w,768/h):1;
     renderer.setPixelRatio(1);renderer.setSize(Math.max(1,Math.round(w*scale)),Math.max(1,Math.round(h*scale)),false);
-    stage.camera.aspect=w/h;stage.camera.updateProjectionMatrix();renderer.shadowMap.enabled=!lightweight;stage.controls.enableDamping=lightweight?false:originalDamping;invalidate();
+    stage.camera.aspect=w/h;if(stage.camera.view?.enabled)stage.camera.view=fitViewToAspect(stage.camera.view,w/h);stage.camera.updateProjectionMatrix();renderer.shadowMap.enabled=!lightweight;stage.controls.enableDamping=lightweight?false:originalDamping;invalidate();
     // setSize clears the canvas; redraw now so a layout change never leaves a blank view.
     if(!fixedController?.enabled&&ready)draw();
   }
