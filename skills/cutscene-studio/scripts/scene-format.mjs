@@ -22,6 +22,10 @@ export const POSES = {
   reaching: { torso: { bend: 18 }, r_arm: { raise: 65 }, r_elbow: { bend: 15 } },
 };
 export const PROP_TYPES = ['box', 'table', 'chair', 'sphere'];
+// sun: parallel rays from position toward target. lamp: point light at position.
+// spot: cone from position toward target. For lamp/spot, intensity is the brightness
+// reached at the target, so the same number looks alike across types.
+export const LIGHT_TYPES = ['sun', 'lamp', 'spot'];
 export const CHEST_DEFAULTS = {height:0.65,spacing:0.46,projection:1};
 export const CHEST_LIMITS = {height:[0.55,0.78],spacing:[0.3,0.6],projection:[0.4,1.6]};
 export function chestIssues(value,path='chest') {
@@ -50,10 +54,10 @@ function collector() {
   const color=(v,p,fallback)=>{if(v===undefined)return fallback;if(typeof v!=='string'||!/^#[0-9a-f]{6}$/i.test(v)){error(p,'COLOR_REQUIRED','#RRGGBB 형식의 색상이 필요합니다.','#RRGGBB',v);return fallback;}return v;};
   const list=(v,p,max)=>{if(!Array.isArray(v)||v.length>max){error(p,'ARRAY_LIMIT','최대 '+max+'개의 객체 배열이 필요합니다.',{type:'array',maxItems:max},v);return [];}return v.map((x,i)=>obj(x,p+'['+i+']'));};
   function camera(input,p='camera') {
-    const c=obj(input,p);keys(c,['position','target','fov'],p);
+    const c=obj(input,p);keys(c,['position','target','fov','zoom','view'],p);
     const position=vec(c.position,p+'.position'),target=vec(c.target,p+'.target');
     if(Array.isArray(c.position)&&Array.isArray(c.target)&&position.every((x,i)=>Math.abs(x-target[i])<1e-6))error(p,'CAMERA_NO_DIRECTION','카메라 위치와 목표점은 달라야 합니다.','position != target',c);
-    return {position,target,fov:num(c.fov===undefined?40:c.fov,p+'.fov',10,100)};
+    const projection={};if(c.zoom!==undefined)projection.zoom=num(c.zoom,p+'.zoom',.0001,10000);if(c.view!==undefined){if(c.view===null)projection.view=null;else{const v=obj(c.view,p+'.view');keys(v,['enabled','fullWidth','fullHeight','offsetX','offsetY','width','height'],p+'.view');if(typeof v.enabled!=='boolean')error(p+'.view.enabled','BOOLEAN_REQUIRED','true 또는 false가 필요합니다.');projection.view={enabled:!!v.enabled};for(const k of ['fullWidth','fullHeight','width','height'])projection.view[k]=num(v[k],p+'.view.'+k,.0001,1000000);for(const k of ['offsetX','offsetY'])projection.view[k]=num(v[k],p+'.view.'+k,-1000000,1000000);}}return {position,target,fov:num(c.fov===undefined?40:c.fov,p+'.fov',10,100),...projection};
   }
   return {errors,warnings,error,warn,obj,keys,num,vec,str,color,list,camera};
 }
@@ -68,7 +72,7 @@ export function validateCamera(input,path='camera') {
 export function analyzeScene(input) {
   const c=collector(),{error,warn,obj,keys,num,vec,str,color,list,camera}=c;
   const raw=obj(input,'$');
-  keys(raw,['version','units','title','sourceText','assumptions','room','actors','props','camera','lighting','shots'],'');
+  keys(raw,['version','units','title','style','sourceText','assumptions','room','actors','props','camera','lighting','shots'],'');
   if(raw.version!==1)error('version','VERSION_REQUIRED','장면 버전은 1이어야 합니다.',1,raw.version);
   if(raw.units!=='meters')error('units','UNITS_REQUIRED','길이 단위는 meters만 지원합니다.','meters',raw.units);
   if(raw.room===undefined)warn('room','DEFAULT_ROOM','방 정보가 없어 기본 방 6×3×5m를 사용합니다.');
@@ -79,7 +83,7 @@ export function analyzeScene(input) {
   const ids=new Set();
   function id(v,p){const value=str(v,p);if(!/^[A-Za-z0-9_-]{1,64}$/.test(value))error(p,'INVALID_ID','1~64자의 영문·숫자·밑줄·하이픈 ID가 필요합니다.','[A-Za-z0-9_-]{1,64}',v);else if(ids.has(value))error(p,'DUPLICATE_ID','인물·소품 ID가 중복됩니다. 고유한 ID로 바꾸세요.','unique actor/prop id',v);ids.add(value);return value;}
   const actors=list(raw.actors===undefined?[]:raw.actors,'actors',12).map((a,i)=>{
-    const p='actors['+i+']';keys(a,['id','name','position','yaw','height','headUnits','chest','pose','joints','intent'],p);
+    const p='actors['+i+']';keys(a,['id','name','position','yaw','height','headUnits','chest','pose','joints','intent','role','description'],p);
     const chest=a.chest===undefined?undefined:normalizeChest(a.chest);
     if(a.chest!==undefined)c.errors.push(...chestIssues(a.chest,p+'.chest').slice(0,Math.max(0,100-c.errors.length)));
     const pose=a.pose===undefined?'standing':a.pose;
@@ -90,12 +94,12 @@ export function analyzeScene(input) {
       const props=obj(values,p+'.joints.'+joint);keys(props,Object.keys(JOINTS[joint]),p+'.joints.'+joint);joints[joint]={};
       for(const [key,value]of Object.entries(props))if(Object.hasOwn(JOINTS[joint],key))joints[joint][key]=num(value,p+'.joints.'+joint+'.'+key,...JOINTS[joint][key]);
     }
-    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),position:vec(a.position,p+'.position'),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),height:num(a.height===undefined?1.75:a.height,p+'.height',0.5,3),headUnits:num(a.headUnits===undefined?8:a.headUnits,p+'.headUnits',3,12),...(chest?{chest}:{}),pose,joints,intent:str(a.intent,p+'.intent')};
+    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),position:vec(a.position,p+'.position'),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),height:num(a.height===undefined?1.75:a.height,p+'.height',0.5,3),headUnits:num(a.headUnits===undefined?8:a.headUnits,p+'.headUnits',3,12),...(chest?{chest}:{}),pose,joints,intent:str(a.intent,p+'.intent'),role:str(a.role,p+'.role'),description:str(a.description,p+'.description')};
   });
   const props=list(raw.props===undefined?[]:raw.props,'props',80).map((a,i)=>{
-    const p='props['+i+']';keys(a,['id','name','type','position','size','yaw','color'],p);
+    const p='props['+i+']';keys(a,['id','name','type','position','size','yaw','color','role','intent','description'],p);
     if(!PROP_TYPES.includes(a.type))error(p+'.type','UNSUPPORTED_PROP','지원하지 않는 소품 형상입니다.',PROP_TYPES,a.type);
-    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),type:a.type,position:vec(a.position,p+'.position'),size:vec(a.size,p+'.size',0.02,20),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),color:color(a.color,p+'.color','#8c7965')};
+    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),type:a.type,position:vec(a.position,p+'.position'),size:vec(a.size,p+'.size',0.02,20),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),color:color(a.color,p+'.color','#8c7965'),role:str(a.role,p+'.role'),intent:str(a.intent,p+'.intent'),description:str(a.description,p+'.description')};
   });
   const shotIds=new Set();
   const shots=list(raw.shots===undefined?[]:raw.shots,'shots',24).map((s,i)=>{
@@ -103,10 +107,12 @@ export function analyzeScene(input) {
     if(!/^[A-Za-z0-9_-]{1,64}$/.test(sid)||shotIds.has(sid))error(p+'.id','DUPLICATE_OR_INVALID_SHOT_ID','고유한 영문·숫자 ID가 필요합니다.','unique shot id',s.id);
     shotIds.add(sid);return {id:sid,name:str(s.name,p+'.name','컷 '+(i+1)),purpose:str(s.purpose,p+'.purpose'),camera:camera(s.camera,p+'.camera')};
   });
-  const light=raw.lighting===undefined?{}:obj(raw.lighting,'lighting');keys(light,['position','target','color','intensity','ambient'],'lighting');
-  const scene={version:1,units:'meters',title:str(raw.title,'title','새 장면'),sourceText:str(raw.sourceText,'sourceText'),assumptions:str(raw.assumptions,'assumptions'),
+  const light=raw.lighting===undefined?{}:obj(raw.lighting,'lighting');keys(light,['type','position','target','color','intensity','ambient','coneDeg','softness'],'lighting');
+  const lightType=light.type===undefined?'sun':light.type;if(!LIGHT_TYPES.includes(lightType))error('lighting.type','UNSUPPORTED_LIGHT','지원하지 않는 조명 종류입니다. sun(태양·평행광), lamp(전등·점광원), spot(스포트) 중 하나를 쓰세요.',LIGHT_TYPES,light.type);
+  const scene={version:1,units:'meters',title:str(raw.title,'title','새 장면'),style:str(raw.style,'style',''),sourceText:str(raw.sourceText,'sourceText'),assumptions:str(raw.assumptions,'assumptions'),
     room:{size:vec(room.size===undefined?[6,3,5]:room.size,'room.size',1,30),color:color(room.color,'room.color','#b9b5ac'),walls:room.walls!==false},actors,props,camera:camera(raw.camera),shots,
-    lighting:{position:vec(light.position===undefined?[-3,5,3]:light.position,'lighting.position'),target:vec(light.target===undefined?[0,1,0]:light.target,'lighting.target'),color:color(light.color,'lighting.color','#fff0d6'),intensity:num(light.intensity===undefined?2:light.intensity,'lighting.intensity',0,10),ambient:num(light.ambient===undefined?0.6:light.ambient,'lighting.ambient',0,3)}};
+    lighting:{position:vec(light.position===undefined?[-3,5,3]:light.position,'lighting.position'),target:vec(light.target===undefined?[0,1,0]:light.target,'lighting.target'),color:color(light.color,'lighting.color','#fff0d6'),intensity:num(light.intensity===undefined?2:light.intensity,'lighting.intensity',0,10),ambient:num(light.ambient===undefined?0.6:light.ambient,'lighting.ambient',0,3),type:lightType,...(lightType==='spot'?{coneDeg:num(light.coneDeg===undefined?50:light.coneDeg,'lighting.coneDeg',5,170),softness:num(light.softness===undefined?.3:light.softness,'lighting.softness',0,1)}:{})}};
+  if(lightType!=='sun'&&scene.lighting.position.every((v,i)=>Math.abs(v-scene.lighting.target[i])<1e-6))error('lighting.target','LIGHT_NO_DIRECTION','전등·스포트의 위치와 목표점은 달라야 합니다. 목표점은 밝기 기준이 되는 지점입니다.','position != target',light.target);
   if(!c.errors.length){
     const [w,h,d]=scene.room.size;
     for(const [i,a]of actors.entries()){
@@ -136,12 +142,12 @@ export const EXAMPLE_SCENE = {
   assumptions:'방 크기·인물 키·위치·저녁빛은 연출을 위한 추정이다. 두 인물과 상자가 함께 읽히는 한 순간을 선택했다.',
   room:{size:[6,3,5],color:'#b9b5ac',walls:true},
   actors:[
-    {id:'jihoon',name:'지훈',position:[-0.8,0,0],yaw:35,height:1.78,pose:'standing',joints:{head:{turn:25}},intent:'문가의 서연을 돌아본다'},
-    {id:'seoyeon',name:'서연',position:[1.6,0,-1.4],yaw:-40,height:1.65,pose:'standing',joints:{head:{turn:-15}},intent:'지훈을 바라본다'},
+    {id:'jihoon',name:'지훈',position:[-0.8,0,0],yaw:35,height:1.78,pose:'standing',joints:{head:{turn:25}},role:'탁자 앞에 선 인물',intent:'문가의 서연을 돌아본다'},
+    {id:'seoyeon',name:'서연',position:[1.6,0,-1.4],yaw:-40,height:1.65,pose:'standing',joints:{head:{turn:-15}},role:'문가에 멈춘 방문자',intent:'지훈을 바라본다'},
   ],
   props:[
-    {id:'table',name:'탁자',type:'table',position:[0,0,-0.2],size:[1.5,0.75,0.8],yaw:0,color:'#8c7965'},
-    {id:'box',name:'작은 상자',type:'box',position:[0.2,0.75,-0.2],size:[0.3,0.22,0.25],yaw:10,color:'#b48c58'},
+    {id:'table',name:'탁자',type:'table',role:'상자를 받치는 탁자',intent:'탁자 위 상자와 두 인물의 관계를 보여준다',description:'세부 디자인은 미정인 직사각형 탁자',position:[0,0,-0.2],size:[1.5,0.75,0.8],yaw:0,color:'#8c7965'},
+    {id:'box',name:'작은 상자',type:'box',role:'탁자 위 소품',intent:'원문에 등장한 작은 상자의 위치를 표시한다',description:'내용물과 세부 재질은 미정인 작은 직육면체 상자',position:[0.2,0.75,-0.2],size:[0.3,0.22,0.25],yaw:10,color:'#b48c58'},
   ],
   camera:{position:[4,2.5,6],target:[0.1,1,-0.5],fov:42},
   lighting:{position:[-3,5,2],target:[0,1,-0.5],color:'#ffe1b0',intensity:2.4,ambient:0.6},

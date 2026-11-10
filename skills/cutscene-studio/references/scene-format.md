@@ -19,14 +19,36 @@
 | 필드 | 내용 |
 | --- | --- |
 | title/sourceText/assumptions | 제목, 관련 원문, 원문과 구별한 연출상 가정 |
+| style | 최종 작화 화풍(문자열, 최대 2000자). 생략하면 2D 웹툰 일러스트 기본값 |
 | room | size, color(#RRGGBB), walls(boolean) |
-| actors[] | 고유 id, name, position, yaw, height, headUnits, pose, joints, intent |
-| props[] | 인물과도 중복되지 않는 id, name, type, position, size, yaw, color |
-| camera | position, target, fov(10~100). 위치와 목표점은 달라야 함 |
-| lighting | position, target, color, intensity(0~10), ambient(0~3) |
+| actors[] | 고유 id, name, position, yaw, height, headUnits, chest, pose, joints, role, intent, description |
+| props[] | 인물과도 중복되지 않는 id, name, type, position, size, yaw, color, role, intent, description |
+| camera | position, target, fov(10~100). 위치와 목표점은 달라야 함. zoom·view는 편집기가 쓰는 값이므로 새 장면에는 넣지 않음 |
+| lighting | type(sun·lamp·spot, 생략 시 sun), position, target, color, intensity(0~10), ambient(0~3), spot일 때 coneDeg(5~170, 기본 50)·softness(0~1, 기본 0.3) |
 | shots[] | 고유 id, name, purpose, camera. 같은 순간의 카메라 후보 |
 
 관절은 l/r가 인물 기준 좌우다.
+
+role·description은 최종 작화에 쓰이는 외형·역할 설명이다. 인물이면 옷·머리·나이대처럼 그림에 필요한 것만 쓰고, 소품이면 재질·색·디자인을 쓴다. intent는 왜 그 자리·자세에 두었는지다. 이 문장들은 LLM 패키지의 인물 목록에 라벨 색과 짝지어 그대로 들어간다.
+
+## 화풍 (style)
+
+LLM 패키지 지시문의 맨 앞에 들어가는 최종 그림체다. 이미지 생성 모델은 회색 3D 렌더·뎁스·라벨 이미지를 여러 장 받으면 실사·3D로 그리는 경향이 있다. 그래서 원하는 화풍을 구체적으로 적는다(예: `"2D 웹툰 일러스트: 깨끗한 검은 선화와 셀 채색. 사진·실사·3D 질감 금지"`, `"흑백 펜화 만화, 굵은 먹선과 스크린톤"`). 작품 지침에 화풍이 없으면 생략해 기본값을 쓰고, 추정한 화풍은 assumptions에 남긴다.
+
+## 조명 종류
+
+| type | 뜻 | 쓰는 경우 |
+| --- | --- | --- |
+| sun | 평행광. position→target 방향으로 장면 전체에 같은 세기, 그림자가 평행 | 해·달·흐린 하늘·큰 창 |
+| lamp | 점광원. position에서 사방으로 퍼지고 거리 제곱으로 어두워짐, 그림자가 방사형으로 퍼짐 | 가로등·랜턴·촛불·스탠드 |
+| spot | 원뿔 조명. position에서 target 쪽 coneDeg 안만 밝음 | 펜던트 조명·무대 조명·손전등 |
+
+- intensity는 **target 지점에 도달하는 밝기**다. 종류를 바꿔도 target 주변 밝기가 비슷하다. lamp·spot의 target은 가장 밝게 보여야 할 인물이나 탁자 같은 지점으로 둔다.
+- lamp·spot은 position과 target이 같으면 오류다.
+- 광원 위치는 실제 공간 좌표로 둔다. 원문에서 "골목 끝 가로등"처럼 앞뒤 관계가 중요하면 카메라·인물과의 거리 관계가 맞는지 확인한다. 패키지는 광원이 인물들보다 앞인지 뒤인지 자동으로 적는다.
+- 광원은 하나뿐이다(+ambient). 여러 광원은 가장 중요한 하나로 정하고 나머지는 assumptions에 남긴다.
+
+예: `"lighting":{"type":"lamp","position":[0.6,1.7,3],"target":[0,1.3,1.5],"color":"#ffd9a0","intensity":2.4,"ambient":0.25}`
 
 | 관절 | 속성 범위 |
 | --- | --- |
