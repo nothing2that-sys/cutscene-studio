@@ -1,0 +1,14 @@
+{"version":1,"units":"meters","title":"뎁스 비교 D1 · 광장의 다섯 사람",
+ "sourceText":"해 질 무렵 넓은 광장. 다섯 사람이 제각각 서서 무언가를 기다린다.",
+ "assumptions":"뎁스 비교 실험용 장면. 키와 거리를 섞어 화면 크기만으로는 앞뒤가 헷갈리게 배치.",
+ "room":{"size":[16,3,16],"color":"#7d7a74","walls":false},
+ "actors":[
+  {"id":"d1red","name":"빨간 코트 여자","position":[-1.3,0,2.4],"yaw":20,"height":1.6,"pose":"standing","description":"빨간 코트, 단발머리 20대 여성"},
+  {"id":"d1gray","name":"회색 후드 남자","position":[-0.4,0,0.2],"yaw":0,"height":1.8,"pose":"standing","description":"회색 후드티, 청바지 20대 남성"},
+  {"id":"d1green","name":"초록 점퍼 소년","position":[1.1,0,0.4],"yaw":-30,"height":1.5,"pose":"standing","description":"초록 점퍼, 짧은 머리 중학생 소년"},
+  {"id":"d1black","name":"검은 정장 남자","position":[0.5,0,-1.8],"yaw":-10,"height":1.92,"pose":"standing","description":"검은 정장, 키 큰 40대 남성"},
+  {"id":"d1white","name":"흰 원피스 여자","position":[1.8,0,-3.2],"yaw":-20,"height":1.72,"pose":"standing","description":"흰 원피스, 긴 머리 30대 여성"}],
+ "props":[],
+ "camera":{"position":[0,1.5,5.2],"target":[0.1,1.15,0],"fov":50},
+ "lighting":{"type":"sun","position":[-6,5,4],"target":[0,0,0],"color":"#ffdcb0","intensity":2.4,"ambient":0.45},
+ "shots":[{"id":"d1","name":"D1 광장","purpose":"키와 거리가 섞인 다섯 사람의 앞뒤·크기","camera":{"position":[0,1.5,5.2],"target":[0.1,1.15,0],"fov":50}}]}

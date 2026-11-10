@@ -12,6 +12,7 @@ import {extractShotFacts,describeShot} from './shot-description.js';
 import {objectNotes} from './scene-object-info.js';
 import {buildLabels,renderPasses,analyzePasses,depthRange,passImages,drawPose,lightingNotes,lightSource,buildShotJson,buildPrompt,packageZip,encodePNG,DEFAULT_STYLE} from './llm-package.js';
 import {dataUrlBytes} from './package-files.js';
+import {drawRange,drawPlan} from './depth-views.js';
 
 export function initCutsceneStudio(api) {
   const { THREE, stage } = api;
@@ -81,7 +82,7 @@ export function initCutsceneStudio(api) {
         <div id="studio-shots"></div>
       </div>
       <details id="studio-refs-section"><summary>설정화 · 레퍼런스 연결</summary><p class="studio-help">인물·소품마다 설정화(얼굴·전신·의상 등)를 연결하면 LLM 패키지에 함께 들어가고 라벨 색과 짝지어집니다.</p><div id="studio-refs"></div></details>
-      <div class="studio-section"><h3>촬영 미리보기</h3><label class="studio-label">미리보기 패스 <select id="studio-pass-view" aria-label="미리보기 패스"><option value="color">컬러</option><option value="label">라벨</option><option value="depth">뎁스(카메라 거리)</option><option value="light">직사광·그림자</option><option value="pose">포즈 뼈대</option></select></label><div id="studio-preview"><img id="studio-pass-image" alt="패스 미리보기" hidden></div><p id="studio-caption" class="studio-help">컷을 저장하면 이곳에 촬영 구도가 표시됩니다.</p><p id="studio-preview-state" class="studio-help"></p><button id="studio-preview-refresh" class="btn">미리보기 갱신</button>
+      <div class="studio-section"><h3>촬영 미리보기</h3><label class="studio-label">미리보기 패스 <select id="studio-pass-view" aria-label="미리보기 패스"><option value="color">컬러</option><option value="label">라벨</option><option value="depth">뎁스(카메라 거리)</option><option value="range">거리 색·링 (라이다)</option><option value="plan">위에서 본 배치</option><option value="light">직사광·그림자</option><option value="pose">포즈 뼈대</option></select></label><div id="studio-preview"><img id="studio-pass-image" alt="패스 미리보기" hidden></div><p id="studio-caption" class="studio-help">컷을 저장하면 이곳에 촬영 구도가 표시됩니다.</p><p id="studio-preview-state" class="studio-help"></p><button id="studio-preview-refresh" class="btn">미리보기 갱신</button>
         <div class="studio-row"><button id="studio-color" class="btn primary">PNG 캡처</button><button id="studio-depth" class="btn">Depth PNG</button></div>
         <div class="studio-row"><button id="studio-llm-package" class="btn primary">LLM 패키지 (zip)</button></div>
         <div class="studio-row"><button id="studio-packet" class="btn">LLM 전달 묶음</button><button id="studio-prompt" class="btn">작화 지시문</button></div>
@@ -145,8 +146,8 @@ export function initCutsceneStudio(api) {
     return cleanRender(()=>{
       const environmentMeshes=[];environment.traverse(n=>{if(!n.isMesh)return;for(let q=n;q;q=q.parent)if(!q.visible)return;environmentMeshes.push(n);});
       const labels=buildLabels({actors,props,environmentMeshes});
-      const facts=!only||only==='pose'?extractShotFacts({camera:shotCamera,aspect,actors,props,environmentMeshes,lighting:document.lighting}):null;
-      if(only==='pose')return {width,height,facts,labels};
+      const facts=!only||['pose','range','plan'].includes(only)?extractShotFacts({camera:shotCamera,aspect,actors,props,environmentMeshes,lighting:document.lighting}):null;
+      if(only==='pose'||only==='plan')return {width,height,facts,labels};
       const description=facts?describeShot(facts,{shotName:currentShot().name,purpose:currentShot().purpose}):null;
       const passes=renderPasses({renderer:preview,scene:stage.scene,camera:shotCamera,width,height,labels,light:keyLight(),lightTarget:document.lighting.target,ambient});
       const stats=analyzePasses(passes,labels),range=depthRange(passes,labels,stats);
@@ -160,7 +161,11 @@ export function initCutsceneStudio(api) {
     if(kind==='label')return canvasFrom(width,height,d=>d.set(r.images.rgba));
     if(kind==='depth')return grayCanvas(width,height,r.images.depth8);
     if(kind==='light')return grayCanvas(width,height,r.images.light8);
-    const c=window.document.createElement('canvas');c.width=width;c.height=height;drawPose(c,r.facts,r.labels,lightSource(document.lighting,shotCamera,r.facts));return c;
+    const c=window.document.createElement('canvas');
+    if(kind==='plan'){c.width=c.height=Math.max(width,height);drawPlan(c,{facts:r.facts,labels:r.labels,lighting:document.lighting,room:document.room,camera:shotCamera,aspect});return c;}
+    c.width=width;c.height=height;
+    if(kind==='range'){drawRange(c,{passes:r.passes,labels:r.labels,facts:r.facts,range:r.range});return c;}
+    drawPose(c,r.facts,r.labels,lightSource(document.lighting,shotCamera,r.facts));return c;
   }
   function renderPNG(depth=false) {
     if(depth){const {width,height}=exportSize(),r=computePasses(width,height);lastDepthRange=r.range;captureObserver?.('depth');return passCanvas('depth',r).toDataURL('image/png');}
@@ -418,7 +423,7 @@ export function initCutsceneStudio(api) {
     const color=renderPNG(false),r=computePasses(width,height);lastDepthRange=r.range;
     const notes=new Map([...r.actors,...r.props].map(item=>[item.id,objectNotes(item.root,document)]));
     const {json,refFiles}=buildShotJson({shot,scene:document,camera:shotCamera,facts:r.facts,description:r.description,labels:r.labels,stats:r.stats,range:r.range,lightNotes:r.lightNotes,references,objectNotes:notes,width,height,lighting:document.lighting});
-    const images={'color.png':dataUrlBytes(color),'label.png':await encodePNG({width,height,channels:4,data:r.images.rgba}),'depth.png':await encodePNG({width,height,channels:1,data:r.images.depth8}),'depth16.png':await encodePNG({width,height,channels:1,bitDepth:16,data:r.images.depth16}),'light.png':await encodePNG({width,height,channels:1,data:r.images.light8}),'pose.png':dataUrlBytes(passCanvas('pose',r).toDataURL('image/png'))};
+    const images={'color.png':dataUrlBytes(color),'label.png':await encodePNG({width,height,channels:4,data:r.images.rgba}),'depth.png':await encodePNG({width,height,channels:1,data:r.images.depth8}),'depth16.png':await encodePNG({width,height,channels:1,bitDepth:16,data:r.images.depth16}),'light.png':await encodePNG({width,height,channels:1,data:r.images.light8}),'pose.png':dataUrlBytes(passCanvas('pose',r).toDataURL('image/png')),'range.png':dataUrlBytes(passCanvas('range',r).toDataURL('image/png')),'plan.png':dataUrlBytes(passCanvas('plan',r).toDataURL('image/png'))};
     const folder='shot-'+String(shot.name||'cut').replace(/[\\/:*?"<>|\s]+/g,'_').slice(0,40);
     const prompt=buildPrompt(json);
     return {zip:await packageZip({folder,images,json,prompt,refFiles}),json,prompt,folder};

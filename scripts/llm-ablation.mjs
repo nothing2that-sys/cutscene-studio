@@ -4,14 +4,19 @@
 //   c2-text  : c1 + camera and per-person position/pose text (no light, no distance)
 //   c3-light : c2 + light.png + light text
 //   c4-depth : c2 + depth.png + distance text
-// Usage: node scripts/llm-ablation.mjs [baseUrl] [outDir]
+//   --set=depth (2026-11-10): depth views only, all with depth.png and the distance order
+//   d1-gray  : color.png + depth.png + distance text
+//   d2-range : d1 + range.png (LiDAR-style colour range with rings and labels)
+//   d3-plan  : d2 + plan.png (top-down layout with camera view, people, light)
+// Usage: node scripts/llm-ablation.mjs [baseUrl] [outDir] [--set=depth]
 import {loadPlaywright} from './playwright-runtime.mjs';
 import {readFile,writeFile,mkdir,rm} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 const {chromium}=loadPlaywright();
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const base=process.argv[2]||'http://127.0.0.1:3001',out=path.resolve(process.argv[3]||path.join(root,'docs/review-evidence/2026-11-06-llm-ablation'));
+const argv=process.argv.slice(2),SET=argv.includes('--set=depth')?'depth':'base',pos=argv.filter(a=>!a.startsWith('--'));
+const base=pos[0]||'http://127.0.0.1:3001',out=path.resolve(pos[1]||path.join(root,SET==='depth'?'docs/review-evidence/2026-11-10-depth-ablation':'docs/review-evidence/2026-11-06-llm-ablation'));
 const fixture=f=>path.join(root,'scripts/fixtures/llm-scenarios',f);
 // questions: one correct answer each (all "예" when the image follows the scene).
 const SCENES=[
@@ -30,7 +35,22 @@ const SCENES=[
    ['아이 발이 화면 아래쪽',foot(c)>foot(a),`${foot(c)} > ${foot(a)}`]];}},
 ];
 const strip=t=>String(t||'').replace(/ ?\(pose\.png[^)]*\)/g,'');
+const DEPTH_SCENES=[
+ {id:'D1-crowd',file:fixture('d1-crowd-depth.json'),aspect:16/9,tests:'depth',conditions:['d1-gray','d2-range','d3-plan'],
+  questions:['다섯 사람이 모두 그려졌는가','왼쪽부터 빨강 코트 → 회색 후드 → 초록 점퍼 → 검은 정장 → 흰 원피스 순서인가(화면 가로 위치)','빨간 코트 여자가 가장 앞(가장 아래쪽 발)인가','흰 원피스 여자가 가장 뒤(가장 위쪽 발)인가','측정: 초록 점퍼 소년 ÷ 검은 정장 남자의 화면 키 비율','측정: 빨간 코트 여자 ÷ 흰 원피스 여자의 화면 키 비율'],
+  verify:j=>{const L=id=>j.labels.find(l=>l.id===id),h=l=>l.screen.bbox[3]-l.screen.bbox[1],g=L('d1green'),b=L('d1black'),r=L('d1red'),w=L('d1white');return [
+   ['다섯 명 모두 화면 안',['d1red','d1gray','d1green','d1black','d1white'].every(id=>L(id)?.visible),''],
+   ['초록(가까움)과 검정(멂)의 화면 키가 비슷',h(g)/h(b)>.8&&h(g)/h(b)<1.45&&b.distanceM.median/g.distanceM.median>1.4,`화면 ${(h(g)/h(b)).toFixed(2)} · 거리 ${g.distanceM.median}m/${b.distanceM.median}m`],
+   ['정답 비율 기록',true,`초록÷검정 ${(h(g)/h(b)).toFixed(2)} · 빨강÷흰 ${(h(r)/h(w)).toFixed(2)}`]];}},
+ {id:'D2-lamp-front',file:fixture('d2-lamp-front.json'),aspect:16/9,tests:'depth',conditions:['d1-gray','d2-range','d3-plan'],
+  questions:['랜턴(광원)이 맨 앞 인물보다 카메라 쪽 앞에 있는가','랜턴이 화면 왼쪽에 있는가','주황 재킷 남자가 남색 패딩 여자보다 앞인가','랜턴과 가까운 쪽(주황 재킷)이 더 밝은가','측정: 주황 재킷 남자 ÷ 남색 패딩 여자의 화면 키 비율'],
+  verify:j=>{const a=j.labels.find(l=>l.id==='d2a'),b=j.labels.find(l=>l.id==='d2b'),h=l=>l.screen.bbox[3]-l.screen.bbox[1];return [
+   ['광원이 인물들보다 앞',j.lighting.source?.relation==='front',j.lighting.source?.text||''],
+   ['광원이 화면 안 왼쪽',j.lighting.source?.inFrame&&j.lighting.source.xy[0]<.4,JSON.stringify(j.lighting.source?.xy)],
+   ['정답 비율 기록',true,`주황÷남색 ${(h(a)/h(b)).toFixed(2)}`]];}},
+];
 function prompt(j,scene,cond){
+ if(cond.startsWith('d'))return depthPrompt(j,scene,cond);
  const people=j.labels.filter(l=>l.kind==='person'),lines=[`# ${j.scene.title}`,'','## 화풍 (가장 먼저 지킬 것)',j.style,'첨부 이미지는 구도·명암 참고 자료일 뿐 그림체 참고가 아닙니다. 회색 3D 렌더나 흑백 이미지의 질감을 따라 그리지 말고 위 화풍으로 그리세요.','',
   '첨부 color.png(무채색 마네킹 작업 렌더)의 카메라 구도로 아래 장면을 한 컷으로 그려 주세요.','','## 장면',scene.sourceText,'','## 인물',...people.map(l=>`- ${l.name}: ${l.notes?.description||''}`)];
  if(cond!=='c1-color')lines.push('','## 촬영 정보',`- 렌즈 약 ${j.camera.focal35mm}mm(35mm 환산), 카메라 높이 ${j.camera.heightM}m, 피치 ${j.camera.pitchDeg}°`,'','## 인물별 화면 위치와 포즈 (좌우: "화면 왼쪽/오른쪽"은 이미지 기준, "왼팔/오른팔"은 인물 자신 기준)',...people.map(l=>`- ${l.name}: ${l.pose.text}`));
@@ -38,14 +58,24 @@ function prompt(j,scene,cond){
  if(cond==='c4-depth'){const order=[...people].sort((a,b)=>a.distanceM.median-b.distanceM.median);lines.push('','## 거리 (depth.png 첨부)',`- depth.png: 카메라에서의 거리. 흰색일수록 가깝고 어두울수록 멂(${j.depth.depthPng.nearM}m → ${j.depth.depthPng.farM}m). 검은색은 배경.`,`- 카메라에서 가까운 순서: ${order.map(l=>`${l.name}(${l.distanceM.median}m)`).join(' → ')}`,...people.map(l=>`- ${l.name}: 카메라에서 약 ${l.distanceM.median}m`));}
  lines.push('','글자·라벨·말풍선은 그림에 넣지 마세요.');return lines.join('\n');
 }
-const FILES={'c1-color':['color.png'],'c2-text':['color.png'],'c3-light':['color.png','light.png'],'c4-depth':['color.png','depth.png']};
+function depthPrompt(j,scene,cond){
+ const people=j.labels.filter(l=>l.kind==='person'),order=[...people].filter(l=>l.visible).sort((a,b)=>a.distanceM.median-b.distanceM.median);
+ const lines=[`# ${j.scene.title}`,'','## 화풍 (가장 먼저 지킬 것)',j.style,'첨부 이미지는 구도·거리 참고 자료일 뿐 그림체 참고가 아닙니다. 회색 3D 렌더나 색 지도·도표의 질감을 따라 그리지 말고 위 화풍으로 그리세요.','',
+  '첨부 color.png(무채색 마네킹 작업 렌더)의 카메라 구도로 아래 장면을 한 컷으로 그려 주세요.','','## 장면',scene.sourceText,'','## 인물',...people.map(l=>`- ${l.name}: ${l.notes?.description||''}`),
+  '','## 거리 (첨부 자료를 따르세요)',`- depth.png: 카메라에서의 거리. 흰색일수록 가깝고 어두울수록 멂(${j.depth.depthPng.nearM}m → ${j.depth.depthPng.farM}m). 검은색은 배경.`];
+ if(cond!=='d1-gray')lines.push('- range.png: 거리를 색으로 표시(빨강=가까움 → 파랑=멂, 오른쪽 범례가 m). 흰 선은 카메라에서 같은 거리, 검은 윤곽은 앞의 물체가 뒤의 물체를 가리는 경계, 숫자는 인물별 거리입니다.');
+ if(cond==='d3-plan')lines.push('- plan.png: 위에서 내려다본 배치도. 아래쪽 삼각형이 카메라, 위쪽이 카메라가 보는 방향, 원은 카메라에서 같은 거리입니다. 원판은 인물(화살표=바라보는 방향), 노란 표시는 광원입니다. 인물과 광원의 앞뒤·좌우 위치를 이 배치대로 지키세요.');
+ lines.push(`- 카메라에서 가까운 순서: ${order.map(l=>`${l.name}(${l.distanceM.median}m)`).join(' → ')}`,'- 인물들의 화면 속 크기 비율은 color.png 그대로 두고, 멀리 있는 인물을 키우거나 가깝게 당기지 마세요.','','글자·라벨·도표·말풍선은 그림에 넣지 마세요.');
+ return lines.join('\n');
+}
+const FILES={'d1-gray':['color.png','depth.png'],'d2-range':['color.png','depth.png','range.png'],'d3-plan':['color.png','depth.png','range.png','plan.png'],'c1-color':['color.png'],'c2-text':['color.png'],'c3-light':['color.png','light.png'],'c4-depth':['color.png','depth.png']};
 const browser=await chromium.launch({channel:'chrome',headless:true,args:['--enable-webgl','--use-gl=angle','--use-angle=swiftshader']});
 const page=await browser.newPage({viewport:{width:1600,height:1000}});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
 const report={generatedAt:new Date().toISOString(),scenes:[]};
 try{
  await page.goto(base);await page.waitForFunction(()=>window.__bodyV1?.studio&&document.getElementById('studio-example'));
- for(const sc of SCENES){
+ for(const sc of SET==='depth'?DEPTH_SCENES:SCENES){
   const text=await readFile(sc.file,'utf8'),scene=JSON.parse(text);
   const r=await page.evaluate(async({text,aspect})=>{
    const S=window.__bodyV1.studio,$=id=>document.getElementById(id);
@@ -54,14 +84,14 @@ try{
    const pkg=await S.createShotPackage(),z=pkg.zip,files={};
    for(let i=0;i<z.length-4;i++){if(z[i]==0x50&&z[i+1]==0x4b&&z[i+2]==3&&z[i+3]==4){const sz=z[i+18]|z[i+19]<<8|z[i+20]<<16|z[i+21]<<24,nl=z[i+26]|z[i+27]<<8;const name=new TextDecoder().decode(z.subarray(i+30,i+30+nl));files[name.split('/').slice(1).join('/')]=z.slice(i+30+nl,i+30+nl+sz);i+=30+nl+sz-1;}}
    const b64=u=>{let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);};
-   return {json:pkg.json,files:Object.fromEntries(['color.png','light.png','depth.png'].map(n=>[n,b64(files[n])]))};
+   return {json:pkg.json,files:Object.fromEntries(['color.png','light.png','depth.png','range.png','plan.png'].map(n=>[n,b64(files[n])]))};
   },{text,aspect:sc.aspect});
   const checks=sc.verify(r.json).map(([name,ok,detail])=>({name,ok:!!ok,detail}));
   const dir=path.join(out,sc.id);
   await rm(dir,{recursive:true,force:true});
   for(const cond of sc.conditions){const files=FILES[cond];const d=path.join(dir,cond);await mkdir(d,{recursive:true});for(const f of files)await writeFile(path.join(d,f),Buffer.from(r.files[f],'base64'));await writeFile(path.join(d,'prompt.txt'),prompt(r.json,scene,cond));}
   await mkdir(path.join(dir,'results'),{recursive:true});
-  await writeFile(path.join(dir,'questions.md'),[`# ${sc.id} 채점 질문 (모두 "예"가 정답)`,'',...sc.questions.map((q,i)=>`${i+1}. ${q}`),'',`조건: ${sc.conditions.join(', ')} · 각 3회`,'결과 파일: results/<조건>-<회차>.png  예) results/'+sc.conditions[2]+'-2.png'].join('\n'));
+  await writeFile(path.join(dir,'questions.md'),[`# ${sc.id} 채점 질문 (모두 "예"가 정답)`,'',...sc.questions.map((q,i)=>`${i+1}. ${q}`),'',`조건: ${sc.conditions.map((c,i)=>`${String(i+1).padStart(2,'0')}=${c}`).join(', ')} · 각 3회`,'결과 파일: results/<조건번호>_<회차>.png  예) results/03_2.png = '+sc.conditions[2]+' 2회차'].join('\n'));
   report.scenes.push({id:sc.id,tests:sc.tests,conditions:sc.conditions,checks,questions:sc.questions});
   console.log(`${sc.id}: scene checks ${checks.filter(c=>c.ok).length}/${checks.length}`);for(const c of checks)console.log(`  ${c.ok?'✔':'✖'} ${c.name} ${c.detail}`);
  }

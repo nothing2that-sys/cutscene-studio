@@ -39,8 +39,8 @@ try{
    const times=[];for(const only of ['label','depth','light','pose']){const t=performance.now();S.computePasses(576,Math.round(576/aspect),{commit:false,only});times.push(performance.now()-t);}
    // Unpack the stored zip in the page to build a captioned contact sheet.
    const z=pkg.zip,files={};for(let i=0;i<z.length-4;i++){if(z[i]==0x50&&z[i+1]==0x4b&&z[i+2]==3&&z[i+3]==4){const sz=z[i+18]|z[i+19]<<8|z[i+20]<<16|z[i+21]<<24,nl=z[i+26]|z[i+27]<<8;const name=new TextDecoder().decode(z.subarray(i+30,i+30+nl));files[name.split('/').slice(1).join('/')]=z.slice(i+30+nl,i+30+nl+sz);i+=30+nl+sz-1;}}
-   const names=['color.png','label.png','depth.png','light.png','pose.png'],imgs=await Promise.all(names.map(n=>createImageBitmap(new Blob([files[n]],{type:'image/png'}))));
-   const cw=aspect>=1?640:300,ch=Math.round(cw/aspect),cols=aspect>=1?3:5,rows=Math.ceil(names.length/cols),c=document.createElement('canvas');c.width=cols*cw;c.height=rows*(ch+24);const x=c.getContext('2d');x.fillStyle='#222';x.fillRect(0,0,c.width,c.height);x.font='16px sans-serif';
+   const names=['color.png','label.png','depth.png','range.png','plan.png','light.png','pose.png'],imgs=await Promise.all(names.map(n=>createImageBitmap(new Blob([files[n]],{type:'image/png'}))));
+   const cw=aspect>=1?640:300,ch=Math.round(cw/aspect),cols=aspect>=1?4:7,rows=Math.ceil(names.length/cols),c=document.createElement('canvas');c.width=cols*cw;c.height=rows*(ch+24);const x=c.getContext('2d');x.fillStyle='#222';x.fillRect(0,0,c.width,c.height);x.font='16px sans-serif';
    imgs.forEach((im,i)=>{const cx=(i%cols)*cw,cy=Math.floor(i/cols)*(ch+24);x.fillStyle='#ddd';x.fillText(names[i],cx+6,cy+17);x.drawImage(im,cx,cy+24,cw,ch);});
    const b64=u=>{let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);};
    return {zip:b64(z),folder:pkg.folder,json:pkg.json,prompt:pkg.prompt,contact:c.toDataURL('image/png').split(',')[1],color:b64(files['color.png']),packageMs,passMs:times,status:$('studio-status').textContent};
