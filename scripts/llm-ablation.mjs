@@ -8,15 +8,19 @@
 //   d1-gray  : color.png + depth.png + distance text
 //   d2-range : d1 + range.png (LiDAR-style colour range with rings and labels)
 //   d3-plan  : d2 + plan.png (top-down layout with camera view, people, light)
-// Usage: node scripts/llm-ablation.mjs [baseUrl] [outDir] [--set=depth]
+//   --set=body (2026-11-10): same scene, prompt and attachments (color + depth); only the
+//   mannequin body differs
+//   b1-female: everyone on the default (female) mannequin, bodyType removed
+//   b2-typed : matching body types (male, male-heavy, child)
+// Usage: node scripts/llm-ablation.mjs [baseUrl] [outDir] [--set=depth|--set=body]
 import {loadPlaywright} from './playwright-runtime.mjs';
 import {readFile,writeFile,mkdir,rm} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 const {chromium}=loadPlaywright();
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const argv=process.argv.slice(2),SET=argv.includes('--set=depth')?'depth':'base',pos=argv.filter(a=>!a.startsWith('--'));
-const base=pos[0]||'http://127.0.0.1:3001',out=path.resolve(pos[1]||path.join(root,SET==='depth'?'docs/review-evidence/2026-11-10-depth-ablation':'docs/review-evidence/2026-11-06-llm-ablation'));
+const argv=process.argv.slice(2),SET=argv.includes('--set=depth')?'depth':argv.includes('--set=body')?'body':'base',pos=argv.filter(a=>!a.startsWith('--'));
+const base=pos[0]||'http://127.0.0.1:3001',out=path.resolve(pos[1]||path.join(root,SET==='depth'?'docs/review-evidence/2026-11-10-depth-ablation':SET==='body'?'docs/review-evidence/2026-11-10-body-ablation':'docs/review-evidence/2026-11-06-llm-ablation'));
 const fixture=f=>path.join(root,'scripts/fixtures/llm-scenarios',f);
 // questions: one correct answer each (all "예" when the image follows the scene).
 const SCENES=[
@@ -49,7 +53,18 @@ const DEPTH_SCENES=[
    ['광원이 화면 안 왼쪽',j.lighting.source?.inFrame&&j.lighting.source.xy[0]<.4,JSON.stringify(j.lighting.source?.xy)],
    ['정답 비율 기록',true,`주황÷남색 ${(h(a)/h(b)).toFixed(2)}`]];}},
 ];
+const BODY_SCENES=[
+ {id:'B1-body-types',file:fixture('b1-body-types.json'),aspect:16/9,tests:'body',conditions:['b1-female','b2-typed'],
+  // The only difference between the conditions is the mannequin body.
+  variant:(cond,scene)=>cond==='b1-female'?{...scene,actors:scene.actors.map(({bodyType,...a})=>a)}:scene,
+  questions:['세 사람이 모두 그려졌는가','왼쪽 마른 남자가 남성 체형인가(가슴 볼륨·잘록한 허리·넓은 골반·둥근 엉덩이가 없음)','가운데 남자가 배가 나온 큰 체격으로 그려졌는가','오른쪽 아이가 아이 비율인가(몸에 비해 큰 머리, 짧은 팔다리)—"작은 어른"이면 아니오','뒤 벽 그림자 세 개가 모두 남성·아이 윤곽인가(그림자에 여성 마네킹의 가슴·허리·엉덩이 곡선이 없음)','측정: 오른쪽 아이 ÷ 왼쪽 마른 남자의 화면 키(머리 꼭대기~발바닥) 비율'],
+  verify:j=>{const L=id=>j.labels.find(l=>l.id===id),h=l=>l.screen.bbox[3]-l.screen.bbox[1],m=L('b1man'),c=L('b1child'),hv=L('b1heavy');return [
+   ['세 명 모두 화면 안',[m,c,hv].every(l=>l?.visible),''],
+   ['뒤 벽이 보임',j.labels.some(l=>l.kind==='wall'&&l.visible),''],
+   ['정답 비율 기록',true,`아이÷마른 남자 ${(h(c)/h(m)).toFixed(2)}`]];}},
+];
 function prompt(j,scene,cond){
+ if(cond.startsWith('b'))return depthPrompt(j,scene,'d1-gray');
  if(cond.startsWith('d'))return depthPrompt(j,scene,cond);
  const people=j.labels.filter(l=>l.kind==='person'),lines=[`# ${j.scene.title}`,'','## 화풍 (가장 먼저 지킬 것)',j.style,'첨부 이미지는 구도·명암 참고 자료일 뿐 그림체 참고가 아닙니다. 회색 3D 렌더나 흑백 이미지의 질감을 따라 그리지 말고 위 화풍으로 그리세요.','',
   '첨부 color.png(무채색 마네킹 작업 렌더)의 카메라 구도로 아래 장면을 한 컷으로 그려 주세요.','','## 장면',scene.sourceText,'','## 인물',...people.map(l=>`- ${l.name}: ${l.notes?.description||''}`)];
@@ -68,28 +83,32 @@ function depthPrompt(j,scene,cond){
  lines.push(`- 카메라에서 가까운 순서: ${order.map(l=>`${l.name}(${l.distanceM.median}m)`).join(' → ')}`,'- 인물들의 화면 속 크기 비율은 color.png 그대로 두고, 멀리 있는 인물을 키우거나 가깝게 당기지 마세요.','','글자·라벨·도표·말풍선은 그림에 넣지 마세요.');
  return lines.join('\n');
 }
-const FILES={'d1-gray':['color.png','depth.png'],'d2-range':['color.png','depth.png','range.png'],'d3-plan':['color.png','depth.png','range.png','plan.png'],'c1-color':['color.png'],'c2-text':['color.png'],'c3-light':['color.png','light.png'],'c4-depth':['color.png','depth.png']};
+const FILES={'b1-female':['color.png','depth.png'],'b2-typed':['color.png','depth.png'],'d1-gray':['color.png','depth.png'],'d2-range':['color.png','depth.png','range.png'],'d3-plan':['color.png','depth.png','range.png','plan.png'],'c1-color':['color.png'],'c2-text':['color.png'],'c3-light':['color.png','light.png'],'c4-depth':['color.png','depth.png']};
 const browser=await chromium.launch({channel:'chrome',headless:true,args:['--enable-webgl','--use-gl=angle','--use-angle=swiftshader']});
 const page=await browser.newPage({viewport:{width:1600,height:1000}});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
 const report={generatedAt:new Date().toISOString(),scenes:[]};
 try{
  await page.goto(base);await page.waitForFunction(()=>window.__bodyV1?.studio&&document.getElementById('studio-example'));
- for(const sc of SET==='depth'?DEPTH_SCENES:SCENES){
+ for(const sc of SET==='depth'?DEPTH_SCENES:SET==='body'?BODY_SCENES:SCENES){
   const text=await readFile(sc.file,'utf8'),scene=JSON.parse(text);
-  const r=await page.evaluate(async({text,aspect})=>{
+  const build=text=>page.evaluate(async({text,aspect})=>{
    const S=window.__bodyV1.studio,$=id=>document.getElementById(id);
-   if(!S.importText(text,'ablation',true))throw Error('import failed: '+$('studio-status').textContent);
+   if(!(await S.importText(text,'ablation',true)))throw Error('import failed: '+$('studio-status').textContent);
    await new Promise(r=>setTimeout(r,2500));const sel=$('studio-aspect');sel.value=String(aspect);sel.dispatchEvent(new Event('change'));
    const pkg=await S.createShotPackage(),z=pkg.zip,files={};
    for(let i=0;i<z.length-4;i++){if(z[i]==0x50&&z[i+1]==0x4b&&z[i+2]==3&&z[i+3]==4){const sz=z[i+18]|z[i+19]<<8|z[i+20]<<16|z[i+21]<<24,nl=z[i+26]|z[i+27]<<8;const name=new TextDecoder().decode(z.subarray(i+30,i+30+nl));files[name.split('/').slice(1).join('/')]=z.slice(i+30+nl,i+30+nl+sz);i+=30+nl+sz-1;}}
    const b64=u=>{let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);};
    return {json:pkg.json,files:{...Object.fromEntries(['color.png','light.png','depth.png','range.png'].map(n=>[n,b64(files[n])])),'plan.png':S.planPNG().split(',')[1]}};
   },{text,aspect:sc.aspect});
+  // A scene with variants is built once per condition; otherwise one build serves all.
+  const builds=sc.variant?{}:null;
+  if(sc.variant)for(const cond of sc.conditions)builds[cond]=await build(JSON.stringify(sc.variant(cond,scene)));
+  const r=sc.variant?builds[sc.conditions.at(-1)]:await build(text);
   const checks=sc.verify(r.json).map(([name,ok,detail])=>({name,ok:!!ok,detail}));
   const dir=path.join(out,sc.id);
   // Rewrite only the condition folders; results/ holds generated images and must survive.
-  for(const cond of sc.conditions){await rm(path.join(dir,cond),{recursive:true,force:true});const files=FILES[cond];const d=path.join(dir,cond);await mkdir(d,{recursive:true});for(const f of files)await writeFile(path.join(d,f),Buffer.from(r.files[f],'base64'));await writeFile(path.join(d,'prompt.txt'),prompt(r.json,scene,cond));}
+  for(const cond of sc.conditions){await rm(path.join(dir,cond),{recursive:true,force:true});const files=FILES[cond];const d=path.join(dir,cond);await mkdir(d,{recursive:true});const rc=builds?.[cond]||r;for(const f of files)await writeFile(path.join(d,f),Buffer.from(rc.files[f],'base64'));await writeFile(path.join(d,'prompt.txt'),prompt(rc.json,scene,cond));}
   await mkdir(path.join(dir,'results'),{recursive:true});
   await writeFile(path.join(dir,'questions.md'),[`# ${sc.id} 채점 질문 (모두 "예"가 정답)`,'',...sc.questions.map((q,i)=>`${i+1}. ${q}`),'',`조건: ${sc.conditions.map((c,i)=>`${String(i+1).padStart(2,'0')}=${c}`).join(', ')} · 각 3회`,'결과 파일: results/<조건번호>_<회차>.png  예) results/03_2.png = '+sc.conditions[2]+' 2회차'].join('\n'));
   report.scenes.push({id:sc.id,tests:sc.tests,conditions:sc.conditions,checks,questions:sc.questions});
