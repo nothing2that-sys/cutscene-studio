@@ -20,6 +20,13 @@ export const POSES = {
   sitting: { l_leg: { raise: 90 }, r_leg: { raise: 90 }, l_knee: { bend: 90 }, r_knee: { bend: 90 }, l_elbow: { bend: 70 }, r_elbow: { bend: 70 } },
   pointing: { r_arm: { raise: 90 }, r_elbow: { bend: 5 } },
   reaching: { torso: { bend: 18 }, r_arm: { raise: 65 }, r_elbow: { bend: 15 } },
+  // Low poses. Values are shared by every body type; the actor is lowered until its lowest
+  // point touches position[1]. 'body' turns the whole figure about the pelvis (lying only).
+  kneeling: { l_leg: { raise: 0 }, r_leg: { raise: 0 }, l_knee: { bend: 105 }, r_knee: { bend: 105 }, l_ankle: { bend: 45 }, r_ankle: { bend: 45 }, l_arm: { raise: 0 }, r_arm: { raise: 0 }, l_elbow: { bend: 20 }, r_elbow: { bend: 20 } },
+  'half-kneeling': { l_leg: { raise: 96 }, l_knee: { bend: 90 }, r_leg: { raise: -5 }, r_knee: { bend: 105 }, r_ankle: { bend: 45 }, l_arm: { raise: 20 }, l_elbow: { bend: 60 }, r_arm: { raise: -5 } },
+  squatting: { l_leg: { raise: 110 }, r_leg: { raise: 110 }, l_knee: { bend: 145 }, r_knee: { bend: 145 }, l_ankle: { bend: -30 }, r_ankle: { bend: -30 }, torso: { bend: 30 }, l_arm: { raise: 50 }, r_arm: { raise: 50 }, l_elbow: { bend: 60 }, r_elbow: { bend: 60 } },
+  crouching: { l_leg: { raise: 100 }, r_leg: { raise: 100 }, l_knee: { bend: 140 }, r_knee: { bend: 140 }, l_ankle: { bend: -30 }, r_ankle: { bend: -30 }, torso: { bend: 35 }, l_arm: { raise: 30 }, r_arm: { raise: 30 }, l_elbow: { bend: 20 }, r_elbow: { bend: 20 } },
+  lying: { body: { bend: -90 }, l_arm: { raise: -10 }, r_arm: { raise: -10 } },
 };
 export const PROP_TYPES = ['box', 'table', 'chair', 'sphere'];
 // Body types of the common v1 body (app/src/doll-profiles.js BODY_TYPES).

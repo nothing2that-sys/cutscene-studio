@@ -125,7 +125,8 @@ function stance(a,props){
  const knee=s=>180-angleAt(P('hip'+s),P('knee'+s),P('ankle'+s));
  const bends={L:knee('L'),R:knee('R')},pelvisRatio=(P('pelvis')[1]-floor)/H;
  if(torsoTilt>60){const f=a.forward[1];return {key:'lying',text:f>.5?'등을 대고 누움(얼굴이 위)':f<-.5?'엎드림':'옆으로 누움',bends};}
- const lean=torsoTilt>15?(V(P('neck')).sub(V(P('pelvis'))).dot(V(a.forward))>0?`상체를 앞으로 ${Math.round(torsoTilt)}° 숙임`:`상체를 뒤로 ${Math.round(torsoTilt)}° 젖힘`):null;
+ // forward is perpendicular to the (tilted) torso, so compare horizontal parts only.
+ const flat=v=>v.setY(0),lean=torsoTilt>15?(flat(V(P('neck')).sub(V(P('pelvis')))).dot(flat(V(a.forward)))>0?`상체를 앞으로 ${Math.round(torsoTilt)}° 숙임`:`상체를 뒤로 ${Math.round(torsoTilt)}° 젖힘`):null;
  const seat=props.find(p=>{const pe=P('pelvis'),b=p.box;return pe[0]>b.min[0]-.1&&pe[0]<b.max[0]+.1&&pe[2]>b.min[2]-.1&&pe[2]<b.max[2]+.1&&pe[1]-b.max[1]>-.05&&pe[1]-b.max[1]<.3;});
  const kneesDown=['L','R'].filter(s=>P('knee'+s)[1]-floor<.08*H);
  const thighLift=s=>deg(V(P('knee'+s)).sub(V(P('hip'+s))).angleTo(UP.clone().negate())),sitting=thighLift('L')>55&&thighLift('R')>55;

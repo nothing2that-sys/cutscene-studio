@@ -112,7 +112,7 @@ export function installBodyV1(m,{profile=m.userData.bodyProfile||{height:1.75,he
   auditDisplayedJoint(key,{alreadySynchronized=false}={}){if(!alreadySynchronized)sync();displayContacts??=createDollContacts(full.meshes,new Map(Object.entries(names).map(([key,name])=>[name,outputs[key]])));const group=full.bones.get(names[key]),only=new Set();for(const [part,mesh]of full.meshes){for(let n=mesh.parent;n;n=n.parent)if(n===group){only.add(part);break;}}if(key==='torso'||key==='body')only.add('thorax');let low=Infinity,high=-Infinity;const point=new THREE.Vector3();for(const mesh of bodyMeshes){const p=mesh.geometry.attributes.position;for(let i=0;i<p.count;i++){point.fromBufferAttribute(p,i).applyMatrix4(mesh.matrixWorld);low=Math.min(low,point.y);high=Math.max(high,point.y);}}const height=high-low,tolerance=.002*height;return {...displayContacts.audit({only,stride:1,margin:tolerance}),height,tolerance,scope:'actual displayed vertex penetration diagnostic; independent triangle validation required'};},
   configure(next){unitScale=next.height/stature;m.userData.bodyProfile=structuredClone(next);root.userData.bodyProfile=structuredClone(next);sync();},
   actor(id){
-   return {id,root,driver:m,bodyMeshes,get protection(){return jointProtection;},get sourceRequestFrame(){return full.sourceRequestFrame;},joints:{...Object.fromEntries(Object.keys(names).map(k=>[k,m[k]])),...Object.fromEntries(Object.entries(names).map(([k,name])=>[name,outputs[k]]))},pelvis:outputs.body,chest:outputs.torso,canonicalFullRig:full,guides:full.guides,contactBinding:full.contactBinding,surfaceAnchors:full.surfaceAnchors.map(a=>({...a,actorId:id})),
+   return {id,root,driver:m,bodyMeshes,auditJoint:key=>adapter.auditDisplayedJoint(key),get protection(){return jointProtection;},get sourceRequestFrame(){return full.sourceRequestFrame;},joints:{...Object.fromEntries(Object.keys(names).map(k=>[k,m[k]])),...Object.fromEntries(Object.entries(names).map(([k,name])=>[name,outputs[k]]))},pelvis:outputs.body,chest:outputs.torso,canonicalFullRig:full,guides:full.guides,contactBinding:full.contactBinding,surfaceAnchors:full.surfaceAnchors.map(a=>({...a,actorId:id})),
     createOracleRequestRig:async()=>{
      const clone=await freshFactory(),a=getBodyV1(clone);a.setJointProtection(false);a.neutral();const actor=a.actor(id);
      return {...actor,protection:false,update:a.sync,dispose(){a.full.dispose();const owned=new Set();clone.traverse(n=>{if(n.geometry)owned.add(n.geometry);});for(const geometry of owned)geometry.dispose();clone.removeFromParent();}};
@@ -123,7 +123,8 @@ export function installBodyV1(m,{profile=m.userData.bodyProfile||{height:1.75,he
  adapters.set(m,adapter);neutral();return adapter;
 }
 
-// Bounds of the actual displayed v1 exterior; legacy bodies and props keep their existing bounds.
+// Bounds of the actual displayed v1 exterior (vertex-exact, so rotated parts such as a
+// kneeling shin do not leave the figure floating); legacy bodies and props keep their existing bounds.
 export function displayedObjectBounds(object,target=new THREE.Box3()){
- const asset=getBodyV1(object);if(!asset)return target.setFromObject(object);asset.sync();object.updateMatrixWorld(true);target.makeEmpty();for(const mesh of asset.bodyMeshes)target.union(new THREE.Box3().setFromObject(mesh));return target;
+ const asset=getBodyV1(object);if(!asset)return target.setFromObject(object);asset.sync();object.updateMatrixWorld(true);target.makeEmpty();for(const mesh of asset.bodyMeshes)target.union(new THREE.Box3().setFromObject(mesh,true));return target;
 }

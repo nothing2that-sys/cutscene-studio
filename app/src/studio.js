@@ -478,7 +478,7 @@ export function initCutsceneStudio(api) {
     setBeforeCapture(fn){beforeCapture=fn;},setBeforeReadCamera(fn){beforeReadCamera=fn;},setCaptureObserver(fn){captureObserver=fn;},
     rememberShotProjection(){shotProjection={key:JSON.stringify(currentShot().camera),zoom:shotCamera.zoom,view:shotCamera.view?{...shotCamera.view}:null};},
     environmentMeshes(role='working'){const meshes=[];const visible=(node)=>{for(let p=node;p;p=p.parent){if(role==='shot'&&p===node&&p.userData.editingWall)continue;if(!p.visible)return false;}return true;};environment.traverse(n=>{if(n.isMesh&&visible(n))meshes.push(n);});if(stage.ground?.isMesh&&visible(stage.ground))meshes.push(stage.ground);return [...new Set(meshes)];},
-    shotCamera,previewRenderer:preview,updateShotCamera,cleanRender,renderPNG,createHandoffPacket,createShotPackage,computePasses,
+    shotCamera,previewRenderer:preview,updateShotCamera,cleanRender,renderPNG,createHandoffPacket,createShotPackage,computePasses,shotDescription,
     // Top-down plan for people and experiments; not part of the LLM package.
     planPNG(){const {width,height}=exportSize();return passCanvas('plan',computePasses(width,height,{only:'plan'})).toDataURL('image/png');},
     references:()=>references,

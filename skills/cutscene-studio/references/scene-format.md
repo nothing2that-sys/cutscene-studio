@@ -8,7 +8,10 @@
 - 인물 position은 포즈 적용 후 인체 최저점의 기준 좌표. 서 있는 발은 Y=0. 소품 position은 밑면 중심. 탁자 높이가 0.75이면 위의 상자는 Y=0.75.
 - yaw와 joints 속성은 도, camera.fov는 수직 화각. 정밀 프로젝트의 rotation은 라디안 Euler 배열이므로 서로 복사하지 않는다.
 - 기본 벽은 X 음의 끝과 Z 음의 끝. 카메라를 벽 밖에 두면 인물이 가려질 수 있다. yaw 방향은 실제 예제 렌더로 대조한다.
-- 기본 포즈 standing/sitting/pointing/reaching, 소품 box/table/chair/sphere. 눕기·무릎꿇기·의자 접촉 자동 해결은 없다. 지원하는 관절값으로 근사할 수 있는 부분과 사용자가 조정할 부분을 밝힌다.
+- 기본 포즈 standing/sitting/pointing/reaching과 바닥 자세 kneeling(두 무릎)/half-kneeling(오른쪽 무릎을 꿇고 왼발을 앞에 세움)/squatting(쪼그려 앉기)/crouching(상체를 숙여 웅크림)/lying(바닥에 등을 대고 누움). 소품 box/table/chair/sphere.
+  - 바닥 자세는 모든 체형 종류에서 몸의 가장 낮은 점이 position[1] 높이에 닿게 놓인다. 무릎이나 등이 바닥에 닿는다.
+  - lying은 yaw 방향으로 머리가 뒤쪽에 오게 눕는다. 엎드림·옆으로 누움, 의자 접촉 자동 해결은 없다.
+  - 그 밖의 자세는 joints로 근사하고, 근사한 부분과 사용자가 조정할 부분을 밝힌다.
 - 최대 인물 12, 소품 80, 카메라 컷 24. 보통 필요한 1~3컷만 제안한다.
 - 문·창 개구부, 여러 층은 자동 모델링하지 않는다. 중요하면 위치·높이·이동 관계를 assumptions와 대리 블록에 남긴다.
 

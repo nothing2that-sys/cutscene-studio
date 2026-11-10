@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { validateScene, EXAMPLE_SCENE } from '../app/src/scene-format.js';
+import { validateScene, EXAMPLE_SCENE, POSES } from '../app/src/scene-format.js';
 import { analyzeInputText } from '../app/src/scene-feedback.js';
 import {readFileSync} from 'node:fs';
 
@@ -54,4 +54,11 @@ test('body type: v1 types accepted, conflicts with headUnits/chest rejected, fem
  assert.equal(validateScene({...EXAMPLE_SCENE,actors:[{...actor,bodyType:'female'}]}).actors[0].bodyType,undefined);
  assert.throws(()=>validateScene({...EXAMPLE_SCENE,actors:[{...actor,bodyType:'giant'}]}),/체형 종류/);
  assert.throws(()=>validateScene({...EXAMPLE_SCENE,actors:[{...actor,bodyType:'child',headUnits:5}]}),/headUnits/);
+});
+test('low pose presets are accepted for every body type',()=>{
+  for(const pose of ['kneeling','half-kneeling','squatting','crouching','lying'])for(const bodyType of ['female','male','child']){
+    const scene=validateScene({version:1,units:'meters',actors:[{id:'a',position:[0,0,0],pose,bodyType}],camera:{position:[0,1,4],target:[0,1,0]}});
+    assert.equal(scene.actors[0].pose,pose);
+  }
+  assert.ok(POSES.lying.body,'lying turns the whole figure');
 });

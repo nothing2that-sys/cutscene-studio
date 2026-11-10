@@ -90,7 +90,8 @@ export function installPoseLibrary(editor,api){
   const run=fn=>{try{fn();}catch(error){editor.status(error.message);}};
   let store,records=[],ready=false;
   const known=new Set();let auto=true;try{auto=localStorage.getItem('pose-auto-record')!=='false';}catch{}
-  const apply=(reference,record,{groundVolume=false,referenceView=null}={})=>{editor.cancel();const model=api.getSelection(),ground=document.getElementById('pose-ground').checked,floor=ground&&groundVolume&&model?.torso?footY(model):null;const yawDelta=applyReferencePose(model,reference,ground&&!groundVolume);
+  // Named poses (kneeling, lying…) are grounded by their lowest point, not the ankles.
+  const apply=(reference,record,{groundVolume=reference.kind==='semantic',referenceView=null}={})=>{editor.cancel();const model=api.getSelection(),ground=document.getElementById('pose-ground').checked,floor=ground&&groundVolume&&model?.torso?(reference.kind==='semantic'?(model.updateMatrixWorld(true),displayedObjectBounds(model).min.y):footY(model)):null;const yawDelta=applyReferencePose(model,reference,ground&&!groundVolume);
     // The reference camera turns with the figure so the preview still matches the picture.
     if(referenceView&&yawDelta){const turn=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),yawDelta),rotate=v=>Array.isArray(v)?new THREE.Vector3(...v).applyQuaternion(turn).toArray():v;referenceView={direction:rotate(referenceView.direction),up:rotate(referenceView.up)};}
     if(floor!==null){model.updateMatrixWorld(true);model.position.y+=floor-displayedObjectBounds(model).min.y;model.updateMatrixWorld(true);}
