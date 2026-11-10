@@ -22,6 +22,8 @@ export const POSES = {
   reaching: { torso: { bend: 18 }, r_arm: { raise: 65 }, r_elbow: { bend: 15 } },
 };
 export const PROP_TYPES = ['box', 'table', 'chair', 'sphere'];
+// Body types of the common v1 body (app/src/doll-profiles.js BODY_TYPES).
+export const BODY_TYPE_NAMES = ['female', 'male', 'neutral', 'child', 'male-heavy'];
 // sun: parallel rays from position toward target. lamp: point light at position.
 // spot: cone from position toward target. For lamp/spot, intensity is the brightness
 // reached at the target, so the same number looks alike across types.
@@ -83,7 +85,8 @@ export function analyzeScene(input) {
   const ids=new Set();
   function id(v,p){const value=str(v,p);if(!/^[A-Za-z0-9_-]{1,64}$/.test(value))error(p,'INVALID_ID','1~64자의 영문·숫자·밑줄·하이픈 ID가 필요합니다.','[A-Za-z0-9_-]{1,64}',v);else if(ids.has(value))error(p,'DUPLICATE_ID','인물·소품 ID가 중복됩니다. 고유한 ID로 바꾸세요.','unique actor/prop id',v);ids.add(value);return value;}
   const actors=list(raw.actors===undefined?[]:raw.actors,'actors',12).map((a,i)=>{
-    const p='actors['+i+']';keys(a,['id','name','position','yaw','height','headUnits','chest','pose','joints','intent','role','description'],p);
+    const p='actors['+i+']';keys(a,['id','name','position','yaw','height','headUnits','bodyType','chest','pose','joints','intent','role','description'],p);
+    if(a.bodyType!==undefined){if(!BODY_TYPE_NAMES.includes(a.bodyType))error(p+'.bodyType','UNSUPPORTED_BODY_TYPE','지원하지 않는 체형 종류입니다.',BODY_TYPE_NAMES,a.bodyType);else if(a.bodyType!=='female'&&(a.chest!==undefined||(a.headUnits!==undefined&&a.headUnits!==8)))error(p+'.bodyType','BODY_TYPE_CONFLICT','체형 종류를 쓰면 headUnits·chest는 넣지 않습니다(아이 체형은 비례가 내장됨).','bodyType only',a.bodyType);}
     const chest=a.chest===undefined?undefined:normalizeChest(a.chest);
     if(a.chest!==undefined)c.errors.push(...chestIssues(a.chest,p+'.chest').slice(0,Math.max(0,100-c.errors.length)));
     const pose=a.pose===undefined?'standing':a.pose;
@@ -94,7 +97,7 @@ export function analyzeScene(input) {
       const props=obj(values,p+'.joints.'+joint);keys(props,Object.keys(JOINTS[joint]),p+'.joints.'+joint);joints[joint]={};
       for(const [key,value]of Object.entries(props))if(Object.hasOwn(JOINTS[joint],key))joints[joint][key]=num(value,p+'.joints.'+joint+'.'+key,...JOINTS[joint][key]);
     }
-    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),position:vec(a.position,p+'.position'),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),height:num(a.height===undefined?1.75:a.height,p+'.height',0.5,3),headUnits:num(a.headUnits===undefined?8:a.headUnits,p+'.headUnits',3,12),...(chest?{chest}:{}),pose,joints,intent:str(a.intent,p+'.intent'),role:str(a.role,p+'.role'),description:str(a.description,p+'.description')};
+    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),position:vec(a.position,p+'.position'),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),height:num(a.height===undefined?1.75:a.height,p+'.height',0.5,3),headUnits:num(a.headUnits===undefined?8:a.headUnits,p+'.headUnits',3,12),...(a.bodyType!==undefined&&a.bodyType!=='female'?{bodyType:a.bodyType}:{}),...(chest?{chest}:{}),pose,joints,intent:str(a.intent,p+'.intent'),role:str(a.role,p+'.role'),description:str(a.description,p+'.description')};
   });
   const props=list(raw.props===undefined?[]:raw.props,'props',80).map((a,i)=>{
     const p='props['+i+']';keys(a,['id','name','type','position','size','yaw','color','role','intent','description'],p);

@@ -21,7 +21,7 @@
 | title/sourceText/assumptions | 제목, 관련 원문, 원문과 구별한 연출상 가정 |
 | style | 최종 작화 화풍(문자열, 최대 2000자). 생략하면 2D 웹툰 일러스트 기본값 |
 | room | size, color(#RRGGBB), walls(boolean) |
-| actors[] | 고유 id, name, position, yaw, height, headUnits, chest, pose, joints, role, intent, description |
+| actors[] | 고유 id, name, position, yaw, height, headUnits, bodyType, chest, pose, joints, role, intent, description |
 | props[] | 인물과도 중복되지 않는 id, name, type, position, size, yaw, color, role, intent, description |
 | camera | position, target, fov(10~100). 위치와 목표점은 달라야 함. zoom·view는 편집기가 쓰는 값이므로 새 장면에는 넣지 않음 |
 | lighting | type(sun·lamp·spot, 생략 시 sun), position, target, color, intensity(0~10), ambient(0~3), spot일 때 coneDeg(5~170, 기본 50)·softness(0~1, 기본 0.3) |
@@ -30,6 +30,22 @@
 관절은 l/r가 인물 기준 좌우다.
 
 role·description은 최종 작화에 쓰이는 외형·역할 설명이다. 인물이면 옷·머리·나이대처럼 그림에 필요한 것만 쓰고, 소품이면 재질·색·디자인을 쓴다. intent는 왜 그 자리·자세에 두었는지다. 이 문장들은 LLM 패키지의 인물 목록에 라벨 색과 짝지어 그대로 들어간다.
+
+## 체형 종류 (bodyType)
+
+공통 인체의 체형을 고른다.
+
+| bodyType | 체형 |
+| --- | --- |
+| female (생략과 같음) | 성인 여성 8등신 |
+| male | 성인 남성 8등신 |
+| neutral | 중성 8등신(성별 단서를 줄임) |
+| child | 아이(약 5.4등신, 비례 내장) |
+| male-heavy | 성인 남성 큰 체격 |
+
+- bodyType을 쓰면 headUnits와 chest는 넣지 않는다. 아이의 머리 비율은 체형에 들어 있다. 키는 height로 정한다(예: 아이 1.1~1.3m).
+- 인물 설명(description)과 체형이 어긋나지 않게 한다. 예: 남성 인물이면 male 또는 male-heavy, 성별이 정해지지 않았으면 neutral.
+- headUnits를 8이 아닌 값으로 지정하고 bodyType이 없으면 예전 인체로 만들어진다. 새 장면에서는 bodyType을 쓴다.
 
 ## 화풍 (style)
 

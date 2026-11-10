@@ -84,12 +84,12 @@ try{
    const pkg=await S.createShotPackage(),z=pkg.zip,files={};
    for(let i=0;i<z.length-4;i++){if(z[i]==0x50&&z[i+1]==0x4b&&z[i+2]==3&&z[i+3]==4){const sz=z[i+18]|z[i+19]<<8|z[i+20]<<16|z[i+21]<<24,nl=z[i+26]|z[i+27]<<8;const name=new TextDecoder().decode(z.subarray(i+30,i+30+nl));files[name.split('/').slice(1).join('/')]=z.slice(i+30+nl,i+30+nl+sz);i+=30+nl+sz-1;}}
    const b64=u=>{let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);};
-   return {json:pkg.json,files:Object.fromEntries(['color.png','light.png','depth.png','range.png','plan.png'].map(n=>[n,b64(files[n])]))};
+   return {json:pkg.json,files:{...Object.fromEntries(['color.png','light.png','depth.png','range.png'].map(n=>[n,b64(files[n])])),'plan.png':S.planPNG().split(',')[1]}};
   },{text,aspect:sc.aspect});
   const checks=sc.verify(r.json).map(([name,ok,detail])=>({name,ok:!!ok,detail}));
   const dir=path.join(out,sc.id);
-  await rm(dir,{recursive:true,force:true});
-  for(const cond of sc.conditions){const files=FILES[cond];const d=path.join(dir,cond);await mkdir(d,{recursive:true});for(const f of files)await writeFile(path.join(d,f),Buffer.from(r.files[f],'base64'));await writeFile(path.join(d,'prompt.txt'),prompt(r.json,scene,cond));}
+  // Rewrite only the condition folders; results/ holds generated images and must survive.
+  for(const cond of sc.conditions){await rm(path.join(dir,cond),{recursive:true,force:true});const files=FILES[cond];const d=path.join(dir,cond);await mkdir(d,{recursive:true});for(const f of files)await writeFile(path.join(d,f),Buffer.from(r.files[f],'base64'));await writeFile(path.join(d,'prompt.txt'),prompt(r.json,scene,cond));}
   await mkdir(path.join(dir,'results'),{recursive:true});
   await writeFile(path.join(dir,'questions.md'),[`# ${sc.id} 채점 질문 (모두 "예"가 정답)`,'',...sc.questions.map((q,i)=>`${i+1}. ${q}`),'',`조건: ${sc.conditions.map((c,i)=>`${String(i+1).padStart(2,'0')}=${c}`).join(', ')} · 각 3회`,'결과 파일: results/<조건번호>_<회차>.png  예) results/03_2.png = '+sc.conditions[2]+' 2회차'].join('\n'));
   report.scenes.push({id:sc.id,tests:sc.tests,conditions:sc.conditions,checks,questions:sc.questions});

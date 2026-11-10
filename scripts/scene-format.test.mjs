@@ -47,3 +47,11 @@ test('lighting type: sun default, lamp and spot accepted, unknown rejected',()=>
  assert.throws(()=>validateScene({...EXAMPLE_SCENE,lighting:{...EXAMPLE_SCENE.lighting,type:'neon'}}),/조명 종류/);
  assert.throws(()=>validateScene({...EXAMPLE_SCENE,lighting:{...EXAMPLE_SCENE.lighting,type:'lamp',position:[0,1,0],target:[0,1,0]}}),/목표점/);
 });
+
+test('body type: v1 types accepted, conflicts with headUnits/chest rejected, female omitted',()=>{
+ const actor=EXAMPLE_SCENE.actors[0];
+ for(const t of ['male','neutral','child','male-heavy'])assert.equal(validateScene({...EXAMPLE_SCENE,actors:[{...actor,bodyType:t,headUnits:undefined,chest:undefined}]}).actors[0].bodyType,t);
+ assert.equal(validateScene({...EXAMPLE_SCENE,actors:[{...actor,bodyType:'female'}]}).actors[0].bodyType,undefined);
+ assert.throws(()=>validateScene({...EXAMPLE_SCENE,actors:[{...actor,bodyType:'giant'}]}),/체형 종류/);
+ assert.throws(()=>validateScene({...EXAMPLE_SCENE,actors:[{...actor,bodyType:'child',headUnits:5}]}),/headUnits/);
+});

@@ -10,7 +10,8 @@ import { installPoseLibrary, poseFingerprint } from './pose-library.js';
 import {renderObjectInfo} from './scene-object-info.js';
 import { initViewPerformance } from './view-performance.js';
 import { analyzeEditorState } from './scene-feedback.js';
-import {prepareBodyV1,getBodyV1,validateBodyV1State} from './body-v1-adapter.js';
+import {prepareBodyV1,getBodyV1,validateBodyV1State,ensureBodyTypes,bodyTypeReady,BODY_V1_ASSET} from './body-v1-adapter.js';
+import {BODY_TYPES,bodyTypeOf} from './doll-profiles.js';
 import {installBodyV1Main} from './body-v1-main.js';
 import {installSceneFixedView} from './body-v1-fixed.js';
 import {installLayout} from './layout.js';
@@ -155,6 +156,8 @@ function captureState() {
 
 function applyState(json) {
   if(!json)return;const state=JSON.parse(json);validateBodyV1State(state);const checked=analyzeEditorState(state);if(!checked.valid)throw new SceneValidationError(checked.errors);
+  // Body types other than the default need their torso mesh built first.
+  const bodyTypes=(state.mannequins||[]).filter(d=>d.bodyAsset).map(d=>bodyTypeOf(d.bodyProfile));if(!bodyTypes.every(bodyTypeReady))return ensureBodyTypes(bodyTypes).then(()=>applyState(json));
   let generation;const preparedActors=[],preparedProps=new Array((state.importedModels||[]).length),tasks=[];
   const discard=()=>{for(const m of preparedActors){getBodyV1(m)?.full.dispose();m.removeFromParent();}for(const m of preparedProps)if(m){m.removeFromParent();m.traverse(n=>{n.geometry?.dispose();});}};
   const prepareProp=(model,d,index)=>{model.removeFromParent();model.name=d.name||d.primitive?.name||'restored-glb';model.userData.sceneNotes=d.sceneNotes;model.position.fromArray(d.position);model.rotation.fromArray(d.rotation);model.scale.fromArray(d.scale);model.visible=d.visible!==false;if(d.glbBase64){model.userData._glbBase64=d.glbBase64;model.userData._glbFileName=d.name;}preparedProps[index]=model;};
@@ -961,7 +964,22 @@ function bodyProfilePanel() {
   const height=p?.height||1.75,heads=p?.headUnits||8;
   const chest=p?.chest||{height:0.65,spacing:0.46,projection:1};
   const chestUI='<details class="body-chest"><summary>가슴 형태 참조</summary><label class="studio-check"><input id="body-chest-enabled" type="checkbox" '+(p?.chest?'checked':'')+'> 가슴 형태 표시</label><div id="body-chest-options" '+(p?.chest?'':'hidden')+'><label>흉곽 높이 % <input id="body-chest-height" type="number" min="55" max="78" step="1" value="'+Math.round(chest.height*100)+'"></label><label>좌우 간격 % <input id="body-chest-spacing" type="number" min="30" max="60" step="1" value="'+Math.round(chest.spacing*100)+'"></label><label>돌출 배율 <input id="body-chest-projection" type="number" min="0.4" max="1.6" step="0.1" value="'+chest.projection+'"></label><p class="body-hint">흉곽에 붙은 입체 참조입니다. 포즈와 함께 움직이며 컬러·깊이 캡처에 포함됩니다.</p></div></details>';
-  return '<section class="body-profile"><h3>인물 체형 설정</h3><div class="studio-row"><label>키 cm <input id="body-height" type="number" min="50" max="300" step="0.1" value="'+(height*100).toFixed(1)+'"></label><label>등신 <input id="body-head-units" type="number" min="3" max="12" step="0.5" value="'+heads+'"></label></div><div class="studio-row"><button class="btn" data-head-units="5">5등신</button><button class="btn" data-head-units="8">8등신</button><button class="btn" data-head-units="9.5">9.5등신</button><button class="btn primary" id="body-apply">체형 적용</button></div><div class="studio-row"><button class="btn" data-body-preset="neutral">기본 작화 체형</button><button class="btn" data-body-preset="feminine">여성형 작화 체형</button></div>'+chestUI+'<p class="body-hint">'+(p?'설정: '+(p.height*100).toFixed(1)+'cm / '+p.headUnits+'등신 · 머리 '+(p.height/p.headUnits*100).toFixed(2)+'cm':'기존 인체 유지 중 · 적용 버튼으로 체형을 설정하세요.')+'</p><p class="body-hint">포즈 조작 중 뼈 길이와 크기 고정. 관절 이동은 끝점 IK, 회전은 관절 회전입니다.</p><output id="body-status"></output></section>';
+  const type=bodyTypeOf(p),typeRow=getBodyV1(activeMannequin)?'<div class="studio-row"><label>체형 종류 <select id="body-type">'+Object.entries(BODY_TYPES).map(([k,t])=>'<option value="'+k+'" '+(k===type?'selected':'')+'>'+t.label+'</option>').join('')+'</select></label><button class="btn" id="body-type-apply">체형 바꾸기</button></div>':'';
+  return '<section class="body-profile"><h3>인물 체형 설정</h3>'+typeRow+'<div class="studio-row"><label>키 cm <input id="body-height" type="number" min="50" max="300" step="0.1" value="'+(height*100).toFixed(1)+'"></label><label>등신 <input id="body-head-units" type="number" min="3" max="12" step="0.5" value="'+heads+'"></label></div><div class="studio-row"><button class="btn" data-head-units="5">5등신</button><button class="btn" data-head-units="8">8등신</button><button class="btn" data-head-units="9.5">9.5등신</button><button class="btn primary" id="body-apply">체형 적용</button></div><div class="studio-row"><button class="btn" data-body-preset="neutral">기본 작화 체형</button><button class="btn" data-body-preset="feminine">여성형 작화 체형</button></div>'+chestUI+'<p class="body-hint">'+(p?'설정: '+(p.height*100).toFixed(1)+'cm / '+p.headUnits+'등신 · 머리 '+(p.height/p.headUnits*100).toFixed(2)+'cm':'기존 인체 유지 중 · 적용 버튼으로 체형을 설정하세요.')+'</p><p class="body-hint">포즈 조작 중 뼈 길이와 크기 고정. 관절 이동은 끝점 IK, 회전은 관절 회전입니다.</p><output id="body-status"></output></section>';
+}
+// Swaps a common-body actor to another body type through the normal save/restore path,
+// so pose (bone rotations), position, height, notes and history all carry over.
+async function changeBodyType(m,type){
+  if(!getBodyV1(m))throw Error('체형 종류는 공통 인체에서만 바꿀 수 있습니다.');
+  if(!BODY_TYPES[type])throw Error('지원하지 않는 체형 종류입니다.');
+  if(bodyTypeOf(m.userData.bodyProfile)===type)return;
+  await ensureBodyTypes([type]);
+  const state=snapshotState(),index=mannequins.indexOf(m),entry=state.mannequins[index],id=BODY_TYPES[type].profile;
+  if(!entry)throw Error('바꿀 인물을 찾지 못했습니다.');
+  const {bodyType,...rest}=entry.bodyProfile;entry.bodyProfile=type==='female'?rest:{...rest,bodyType:type};
+  entry.bodyAsset={...BODY_V1_ASSET,...(id!=='default'?{profile:id}:{})};
+  entry.bodyV1Pose.basePose.rigProfile=id;
+  await applyState(JSON.stringify(state));captureState();updatePropertiesPanel();
 }
 function bindBodyProfile() {
   if(!activeMannequin?.torso)return;
@@ -969,6 +987,7 @@ function bindBodyProfile() {
   if(status)status.textContent=common?'공통 인체: 키 조절 지원 · 기본 등신과 가슴 형태 유지':'기존 인체: 저장된 체형과 포즈 유지';
   if(common){document.getElementById('body-head-units').disabled=true;document.getElementById('body-chest-enabled').disabled=true;document.querySelectorAll('[data-head-units],[data-body-preset]').forEach(button=>button.disabled=true);}
   document.querySelectorAll('[data-head-units]').forEach(button=>button.onclick=()=>{document.getElementById('body-head-units').value=button.dataset.headUnits;});
+  const typeButton=document.getElementById('body-type-apply');if(typeButton)typeButton.onclick=()=>{const message=document.getElementById('body-status'),next=document.getElementById('body-type').value;typeButton.disabled=true;message.textContent='체형 바꾸는 중…';changeBodyType(activeMannequin,next).then(()=>{const m=document.getElementById('body-status');if(m)m.textContent='체형을 '+BODY_TYPES[next].label+'(으)로 바꿨습니다. 자세·위치·키는 유지됩니다.';},error=>{message.textContent=error.message;message.className='error';typeButton.disabled=false;});};
   document.querySelectorAll('[data-body-preset]').forEach(button=>button.onclick=()=>{const enabled=button.dataset.bodyPreset==='feminine';document.getElementById('body-chest-enabled').checked=enabled;if(enabled){document.getElementById('body-chest-height').value=65;document.getElementById('body-chest-spacing').value=46;document.getElementById('body-chest-projection').value=1;}document.getElementById('body-apply').click();});
   document.getElementById('body-chest-enabled').onchange=e=>{document.getElementById('body-chest-options').hidden=!e.target.checked;};
   document.getElementById('body-apply').onclick=()=>{
@@ -1170,6 +1189,8 @@ function onMouseUp() {
 // ─── Init ─────────────────────────────────────────────────────────────────────
 async function init() {
   await prepareBodyV1();
+  // Build the other body types in the background so switching or loading them is quick.
+  ensureBodyTypes().catch(error=>console.warn('체형 준비 실패',error));
   stage = getStage();
   stage.scene.background = new THREE.Color(0x1a1a1a);
   const cc = document.getElementById('canvas-container');

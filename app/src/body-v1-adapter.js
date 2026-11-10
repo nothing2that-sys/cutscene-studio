@@ -1,11 +1,17 @@
 import * as THREE from 'three';
 import {isSupportedSourceOrigin} from './body-v1-source-request.js';
 import {createDollContacts} from './doll-contact.js';
-import {prepareFullDoll,assembleFullDoll,migrateFullDollPose,restoreFullDollMainPose,FULL_DOLL_REST_REVISION,shoulderRestQuaternion} from './doll-full-rig.js';
+import {BODY_TYPES,bodyTypeOf} from './doll-profiles.js';
+import {preloadFullDollAssets,prepareFullDoll,assembleFullDoll,migrateFullDollPose,restoreFullDollMainPose,FULL_DOLL_REST_REVISION,shoulderRestQuaternion} from './doll-full-rig.js';
 
 export const BODY_V1_ASSET=Object.freeze({id:'body-v1-default',version:1,rigVersion:'body-v1'});
 const adapters=new WeakMap(),RAD=Math.PI/180;
 export const prepareBodyV1=()=>prepareFullDoll({profile:'default',protection:false,initialState:'rest'});
+// Body types other than the default build their torso mesh in a worker on first use.
+const readyProfiles=new Set(['default']);
+export const bodyTypeReady=type=>readyProfiles.has(BODY_TYPES[type||'female']?.profile);
+export function ensureBodyTypes(types=Object.keys(BODY_TYPES)){return Promise.all([...new Set(types.map(t=>t||'female'))].map(t=>{const id=BODY_TYPES[t]?.profile;if(!id)return Promise.reject(Error('지원하지 않는 체형 종류입니다: '+t));return preloadFullDollAssets({profile:id}).then(()=>readyProfiles.add(id));}));}
+const assetFor=id=>({...BODY_V1_ASSET,...(id!=='default'?{profile:id}:{})});
 export const getBodyV1=m=>adapters.get(m);
 // The asset's L/R bone names follow the front reference image, so its "L"
 // bones sit on the figure's anatomical right. Driver keys are anatomical
@@ -26,11 +32,11 @@ const legacyBasis=sided(sameLetterLegacyBasis);
 const basis=sided(key=>/^[lr]_arm$/.test(key)?shoulderRestQuaternion(key==='l_arm'?'L':'R').invert().multiply(sameLetterLegacyBasis(key)):sameLetterLegacyBasis(key));
 export function validateBodyV1State(state){
  const actors=state?.mannequins||(state?.type==='mannequin'?[state]:[]);
- for(const a of actors){if(a.bodyAsset!==undefined&&(!a.bodyAsset||Object.keys(a.bodyAsset).length!==3||Object.entries(BODY_V1_ASSET).some(([k,v])=>a.bodyAsset[k]!==v)))throw Error('지원하지 않는 인체 자산 또는 리그 버전입니다.');
+ for(const a of actors){if(a.bodyAsset!==undefined&&(!a.bodyAsset||Object.keys(a.bodyAsset).some(k=>!['id','version','rigVersion','profile'].includes(k))||Object.entries(BODY_V1_ASSET).some(([k,v])=>a.bodyAsset[k]!==v)||(a.bodyAsset.profile!==undefined&&(a.bodyAsset.profile==='default'||!Object.values(BODY_TYPES).some(t=>t.profile===a.bodyAsset.profile)))))throw Error('지원하지 않는 인체 자산 또는 리그 버전입니다.');
   if(a.bodyV1Pose&&!a.bodyAsset)throw Error('인체 v1 포즈에는 자산·리그 버전이 필요합니다.');
-  if(a.bodyAsset){const d=a.bodyV1Pose,p=d?.basePose;if(p?.description!==undefined&&(typeof p.description!=='string'||p.description.length>12000))throw Error('인물 설명은 12000자 이하 문자열이어야 합니다.');if(p?.curls!==undefined){if(!p.curls||typeof p.curls!=='object'||Array.isArray(p.curls))throw Error('잘못된 손발 굽힘 값');for(const k of ['L','R','toeL','toeR'])if(!Number.isFinite(p.curls[k])||p.curls[k]<0||p.curls[k]>(k.startsWith('toe')?50:80))throw Error('잘못된 손발 굽힘 값');}if(d?.driverSideRevision!==undefined&&d.driverSideRevision!==DRIVER_SIDE_REVISION)throw Error('지원하지 않는 인체 좌우 revision입니다.');if(d?.driverNativeScale!==undefined&&(!Number.isFinite(d.driverNativeScale)||d.driverNativeScale<=0))throw Error('잘못된 driver native scale');if(![1,2].includes(p?.restRevision??1)||![1,2].includes(d?.driverRestRevision??1)||(p?.restRevision??1)!==(d?.driverRestRevision??1))throw Error('지원하지 않는 인체 rest/driver revision입니다.');if(p?.sourceRequestRevision!=null&&!isSupportedSourceOrigin(p.sourceRequestRevision)||d?.sourceRequestRevision!=null&&(!isSupportedSourceOrigin(d.sourceRequestRevision)||d.sourceRequestRevision!==p?.sourceRequestRevision))throw Error('지원하지 않는 source request revision');if(p?.sourceRequestInterpretation!=null&&(typeof p.sourceRequestInterpretation!=='string'||p.sourceRequestInterpretation.length>2000))throw Error('잘못된 source 해석');const validQ=q=>Array.isArray(q)&&q.length===4&&q.every(Number.isFinite)&&Math.abs(Math.hypot(...q)-1)<.01;
+  if(a.bodyAsset){if(BODY_TYPES[bodyTypeOf(a.bodyProfile)]?.profile!==(a.bodyAsset.profile??'default'))throw Error('체형 종류와 인체 자산 프로필이 맞지 않습니다.');const d=a.bodyV1Pose,p=d?.basePose;if(p?.description!==undefined&&(typeof p.description!=='string'||p.description.length>12000))throw Error('인물 설명은 12000자 이하 문자열이어야 합니다.');if(p?.curls!==undefined){if(!p.curls||typeof p.curls!=='object'||Array.isArray(p.curls))throw Error('잘못된 손발 굽힘 값');for(const k of ['L','R','toeL','toeR'])if(!Number.isFinite(p.curls[k])||p.curls[k]<0||p.curls[k]>(k.startsWith('toe')?50:80))throw Error('잘못된 손발 굽힘 값');}if(d?.driverSideRevision!==undefined&&d.driverSideRevision!==DRIVER_SIDE_REVISION)throw Error('지원하지 않는 인체 좌우 revision입니다.');if(d?.driverNativeScale!==undefined&&(!Number.isFinite(d.driverNativeScale)||d.driverNativeScale<=0))throw Error('잘못된 driver native scale');if(![1,2].includes(p?.restRevision??1)||![1,2].includes(d?.driverRestRevision??1)||(p?.restRevision??1)!==(d?.driverRestRevision??1))throw Error('지원하지 않는 인체 rest/driver revision입니다.');if(p?.sourceRequestRevision!=null&&!isSupportedSourceOrigin(p.sourceRequestRevision)||d?.sourceRequestRevision!=null&&(!isSupportedSourceOrigin(d.sourceRequestRevision)||d.sourceRequestRevision!==p?.sourceRequestRevision))throw Error('지원하지 않는 source request revision');if(p?.sourceRequestInterpretation!=null&&(typeof p.sourceRequestInterpretation!=='string'||p.sourceRequestInterpretation.length>2000))throw Error('잘못된 source 해석');const validQ=q=>Array.isArray(q)&&q.length===4&&q.every(Number.isFinite)&&Math.abs(Math.hypot(...q)-1)<.01;
    if(a.bodyProfile?.headUnits!==8||a.bodyProfile.chest)throw Error('명시된 공통 인체 자산은 기본 등신·가슴 형태만 지원합니다.');
-   if(d?.version!==1||p?.version!==1||p.kind!=='articulated-full-doll-pose'||p.rigProfile!=='default'||!Array.isArray(p.root)||p.root.length!==3||!p.root.every(v=>Number.isFinite(v)&&Math.abs(v)<=10)||!p.quaternions||Object.keys(p.quaternions).length!==fullBoneNames.length||fullBoneNames.some(k=>!validQ(p.quaternions[k]))||!d.driverBase||Object.keys(d.driverBase).length!==Object.keys(names).length||Object.keys(names).some(k=>!validQ(d.driverBase[k])))throw Error('인체 v1 포즈 데이터가 올바르지 않습니다.');
+   if(d?.version!==1||p?.version!==1||p.kind!=='articulated-full-doll-pose'||p.rigProfile!==(a.bodyAsset.profile??'default')||!Array.isArray(p.root)||p.root.length!==3||!p.root.every(v=>Number.isFinite(v)&&Math.abs(v)<=10)||!p.quaternions||Object.keys(p.quaternions).length!==fullBoneNames.length||fullBoneNames.some(k=>!validQ(p.quaternions[k]))||!d.driverBase||Object.keys(d.driverBase).length!==Object.keys(names).length||Object.keys(names).some(k=>!validQ(d.driverBase[k])))throw Error('인체 v1 포즈 데이터가 올바르지 않습니다.');
   }
  }
 }
@@ -39,7 +45,8 @@ export function installBodyV1(m,{profile=m.userData.bodyProfile||{height:1.75,he
  // Legacy hidden meshes still belong to this actor's mutable scene graph.
  // Clone their buffers too; mannequin-js reuses sphere/nail geometries globally.
  const legacyGeometry=new Map();m.traverse(node=>{if(node.geometry){if(!legacyGeometry.has(node.geometry))legacyGeometry.set(node.geometry,node.geometry.clone());node.geometry=legacyGeometry.get(node.geometry);}});
- const full=assembleFullDoll({profile:'default',protection:false,initialState:'rest'}),canonicalRest=full.poseData(),root=new THREE.Group();root.name='Body v1 asset';
+ const dollProfileId=BODY_TYPES[bodyTypeOf(profile)]?.profile;if(!dollProfileId)throw Error('지원하지 않는 체형 종류입니다.');if(!readyProfiles.has(dollProfileId))throw Error('체형 메시를 준비하는 중입니다. 잠시 후 다시 시도하세요.');
+ const full=assembleFullDoll({profile:dollProfileId,protection:false,initialState:'rest'}),canonicalRest=full.poseData(),root=new THREE.Group();root.name='Body v1 asset';
  // Asset rest is kept below user placement. Every actual driver joint remains
  // inside this root; hidden legacy meshes are never substituted for body meshes.
  m.add(root);root.add(m.body);root.add(full.root);
@@ -59,8 +66,8 @@ export function installBodyV1(m,{profile=m.userData.bodyProfile||{height:1.75,he
  const appliedListeners=new Set();full.onAppliedState=listener=>{if(typeof listener!=='function')throw Error('적용 관측자는 함수여야 합니다.');appliedListeners.add(listener);return()=>appliedListeners.delete(listener);};
  for(const name of ['preset','applyPose','applyCanonicalPose','setJoint','setCurl','setToeCurl','setProtection','applySourceRequest']){const mutate=full[name].bind(full);full[name]=(...args)=>{canonicalMeshes();try{return mutate(...args);}finally{displayMeshes();alignFrames();if(name==='setJoint')for(const listener of appliedListeners)listener(full.lastAppliedState);}};}
  full.guides=camera=>{canonicalMeshes();full.root.updateMatrixWorld(true);const lines=rawGuides(camera),world=full.root.matrixWorld.clone().multiply(surfaceTransform()).multiply(full.root.matrixWorld.clone().invert());for(const line of lines)for(const point of line)point?.applyMatrix4(world);displayMeshes();return lines;};
- root.userData.bodyAsset={...BODY_V1_ASSET};root.userData.bodyProfile=structuredClone(profile);root.userData.sceneNotes=m.userData.sceneNotes;
- m.userData.bodyAsset={...BODY_V1_ASSET};m.userData.bodySurface='body-v1';
+ root.userData.bodyAsset=assetFor(dollProfileId);root.userData.bodyProfile=structuredClone(profile);root.userData.sceneNotes=m.userData.sceneNotes;
+ m.userData.bodyAsset=assetFor(dollProfileId);m.userData.bodySurface='body-v1';
  const originalMeshes=[];m.body.traverse(n=>{if(n.isMesh){originalMeshes.push(n);n.visible=false;n.raycast=()=>{};}});
  // Driver frames conjugate native Male XYZ DOFs into the canonical +Z rig.
  // Their origins follow the authored full hierarchy, rather than old proportions.

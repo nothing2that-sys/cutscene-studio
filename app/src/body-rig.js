@@ -1,3 +1,4 @@
+import {BODY_TYPES} from './doll-profiles.js';
 import * as THREE from 'three';
 import { Male } from 'mannequin-js/src/mannequin.js';
 import { JOINTS, chestIssues, normalizeChest } from './scene-format.js';
@@ -23,6 +24,7 @@ function profileValid(profile) {
   if(!profile||typeof profile.height!=='number'||!Number.isFinite(profile.height)||profile.height<0.5||profile.height>3)rigError('키는 50~300cm 범위여야 합니다.');
   if(typeof profile.headUnits!=='number'||!Number.isFinite(profile.headUnits)||profile.headUnits<3||profile.headUnits>12)rigError('등신 비율은 3~12 범위여야 합니다.');
   if(profile.chest!==undefined){const issues=chestIssues(profile.chest);if(issues.length)rigError(issues.map(i=>i.path+': '+i.message).join('\n'));}
+  if(profile.bodyType!==undefined){if(!BODY_TYPES[profile.bodyType]||profile.bodyType==='female')rigError('지원하지 않는 체형 종류입니다.');if(profile.headUnits!==8||profile.chest)rigError('체형 종류는 공통 인체(8등신 기준, 가슴 참조 없음)에서만 지정합니다.');}
 }
 function positionChestGuide(m) {
   const group=chestGuides.get(m),profile=m.userData.bodyProfile?.chest;
@@ -90,7 +92,7 @@ export function constrainBody(m) {
 }
 export function configureBody(m,profile,keepFeet=true) {
   profileValid(profile);
-  if(getBodyV1(m)){const current=m.userData.bodyProfile;if(profile.headUnits!==current.headUnits||JSON.stringify(profile.chest||null)!==JSON.stringify(current.chest||null))rigError('공통 인체는 현재 기본 등신·가슴 형태를 유지합니다. 다른 체형은 기존 인체 장면으로 불러와 사용하세요.');const sole=()=>{m.updateMatrixWorld(true);return Math.min(bodyPartBounds(m,'l_ankle').min.y,bodyPartBounds(m,'r_ankle').min.y);},before=keepFeet?sole():null;getBodyV1(m).configure(profile);lockBoneLayout(m);constrainBody(m);if(keepFeet){m.position.y+=before-sole();m.updateMatrixWorld(true);}return;}
+  if(getBodyV1(m)){const current=m.userData.bodyProfile;if((profile.bodyType||'female')!==(current.bodyType||'female'))rigError('체형 종류는 「체형 종류」로 바꾸세요.');if(profile.headUnits!==current.headUnits||JSON.stringify(profile.chest||null)!==JSON.stringify(current.chest||null))rigError('공통 인체는 현재 기본 등신·가슴 형태를 유지합니다. 다른 체형은 기존 인체 장면으로 불러와 사용하세요.');const sole=()=>{m.updateMatrixWorld(true);return Math.min(bodyPartBounds(m,'l_ankle').min.y,bodyPartBounds(m,'r_ankle').min.y);},before=keepFeet?sole():null;getBodyV1(m).configure(profile);lockBoneLayout(m);constrainBody(m);if(keepFeet){m.position.y+=before-sole();m.updateMatrixWorld(true);}return;}
   const oldMin=keepFeet?new THREE.Box3().setFromObject(m).min.y:null;
   const previousSurface=suspendBodySurface(m);
   // Box3 also measures invisible objects: detach references during neutral sizing.
@@ -117,7 +119,7 @@ export function configureBody(m,profile,keepFeet=true) {
   const actual=new THREE.Box3().setFromObject(m),actualHead=new THREE.Box3().setFromObject(m.head.image);
   m.userData.bodyMetrics={height:actual.max.y-actual.min.y,headHeight:actualHead.max.y-actualHead.min.y};
   m.userData.bodyMetrics.headUnits=m.userData.bodyMetrics.height/m.userData.bodyMetrics.headHeight;
-  m.userData.bodyProfile={height:profile.height,headUnits:profile.headUnits,...(profile.chest?{chest:normalizeChest(profile.chest)}:{})};
+  m.userData.bodyProfile={height:profile.height,headUnits:profile.headUnits,...(profile.chest?{chest:normalizeChest(profile.chest)}:{}),...(profile.bodyType?{bodyType:profile.bodyType}:{})};
   restoreRotations(m,rotations);m.position.copy(position);m.quaternion.copy(orientation);m.updateMatrixWorld(true);
   configureChestGuide(m,m.userData.bodyProfile.chest);m.updateMatrixWorld(true);
   if(previousSurface!==null)resumeBodySurface(m,previousSurface);

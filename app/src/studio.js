@@ -14,6 +14,8 @@ import {buildLabels,renderPasses,analyzePasses,depthRange,passImages,drawPose,li
 import {dataUrlBytes} from './package-files.js';
 import {drawRange,drawPlan} from './depth-views.js';
 import {fitViewToAspect} from './camera-view.js';
+import {ensureBodyTypes,bodyTypeReady} from './body-v1-adapter.js';
+import {BODY_TYPES,bodyTypeOf} from './doll-profiles.js';
 
 export function initCutsceneStudio(api) {
   const { THREE, stage } = api;
@@ -135,7 +137,7 @@ export function initCutsceneStudio(api) {
   let beforeCapture=null,beforeReadCamera=null;
   function exportSize(){const width=aspect>=1?1600:Math.round(1600*aspect);return {width,height:Math.round(width/aspect)};}
   function sceneItems(){
-    const actors=api.mannequins.map((m,i)=>({id:m.userData.studioId||'actor-'+(i+1),name:m.name||'인물 '+(i+1),root:m,height:m.userData.bodyProfile?.height,headUnits:m.userData.bodyProfile?.headUnits}));
+    const actors=api.mannequins.map((m,i)=>({id:m.userData.studioId||'actor-'+(i+1),name:m.name||'인물 '+(i+1),root:m,height:m.userData.bodyProfile?.height,headUnits:m.userData.bodyProfile?.bodyType?BODY_TYPES[bodyTypeOf(m.userData.bodyProfile)].headUnits:m.userData.bodyProfile?.headUnits}));
     const props=api.importedModels.map((p,i)=>({id:p.userData.primitive?.id||'prop-'+(i+1),name:p.name||'소품 '+(i+1),root:p}));
     return {actors,props};
   }
@@ -261,7 +263,7 @@ export function initCutsceneStudio(api) {
     const next=validateScene(raw); // Validate the entire proposal before changing the scene.
     const data={mannequins:[],importedModels:[],activeIndex:0,activeImportIndex:-1,selectedBodyPart:'Root'};
     for(const actor of next.actors) {
-      const m=api.createFullMannequin({height:actor.height,headUnits:actor.headUnits,...(actor.chest?{chest:actor.chest}:{})});
+      const m=api.createFullMannequin({height:actor.height,headUnits:actor.headUnits,...(actor.chest?{chest:actor.chest}:{}),...(actor.bodyType?{bodyType:actor.bodyType}:{})});
       // Mannequin.js adds new instances to its shared scene automatically.
       stage.scene.remove(m);
       // Scale the standing body first; bending must not change the person's height.
@@ -289,6 +291,7 @@ export function initCutsceneStudio(api) {
   function importText(text,source='붙여넣기',sceneOnly=true,apply=true) {
     const report=analyzeInputText(text,source,sceneOnly);
     feedback.show(report);
+    if(report.valid&&apply&&report.inputKind==='scene'){const types=report.value.actors.map(a=>a.bodyType);if(!types.every(bodyTypeReady)){status('체형 메시를 준비하는 중…');return ensureBodyTypes(types).then(()=>importText(text,source,sceneOnly,apply),error=>{status(error.message,true);return false;});}}
     if(!report.valid){status('JSON 오류 '+report.errors.length+'개 · 입력을 적용하지 않았습니다.',true);return false;}
     if(!apply){status('검사 완료 · 오류 0개 / 경고 '+report.warnings.length+'개 · 아직 적용하지 않았습니다.');return true;}
     const previous=api.getState();
@@ -335,7 +338,7 @@ export function initCutsceneStudio(api) {
     const shot=currentShot();
     try {
       beforeCapture?.();updateShotCamera();
-      const actors=api.mannequins.map((m,i)=>({id:m.userData.studioId||'actor-'+(i+1),name:m.name||'인물 '+(i+1),root:m,height:m.userData.bodyProfile?.height,headUnits:m.userData.bodyProfile?.headUnits}));
+      const actors=api.mannequins.map((m,i)=>({id:m.userData.studioId||'actor-'+(i+1),name:m.name||'인물 '+(i+1),root:m,height:m.userData.bodyProfile?.height,headUnits:m.userData.bodyProfile?.bodyType?BODY_TYPES[bodyTypeOf(m.userData.bodyProfile)].headUnits:m.userData.bodyProfile?.headUnits}));
       const props=api.importedModels.map((p,i)=>({id:p.userData.primitive?.id||'prop-'+(i+1),name:p.name||'소품 '+(i+1),root:p}));
       return cleanRender(()=>{
         const environmentMeshes=[];environment.traverse(n=>{if(!n.isMesh)return;for(let q=n;q;q=q.parent)if(!q.visible)return;environmentMeshes.push(n);});
@@ -476,6 +479,8 @@ export function initCutsceneStudio(api) {
     rememberShotProjection(){shotProjection={key:JSON.stringify(currentShot().camera),zoom:shotCamera.zoom,view:shotCamera.view?{...shotCamera.view}:null};},
     environmentMeshes(role='working'){const meshes=[];const visible=(node)=>{for(let p=node;p;p=p.parent){if(role==='shot'&&p===node&&p.userData.editingWall)continue;if(!p.visible)return false;}return true;};environment.traverse(n=>{if(n.isMesh&&visible(n))meshes.push(n);});if(stage.ground?.isMesh&&visible(stage.ground))meshes.push(stage.ground);return [...new Set(meshes)];},
     shotCamera,previewRenderer:preview,updateShotCamera,cleanRender,renderPNG,createHandoffPacket,createShotPackage,computePasses,
+    // Top-down plan for people and experiments; not part of the LLM package.
+    planPNG(){const {width,height}=exportSize();return passCanvas('plan',computePasses(width,height,{only:'plan'})).toDataURL('image/png');},
     references:()=>references,
     restoreReferences(value){if(!value||typeof value!=='object')return;const next={};for(const [id,list]of Object.entries(value)){if(!Array.isArray(list))continue;const ok=list.filter(r=>r&&typeof r.dataUrl==='string'&&/^data:image\/(png|jpeg|webp);base64,/.test(r.dataUrl)).map(r=>({id:String(r.id||crypto.randomUUID()),name:String(r.name||'reference'),label:REF_LABELS.includes(r.label)?r.label:'기타',note:String(r.note||'').slice(0,500),mime:r.dataUrl.slice(5,r.dataUrl.indexOf(';')),dataUrl:r.dataUrl}));if(ok.length)next[id]=ok;}references=next;renderReferences();},
     snapshot:()=>structuredClone({document,initialProposal,proposalOrigin,shots,activeShot,aspect,shotProjection}),
