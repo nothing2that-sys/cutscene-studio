@@ -81,8 +81,9 @@ test('prompt ranks depth, spells out the distance order and warns against manneq
  const lighting={position:[0,1.4,8],target:[0,1.2,0],color:'#ffffff',intensity:2,ambient:.4};
  const {json}=buildShotJson({shot:{name:'컷'},scene:{title:'줄',sourceText:'원문'},camera,facts,description:{text:'촬영 설명\n- 카메라: 풀샷 · 눈높이\n- 인물1: 중복 문장',structured:{actors:[],props:[]}},labels,stats,range,lightNotes:lightingNotes({facts,lighting,labels}),references:{},objectNotes:new Map(),width:3,height:1,lighting});
  const prompt=buildPrompt(json);
- assert.match(prompt,/2\. 크기와 거리감: plan\.png.*range\.png.*depth\.png.*카메라에서 가까운 순서: 인물1\(4m\) → 인물2\(5m\) → 인물3\(6m\)/);
+ assert.match(prompt,/2\. 크기와 거리감: range\.png.*depth\.png.*카메라에서 가까운 순서: 인물1\(4m\) → 인물2\(5m\) → 인물3\(6m\)/);
  assert.match(prompt,/마네킹 윤곽이 아니라 최종으로 그린 인물/);
  assert.match(prompt,/- 카메라: 풀샷 · 눈높이/);
  assert.doesNotMatch(prompt,/중복 문장|## 장면 설명|설정화: 없음/,'no repeated shot description or empty reference lines');
+ assert.doesNotMatch(prompt,/plan\.png/,'plan.png is not given to image models');assert.equal(json.files.plan,undefined);
 });

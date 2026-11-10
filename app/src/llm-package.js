@@ -221,9 +221,9 @@ export function buildShotJson({shot,scene,camera,facts,description,labels,stats,
   scene:{title:scene.title,sourceText:scene.sourceText||'',assumptions:scene.assumptions||''},
   shot:{name:shot.name,purpose:shot.purpose||''},
   image:{width,height,aspect:r3(width/height),origin:'top-left, x right, y down, coordinates normalized 0..1'},
-  files:{color:'color.png',label:'label.png',depth:'depth.png',depth16:'depth16.png',range:'range.png',plan:'plan.png',light:'light.png',pose:'pose.png'},
+  files:{color:'color.png',label:'label.png',depth:'depth.png',depth16:'depth16.png',range:'range.png',light:'light.png',pose:'pose.png'},
   camera:{...facts.camera,lookAt:shot.camera?.target||null},
-  depth:{metric:'euclidean distance from the camera centre to the surface, metres',depthPng:{nearM:range.nearM,farM:range.farM,mapping:`inverse distance (disparity): grey = ${DEPTH_FAR_VALUE} + ${DEPTH_NEAR_VALUE-DEPTH_FAR_VALUE}·(1/d − 1/farM)/(1/nearM − 1/farM), clipped; nearM=${DEPTH_NEAR_VALUE} white, farM=${DEPTH_FAR_VALUE}, background=0`},rangePng:{colormap:'turbo on log distance: red = near, blue = far',rings:'white lines at equal distance from the camera',edges:'black lines where one surface is in front of another',labels:'person name and mean distance in metres'},planPng:{view:'top-down, rotated so up = the camera looking direction',rings:'circles at equal distance from the camera',marks:'people discs with facing arrow, prop footprints, walls, camera field of view, light source'},depth16Png:{unit:'millimetres',background:0}},
+  depth:{metric:'euclidean distance from the camera centre to the surface, metres',depthPng:{nearM:range.nearM,farM:range.farM,mapping:`inverse distance (disparity): grey = ${DEPTH_FAR_VALUE} + ${DEPTH_NEAR_VALUE-DEPTH_FAR_VALUE}·(1/d − 1/farM)/(1/nearM − 1/farM), clipped; nearM=${DEPTH_NEAR_VALUE} white, farM=${DEPTH_FAR_VALUE}, background=0`},rangePng:{colormap:'turbo on log distance: red = near, blue = far',rings:'white lines at equal distance from the camera',edges:'black lines where one surface is in front of another',labels:'person name and mean distance in metres'},depth16Png:{unit:'millimetres',background:0}},
   lighting:{type,typeText:LIGHT_TYPE_TEXT[type],positionWorld:lighting.position,targetWorld:lighting.target,...(type==='spot'?{coneDeg:lighting.coneDeg,softness:lighting.softness}:{}),...(source?{source}:{}),directionToLightCamera:camDir,cameraFrame:'+x screen right, +y screen up, +z toward the viewer; direction measured from the lit target point',text:(type==='sun'?'':'비추는 곳 기준으로 ')+lightDirectionText(camDir)+(source?.text?' · '+source.text:''),color:lighting.color,intensity:lighting.intensity,intensityMeaning:'brightness reached at targetWorld',ambient:lighting.ambient,
    lightPng:'direct light only: surface facing the light with nothing in between = white; turned away or in a cast shadow = black. Ambient light is excluded. Background is also black; use label.png to tell them apart.'+(type==='sun'?'':' A lamp/spot fades with distance: the lit target reads white, nearer surfaces clip to white, farther ones are greyer.')},
   labels:entries,
@@ -231,6 +231,8 @@ export function buildShotJson({shot,scene,camera,facts,description,labels,stats,
  };
  return {json,refFiles};
 }
+// plan.png is not attached: on 2026-11-10 it turned people to face away in 4 of 6
+// generated images (docs/review-evidence/2026-11-10-depth-ablation/RESULTS.md).
 // Shaped by the 2026-11-06 comparison (docs/LLM_ABLATION_PROCEDURE.md): depth.png fixed
 // size and distance, light.png helped only where color.png cannot show the light, and
 // extra prose alone did not help. So the prompt is short, ranks the files, states the
@@ -248,8 +250,8 @@ export function buildPrompt(json){
  '첨부 이미지들은 구도·거리·명암·포즈를 전달하는 구조 자료일 뿐 그림체 참고가 아닙니다. 회색 3D 렌더, 단색 라벨, 흑백 명암의 질감을 따라 그리지 말고 위 화풍으로 그리세요.',
  '','## 지킬 순서',
  '1. 구도: color.png와 같은 카메라 위치·화각·화면비. 인물·소품의 화면 위치를 옮기지 마세요.',
- `2. 크기와 거리감: plan.png(위에서 본 배치, 위쪽이 카메라가 보는 방향)와 range.png(거리 색: 빨강=가까움 → 파랑=멂, 흰 선=같은 거리, 숫자=m), depth.png(흰색일수록 가까움, ${json.depth.depthPng.nearM}m → ${json.depth.depthPng.farM}m)를 따르세요.${order.length>1?` 카메라에서 가까운 순서: ${order.map(l=>`${l.name}(${l.distanceM.median}m)`).join(' → ')}.`:''}${others.length?` 그 밖의 거리: ${others.map(l=>`${l.name} ${l.distanceM.median}m`).join(', ')}.`:''} 인물들의 화면 속 크기 비율은 color.png 그대로 두고, 멀리 있는 인물을 키우거나 가깝게 당기지 마세요. range.png의 검은 윤곽은 앞의 물체가 뒤의 물체를 가리는 경계입니다.`,
- '3. 명암과 그림자: light.png를 따르세요. 흰색은 빛을 정면으로 받는 면, 검은색은 빛을 등진 면이나 다른 물체의 그림자입니다. 광원 위치는 아래 「조명」과 plan.png·pose.png의 노란 표시를 따르세요.',
+ `2. 크기와 거리감: range.png(거리 색: 빨강=가까움 → 파랑=멂, 흰 선=같은 거리, 숫자=m), depth.png(흰색일수록 가까움, ${json.depth.depthPng.nearM}m → ${json.depth.depthPng.farM}m)를 따르세요.${order.length>1?` 카메라에서 가까운 순서: ${order.map(l=>`${l.name}(${l.distanceM.median}m)`).join(' → ')}.`:''}${others.length?` 그 밖의 거리: ${others.map(l=>`${l.name} ${l.distanceM.median}m`).join(', ')}.`:''} 인물들의 화면 속 크기 비율은 color.png 그대로 두고, 멀리 있는 인물을 키우거나 가깝게 당기지 마세요. range.png의 검은 윤곽은 앞의 물체가 뒤의 물체를 가리는 경계입니다.`,
+ '3. 명암과 그림자: light.png를 따르세요. 흰색은 빛을 정면으로 받는 면, 검은색은 빛을 등진 면이나 다른 물체의 그림자입니다. 광원 위치는 아래 「조명」과 pose.png의 노란 표시를 따르세요.',
  '4. 포즈와 좌우: pose.png 뼈대를 따르세요. 인물 기준 왼쪽 팔다리는 밝은 색, 오른쪽은 어두운 색이고 L/R 표시가 있습니다. 빈 점·점선은 가려진 부위입니다.',
  `5. 얼굴·머리·옷: ${hasRefs?'각 인물의 설정화(없으면 인물 설명)':'아래 인물 설명'}을 따르세요. label.png의 색은 아래 목록의 인물·소품을 가리킬 뿐 옷 색이 아닙니다.`,
  '',
