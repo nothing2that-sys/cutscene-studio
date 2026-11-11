@@ -1,6 +1,6 @@
 import {displayedObjectBounds} from './body-surface.js';
 // Cutscene Studio extension to fanverseio/pose-toolkit. GPL-3.0.
-import { validateScene, EXAMPLE_SCENE, POSES, PROP_TYPES, PROP_NAMES, PROP_DEFAULT_SIZES } from './scene-format.js';
+import { validateScene, EXAMPLE_SCENE, POSES, PROP_TYPES, PROP_NAMES, PROP_DEFAULT_SIZES, fovFromFocal, focalFromFov } from './scene-format.js';
 import './studio.css';
 import { constrainBody, captureBoneLayout, snapshotBodyJoints, chestLandmarks } from './body-rig.js';
 import { analyzeInputText } from './scene-feedback.js';
@@ -88,6 +88,7 @@ export function initCutsceneStudio(api) {
         <div class="studio-row"><input id="studio-shot-name" aria-label="새 컷 이름" placeholder="컷 이름"><button id="studio-shot-add" class="btn">구도 저장</button></div>
         <div class="studio-row"><label>화각 <input id="studio-fov" type="number" min="10" max="100" value="40"></label><select id="studio-aspect" aria-label="촬영 화면비"><option value="1.7777777777777777">16:9</option><option value="1.3333333333333333">4:3</option><option value="1">1:1</option><option value="0.75">3:4</option><option value="0.5625">9:16</option></select></div>
         <div id="studio-shots"></div>
+        <div class="studio-row" id="studio-shot-lens-row"><label>선택한 컷 기울기 ° <input id="studio-shot-roll" type="number" min="-45" max="45" step="1" title="+는 화면이 시계 방향으로 기울어짐(더치 앵글)"></label><label>렌즈 mm <input id="studio-shot-focal" type="number" min="12" max="300" step="1" title="35mm 풀프레임 기준"></label></div>
       </div>
       <details id="studio-refs-section"><summary>설정화 · 레퍼런스 연결</summary><p class="studio-help">인물·소품마다 설정화(얼굴·전신·의상 등)를 연결하면 LLM 패키지에 함께 들어가고 라벨 색과 짝지어집니다.</p><div id="studio-refs"></div></details>
       <div class="studio-section"><h3>촬영 미리보기</h3><label class="studio-label">미리보기 패스 <select id="studio-pass-view" aria-label="미리보기 패스"><option value="color">컬러</option><option value="label">라벨</option><option value="depth">뎁스(카메라 거리)</option><option value="range">거리 색·링 (라이다)</option><option value="plan">위에서 본 배치</option><option value="light">직사광·그림자</option><option value="pose">포즈 뼈대</option></select></label><div id="studio-preview"><img id="studio-pass-image" alt="패스 미리보기" hidden></div><p id="studio-caption" class="studio-help">컷을 저장하면 이곳에 촬영 구도가 표시됩니다.</p><p id="studio-preview-state" class="studio-help"></p><button id="studio-preview-refresh" class="btn">미리보기 갱신</button>
@@ -111,7 +112,7 @@ export function initCutsceneStudio(api) {
   const feedback=createValidationPanel(panel.querySelector('.studio-scroll'),download,status);
   function readCamera() { beforeReadCamera?.();const original=api.workingCamera?.();return original?{position:original.position,target:original.target,fov:original.fov,zoom:original.zoom,view:original.view}:{position:stage.camera.position.toArray(),target:stage.controls.target.toArray(),fov:stage.camera.fov,zoom:stage.camera.zoom,view:stage.camera.view?{...stage.camera.view}:null}; }
   function setCamera(camera,def) {
-    camera.position.fromArray(def.position); camera.fov=def.fov;camera.zoom=def.zoom||1;camera.view=def.view?{...def.view}:null;camera.lookAt(new THREE.Vector3(...def.target)); camera.updateProjectionMatrix();
+    camera.position.fromArray(def.position); camera.fov=def.fov;camera.zoom=def.zoom||1;camera.view=def.view?{...def.view}:null;camera.lookAt(new THREE.Vector3(...def.target)); if(def.roll)camera.rotateZ(THREE.MathUtils.degToRad(def.roll)); camera.updateProjectionMatrix();
   }
   function currentShot() { return shots[activeShot] || {name:'현재 작업 구도',purpose:'',camera:readCamera()}; }
   function updateShotCamera() {
@@ -386,7 +387,9 @@ export function initCutsceneStudio(api) {
     });
     $('studio-caption').textContent=`${currentShot().name} · 인물과 포즈는 공유 · ${aspect.toFixed(2)}:1`;
   }
+  function syncShotLens(){const shot=shots[activeShot],roll=$('studio-shot-roll'),focal=$('studio-shot-focal');if(!roll)return;roll.disabled=focal.disabled=!shot;roll.value=shot?String(shot.camera.roll||0):'';focal.value=shot?String(Math.round(focalFromFov(shot.camera.fov))):'';}
   function syncUI() {
+    syncShotLens();
     $('studio-title').value=document.title;$('studio-style').value=document.style||'';$('studio-style').placeholder=DEFAULT_STYLE;$('studio-source').value=document.sourceText;$('studio-assumptions').value=document.assumptions;
     ['x','y','z'].forEach((a,i)=>$(`studio-room-${a}`).value=document.room.size[i]);
     $('studio-walls').checked=document.room.walls;$('studio-light').value=document.lighting.intensity;
@@ -460,6 +463,8 @@ export function initCutsceneStudio(api) {
   }));
   $('studio-fov').onchange=()=>run(()=>{const v=Number($('studio-fov').value);if(v<10||v>100||!Number.isFinite(v))throw new Error('화각은 10~100도입니다.');if(api.setWorkingFov)api.setWorkingFov(v);else {stage.camera.fov=v;stage.camera.updateProjectionMatrix();}api.commit();status('작업 카메라 화각을 바꿨습니다. 컷의 갱신을 누르면 촬영에 반영합니다.');});
   $('studio-aspect').onchange=()=>{aspect=Number($('studio-aspect').value);syncUI();api.commit();};
+  $('studio-shot-roll').onchange=()=>run(()=>{const shot=shots[activeShot];if(!shot)throw new Error('먼저 컷을 고르세요.');const v=Math.max(-45,Math.min(45,Number($('studio-shot-roll').value)||0));if(v)shot.camera.roll=v;else delete shot.camera.roll;previewDirty=true;syncUI();api.commit();status('컷 기울기를 '+v+'°로 바꿨습니다.');});
+  $('studio-shot-focal').onchange=()=>run(()=>{const shot=shots[activeShot];if(!shot)throw new Error('먼저 컷을 고르세요.');const mm=Math.max(12,Math.min(300,Number($('studio-shot-focal').value)||35));shot.camera.fov=Math.round(fovFromFocal(mm)*100)/100;previewDirty=true;syncUI();api.commit();status('컷 렌즈를 '+mm+'mm(세로 화각 '+shot.camera.fov+'°)로 바꿨습니다.');});
   $('studio-shot-add').onclick=()=>run(()=>{if(shots.length>=24)throw new Error('카메라 컷은 최대 24개입니다.');shots.push({id:crypto.randomUUID(),name:$('studio-shot-name').value||`컷 ${shots.length+1}`,purpose:'사용자가 조정한 구도',camera:readCamera()});activeShot=shots.length-1;$('studio-shot-name').value='';syncUI();api.commit();});
   $('studio-color').onclick=()=>run(()=>savePNG(false));$('studio-depth').onclick=()=>run(()=>savePNG(true));
   $('studio-preview-refresh').onclick=()=>run(()=>{previewDirty=true;tickPreview({force:true});});

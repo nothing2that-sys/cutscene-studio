@@ -83,3 +83,10 @@ test('spot-only light fields on other lights are reported, not silently dropped 
   const r=analyzeInputText(JSON.stringify({version:1,units:'meters',actors:[],camera:{position:[0,1,4],target:[0,1,0]},lighting:{type:'lamp',position:[1,2,1],target:[0,1,0],coneDeg:40}}),'t',true);
   assert.ok(r.warnings.some(w=>w.code==='IGNORED_FIELD'));
 });
+test('camera roll and focal length in mm',()=>{
+  const cam=c=>({version:1,units:'meters',actors:[],camera:{position:[0,1,4],target:[0,1,0],...c}});
+  const v=validateScene(cam({focalMm:50,roll:12}));assert.ok(Math.abs(v.camera.fov-26.99)<0.02);assert.equal(v.camera.roll,12);
+  assert.equal(validateScene(cam({})).camera.roll,undefined);
+  assert.ok(analyzeInputText(JSON.stringify(cam({fov:40,focalMm:35})),'t',true).warnings.some(w=>w.code==='FOV_AND_FOCAL'));
+  assert.throws(()=>validateScene(cam({roll:60})));
+});

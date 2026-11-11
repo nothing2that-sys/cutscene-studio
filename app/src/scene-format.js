@@ -42,6 +42,9 @@ export const BODY_TYPE_NAMES = ['female', 'male', 'neutral', 'child', 'male-heav
 // spot: cone from position toward target. For lamp/spot, intensity is the brightness
 // reached at the target, so the same number looks alike across types.
 export const LIGHT_TYPES = ['sun', 'lamp', 'spot'];
+// Lens in mm (35 mm full frame, 24 mm tall) <-> vertical field of view in degrees.
+export const fovFromFocal = mm => 2 * Math.atan(12 / mm) * 180 / Math.PI;
+export const focalFromFov = fov => 12 / Math.tan(fov * Math.PI / 360);
 export const CHEST_DEFAULTS = {height:0.65,spacing:0.46,projection:1};
 export const CHEST_LIMITS = {height:[0.55,0.78],spacing:[0.3,0.6],projection:[0.4,1.6]};
 export function chestIssues(value,path='chest') {
@@ -70,10 +73,15 @@ function collector() {
   const color=(v,p,fallback)=>{if(v===undefined)return fallback;if(typeof v!=='string'||!/^#[0-9a-f]{6}$/i.test(v)){error(p,'COLOR_REQUIRED','#RRGGBB 형식의 색상이 필요합니다.','#RRGGBB',v);return fallback;}return v;};
   const list=(v,p,max)=>{if(!Array.isArray(v)||v.length>max){error(p,'ARRAY_LIMIT','최대 '+max+'개의 객체 배열이 필요합니다.',{type:'array',maxItems:max},v);return [];}return v.map((x,i)=>obj(x,p+'['+i+']'));};
   function camera(input,p='camera') {
-    const c=obj(input,p);keys(c,['position','target','fov','zoom','view'],p);
+    const c=obj(input,p);keys(c,['position','target','fov','zoom','view','roll','focalMm'],p);
+    // roll: dutch angle in degrees, + = horizon tilts clockwise (right side down).
+    // focalMm: lens on 35 mm full frame; converted to fov (fov is what is stored).
+    if(c.focalMm!==undefined&&c.fov!==undefined)warn(p+'.focalMm','FOV_AND_FOCAL','fov와 focalMm을 함께 적었습니다. focalMm을 씁니다.');
+    const lensFov=c.focalMm===undefined?undefined:fovFromFocal(num(c.focalMm,p+'.focalMm',12,300));
+    const roll=c.roll===undefined?0:num(c.roll,p+'.roll',-45,45);
     const position=vec(c.position,p+'.position'),target=vec(c.target,p+'.target');
     if(Array.isArray(c.position)&&Array.isArray(c.target)&&position.every((x,i)=>Math.abs(x-target[i])<1e-6))error(p,'CAMERA_NO_DIRECTION','카메라 위치와 목표점은 달라야 합니다.','position != target',c);
-    const projection={};if(c.zoom!==undefined)projection.zoom=num(c.zoom,p+'.zoom',.0001,10000);if(c.view!==undefined){if(c.view===null)projection.view=null;else{const v=obj(c.view,p+'.view');keys(v,['enabled','fullWidth','fullHeight','offsetX','offsetY','width','height'],p+'.view');if(typeof v.enabled!=='boolean')error(p+'.view.enabled','BOOLEAN_REQUIRED','true 또는 false가 필요합니다.');projection.view={enabled:!!v.enabled};for(const k of ['fullWidth','fullHeight','width','height'])projection.view[k]=num(v[k],p+'.view.'+k,.0001,1000000);for(const k of ['offsetX','offsetY'])projection.view[k]=num(v[k],p+'.view.'+k,-1000000,1000000);}}return {position,target,fov:num(c.fov===undefined?40:c.fov,p+'.fov',10,100),...projection};
+    const projection={};if(c.zoom!==undefined)projection.zoom=num(c.zoom,p+'.zoom',.0001,10000);if(c.view!==undefined){if(c.view===null)projection.view=null;else{const v=obj(c.view,p+'.view');keys(v,['enabled','fullWidth','fullHeight','offsetX','offsetY','width','height'],p+'.view');if(typeof v.enabled!=='boolean')error(p+'.view.enabled','BOOLEAN_REQUIRED','true 또는 false가 필요합니다.');projection.view={enabled:!!v.enabled};for(const k of ['fullWidth','fullHeight','width','height'])projection.view[k]=num(v[k],p+'.view.'+k,.0001,1000000);for(const k of ['offsetX','offsetY'])projection.view[k]=num(v[k],p+'.view.'+k,-1000000,1000000);}}return {position,target,fov:lensFov!==undefined?Math.round(lensFov*100)/100:num(c.fov===undefined?40:c.fov,p+'.fov',10,100),...(roll?{roll}:{}),...projection};
   }
   return {errors,warnings,error,warn,obj,keys,num,vec,str,color,list,camera};
 }

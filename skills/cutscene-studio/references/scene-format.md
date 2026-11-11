@@ -26,7 +26,7 @@
 | room | size, color(#RRGGBB), walls(boolean) |
 | actors[] | 고유 id, name, position, yaw, height, headUnits, bodyType, chest, pose, joints, role, intent, description, lookAt, expression |
 | props[] | 인물과도 중복되지 않는 id, name, type, position, size, yaw, color, role, intent, description, attachTo |
-| camera | position, target, fov(10~100). 위치와 목표점은 달라야 함. zoom·view는 편집기가 쓰는 값이므로 새 장면에는 넣지 않음 |
+| camera | position, target, fov(10~100) 또는 focalMm(12~300, 35mm 풀프레임 세로 24mm 기준 렌즈; 둘 다 쓰면 focalMm), roll(-45~45°, +면 화면이 시계 방향으로 기울어지는 더치 앵글). 위치와 목표점은 달라야 함. zoom·view는 편집기가 쓰는 값이므로 새 장면에는 넣지 않음 |
 | lighting | type(sun·lamp·spot, 생략 시 sun), position, target, color, intensity(0~10), ambient(0~3), spot일 때 coneDeg(5~170, 기본 50)·softness(0~1, 기본 0.3). extras: 보조광 최대 2개(각각 type·position·target·color·intensity, spot이면 coneDeg·softness; 그림자 없음, light.png에 안 나옴, 지시문에 글로 들어감) |
 | shots[] | 고유 id, name, purpose, camera. 같은 순간의 카메라 후보 |
 

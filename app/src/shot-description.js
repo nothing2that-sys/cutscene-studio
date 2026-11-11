@@ -58,8 +58,10 @@ export function extractShotFacts({camera,aspect,actors=[],props=[],environmentMe
  }
  const forwardDir=camera.getWorldDirection(new THREE.Vector3());
  const view0=camera.view?.enabled?camera.view.fullHeight/camera.view.height:1;
- const vfov=2*Math.atan(Math.tan(camera.fov*Math.PI/360)/(camera.zoom||1)/view0),half=Math.tan(vfov/2),diag=Math.atan(Math.hypot(half,half*aspect));
- const facts={camera:{position:camPos.toArray().map(r2),heightM:r2(camPos.y-floorY),pitchDeg:r1(deg(Math.asin(THREE.MathUtils.clamp(forwardDir.y,-1,1)))),verticalFovDeg:r1(deg(vfov)),focal35mm:Math.round(21.63/Math.tan(diag)),aspect:r2(aspect)},actors:[],props:[],lighting:null};
+ const vfov=2*Math.atan(Math.tan(camera.fov*Math.PI/360)/(camera.zoom||1)/view0),half=Math.tan(vfov/2);
+ // Roll read back from the camera itself: world up seen from the camera.
+ const upInCam=new THREE.Vector3(0,1,0).applyQuaternion(camera.getWorldQuaternion(new THREE.Quaternion()).invert()),rollDeg=Math.abs(forwardDir.y)>.97?0:r1(deg(Math.atan2(upInCam.x,upInCam.y)));
+ const facts={camera:{position:camPos.toArray().map(r2),heightM:r2(camPos.y-floorY),rollDeg,pitchDeg:r1(deg(Math.asin(THREE.MathUtils.clamp(forwardDir.y,-1,1)))),verticalFovDeg:r1(deg(vfov)),focal35mm:Math.round(12/half) /* same convention as camera.focalMm: 24 mm frame height */,aspect:r2(aspect)},actors:[],props:[],lighting:null};
  for(const item of actors){
   const m=item.root,W=k=>m[k].getWorldPosition(new THREE.Vector3());
   const P=Object.fromEntries(Object.entries(JOINTS).map(([k,j])=>[k,W(j)]));P.a0=W('l_ankle');P.a1=W('r_ankle');
@@ -108,7 +110,8 @@ function cameraText(c,main){
  const f=c.focal35mm,lens=f<24?'초광각(원근 왜곡이 큼)':f<35?'광각':f<70?'표준 화각':f<135?'중망원(원근이 압축됨)':'망원(원근이 강하게 압축됨)';
  let eye='';
  if(main){const eyeY=main.points.head.world[1]+(main.points.headTop.world[1]-main.points.head.world[1])*.45;const d=c.position[1]-eyeY;eye=Math.abs(d)<.15?', '+main.name+'의 눈높이':d>0?`, ${main.name}의 눈높이보다 ${r1(d)}m 위`:`, ${main.name}의 눈높이보다 ${r1(-d)}m 아래`;}
- return `${angle}(카메라 높이 ${r1(c.heightM)}m${eye}, ${p<0?'아래로':'위로'} ${Math.abs(Math.round(p))}°), ${lens} · 35mm 환산 약 ${f}mm`;
+ const dutch=Math.abs(c.rollDeg||0)>=2?` · 화면이 ${c.rollDeg>0?'시계 방향':'반시계 방향'}으로 ${Math.abs(Math.round(c.rollDeg))}° 기울어진 더치 앵글(수평선이 기울어짐)`:'';
+ return `${angle}(카메라 높이 ${r1(c.heightM)}m${eye}, ${p<0?'아래로':'위로'} ${Math.abs(Math.round(p))}°), ${lens} · 35mm 환산 약 ${f}mm${dutch}`;
 }
 function facingText(a){
  if(a.yawToCamera===null)return null;
