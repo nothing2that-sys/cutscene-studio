@@ -102,7 +102,8 @@ export function analyzeScene(input) {
   if(raw.room===undefined)warn('room','DEFAULT_ROOM','방 정보가 없어 기본 방 6×3×5m를 사용합니다.');
   if(raw.lighting===undefined)warn('lighting','DEFAULT_LIGHTING','조명 정보가 없어 기본 주광과 주변광을 사용합니다.');
   const room=raw.room===undefined?{}:obj(raw.room,'room');
-  keys(room,['size','color','walls'],'room');
+  keys(room,['size','color','walls','wallShadows'],'room');
+  if(room.wallShadows!==undefined&&typeof room.wallShadows!=='boolean')error('room.wallShadows','BOOLEAN_REQUIRED','true 또는 false가 필요합니다.','boolean',room.wallShadows);
   if(room.walls!==undefined&&typeof room.walls!=='boolean')error('room.walls','BOOLEAN_REQUIRED','true 또는 false가 필요합니다.','boolean',room.walls);
   const ids=new Set();
   function id(v,p){const value=str(v,p);if(!/^[A-Za-z0-9_-]{1,64}$/.test(value))error(p,'INVALID_ID','1~64자의 영문·숫자·밑줄·하이픈 ID가 필요합니다.','[A-Za-z0-9_-]{1,64}',v);else if(ids.has(value))error(p,'DUPLICATE_ID','인물·소품 ID가 중복됩니다. 고유한 ID로 바꾸세요.','unique actor/prop id',v);ids.add(value);return value;}
@@ -154,7 +155,7 @@ export function analyzeScene(input) {
   const light=raw.lighting===undefined?{}:obj(raw.lighting,'lighting');keys(light,['type','position','target','color','intensity','ambient','coneDeg','softness','extras'],'lighting');
   const lightType=light.type===undefined?'sun':light.type;if(!LIGHT_TYPES.includes(lightType))error('lighting.type','UNSUPPORTED_LIGHT','지원하지 않는 조명 종류입니다. sun(태양·평행광), lamp(전등·점광원), spot(스포트) 중 하나를 쓰세요.',LIGHT_TYPES,light.type);
   const scene={version:1,units:'meters',title:str(raw.title,'title','새 장면'),style:str(raw.style,'style',''),sourceText:str(raw.sourceText,'sourceText'),assumptions:str(raw.assumptions,'assumptions'),
-    room:{size:vec(room.size===undefined?[6,3,5]:room.size,'room.size',1,30),color:color(room.color,'room.color','#b9b5ac'),walls:room.walls!==false},actors,props,camera:camera(raw.camera),shots,
+    room:{size:vec(room.size===undefined?[6,3,5]:room.size,'room.size',1,30),color:color(room.color,'room.color','#b9b5ac'),walls:room.walls!==false,...(room.wallShadows===true?{wallShadows:true}:{})},actors,props,camera:camera(raw.camera),shots,
     lighting:{position:vec(light.position===undefined?[-3,5,3]:light.position,'lighting.position'),target:vec(light.target===undefined?[0,1,0]:light.target,'lighting.target'),color:color(light.color,'lighting.color','#fff0d6'),intensity:num(light.intensity===undefined?2:light.intensity,'lighting.intensity',0,10),ambient:num(light.ambient===undefined?0.6:light.ambient,'lighting.ambient',0,3),type:lightType,...(lightType==='spot'?{coneDeg:num(light.coneDeg===undefined?50:light.coneDeg,'lighting.coneDeg',5,170),softness:num(light.softness===undefined?.3:light.softness,'lighting.softness',0,1)}:{})}};
   // Extra lights (fill, practical lamps): up to two. light.png still shows the key light
   // only; these are rendered in color.png and described in words.

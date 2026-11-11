@@ -23,7 +23,7 @@
 | --- | --- |
 | title/sourceText/assumptions | 제목, 관련 원문, 원문과 구별한 연출상 가정 |
 | style | 최종 작화 화풍(문자열, 최대 2000자). 생략하면 2D 웹툰 일러스트 기본값 |
-| room | size, color(#RRGGBB), walls(boolean) |
+| room | size, color(#RRGGBB), walls(boolean), wallShadows(boolean, 기본 false: true면 벽이 빛을 가려 벽 뒤 광원이 방 안에 그림자를 만듦) |
 | actors[] | 고유 id, name, position, yaw, height, headUnits, bodyType, chest, pose, joints, role, intent, description, lookAt, expression |
 | props[] | 인물과도 중복되지 않는 id, name, type, position, size, yaw, color, role, intent, description, attachTo |
 | camera | position, target, fov(10~100) 또는 focalMm(12~300, 35mm 풀프레임 세로 24mm 기준 렌즈; 둘 다 쓰면 focalMm), roll(-45~45°, +면 화면이 시계 방향으로 기울어지는 더치 앵글). 위치와 목표점은 달라야 함. zoom·view는 편집기가 쓰는 값이므로 새 장면에는 넣지 않음 |

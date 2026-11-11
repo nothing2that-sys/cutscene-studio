@@ -74,6 +74,7 @@ export function initCutsceneStudio(api) {
       <details open><summary>공간과 조명</summary>
         <div class="studio-row"><span>방 크기 m</span><input id="studio-room-x" type="number" aria-label="방 너비" min="1" max="30" step="0.5"><input id="studio-room-y" type="number" aria-label="방 높이" min="1" max="30" step="0.5"><input id="studio-room-z" type="number" aria-label="방 깊이" min="1" max="30" step="0.5"></div>
         <label class="studio-check"><input id="studio-walls" type="checkbox"> 뒤쪽 벽 표시</label>
+        <label class="studio-check"><input id="studio-wall-shadows" type="checkbox"> 벽이 빛을 가림(벽 그림자)</label>
         <label class="studio-label">조명 종류 <select id="studio-light-type"><option value="sun">태양광 · 평행광</option><option value="lamp">전등 · 점광원</option><option value="spot">스포트</option></select></label>
         <label class="studio-label">빛 세기 (비추는 곳 기준) <input id="studio-light" type="range" min="0" max="6" step="0.1"></label>
         <div class="studio-row"><span>광원 위치 m</span><input id="studio-light-x" type="number" step="0.1" aria-label="광원 X"><input id="studio-light-y" type="number" step="0.1" aria-label="광원 높이"><input id="studio-light-z" type="number" step="0.1" aria-label="광원 Z"></div>
@@ -171,9 +172,9 @@ export function initCutsceneStudio(api) {
       if(only==='pose'||only==='plan')return {width,height,facts,labels};
       const description=facts?describeShot(facts,{shotName:currentShot().name,purpose:currentShot().purpose}):null;
       // light.png is the key light alone: extra lights are switched off for the passes.
-      extraGroup.visible=false;let passes;try{passes=renderPasses({renderer:preview,scene:stage.scene,camera:shotCamera,width,height,labels,light:keyLight(),lightTarget:document.lighting.target,ambient});}finally{extraGroup.visible=true;}
+      extraGroup.visible=false;let passes;try{passes=renderPasses({renderer:preview,scene:stage.scene,camera:shotCamera,width,height,labels,light:keyLight(),lightTarget:document.lighting.target,ambient,castWalls:!!document.room.wallShadows});}finally{extraGroup.visible=true;}
       const stats=analyzePasses(passes,labels),range=depthRange(passes,labels,stats),labelWarnings=assignLabelColors(labels,stats);
-      return {width,height,facts,description,labels,passes,stats,range,labelWarnings,images:passImages(passes,labels,range),lightNotes:facts?lightingNotes({facts,lighting:document.lighting,labels}):null,actors,props};
+      return {width,height,facts,description,labels,passes,stats,range,labelWarnings,images:passImages(passes,labels,range),lightNotes:facts?lightingNotes({facts,lighting:document.lighting,labels,walls:!!document.room.wallShadows}):null,actors,props};
     });
   }
   function canvasFrom(width,height,fill){const c=window.document.createElement('canvas');c.width=width;c.height=height;const ctx=c.getContext('2d'),img=ctx.createImageData(width,height);fill(img.data);ctx.putImageData(img,0,0);return c;}
@@ -260,7 +261,8 @@ export function initCutsceneStudio(api) {
     clearEnvironment();
     const [w,h,d]=document.room.size;
     const material=new THREE.MeshStandardMaterial({color:document.room.color,roughness:0.9,side:THREE.DoubleSide});
-    const add=(size,position,wall)=> {const m=new THREE.Mesh(new THREE.BoxGeometry(...size),material.clone());m.position.set(...position);m.receiveShadow=true;if(wall)m.userData.editingWall=wall;environment.add(m);};
+    // room.wallShadows: walls block light (a lamp or sun behind a wall shadows the room).
+    const add=(size,position,wall)=> {const m=new THREE.Mesh(new THREE.BoxGeometry(...size),material.clone());m.position.set(...position);m.receiveShadow=true;if(wall){m.userData.editingWall=wall;m.castShadow=!!document.room.wallShadows;}environment.add(m);};
     add([w,0.08,d],[0,-0.04,0]);
     if(document.room.walls) {add([w,h,0.08],[0,h/2,-d/2],'back');add([0.08,h,d],[-w/2,h/2,0],'left');}
     material.dispose();
@@ -420,7 +422,7 @@ export function initCutsceneStudio(api) {
     syncShotLens();
     $('studio-title').value=document.title;$('studio-style').value=document.style||'';$('studio-style').placeholder=DEFAULT_STYLE;$('studio-source').value=document.sourceText;$('studio-assumptions').value=document.assumptions;
     ['x','y','z'].forEach((a,i)=>$(`studio-room-${a}`).value=document.room.size[i]);
-    $('studio-walls').checked=document.room.walls;$('studio-light').value=document.lighting.intensity;
+    $('studio-walls').checked=document.room.walls;$('studio-wall-shadows').checked=!!document.room.wallShadows;$('studio-light').value=document.lighting.intensity;
     $('studio-light-color').value=document.lighting.color;$('studio-ambient').value=document.lighting.ambient;
     $('studio-light-type').value=document.lighting.type;['x','y','z'].forEach((a,i)=>{$('studio-light-'+a).value=document.lighting.position[i];$('studio-light-t'+a).value=document.lighting.target[i];});
     renderExtraLights();
@@ -465,6 +467,7 @@ export function initCutsceneStudio(api) {
     document=validateScene({...document,room});rebuildRoom();api.commit();
   });
   $('studio-walls').onchange=()=>{document.room.walls=$('studio-walls').checked;rebuildRoom();api.commit();};
+  $('studio-wall-shadows').onchange=()=>{if($('studio-wall-shadows').checked)document.room.wallShadows=true;else delete document.room.wallShadows;rebuildRoom();previewDirty=true;api.commit();};
   $('studio-light').oninput=()=>{document.lighting.intensity=Number($('studio-light').value);applyLight();};
   // Extra lights: one row each (type, position, target, colour, brightness, remove) plus add.
   function renderExtraLights(){

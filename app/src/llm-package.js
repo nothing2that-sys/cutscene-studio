@@ -43,7 +43,7 @@ const VERTEX='#include <common>\n#include <skinning_pars_vertex>\nvarying vec3 v
 const FRAGMENT='uniform float labelId; varying vec3 viewPos; void main(){gl_FragColor=vec4(labelId,length(viewPos),0.,1.);}';
 
 // Renders into float targets (no MSAA) so label ids and distances are exact.
-export function renderPasses({renderer,scene,camera,width,height,labels,light,lightTarget=null,ambient}){
+export function renderPasses({renderer,scene,camera,width,height,labels,light,lightTarget=null,ambient,castWalls=false}){
  const target=new THREE.WebGLRenderTarget(width,height,{type:THREE.FloatType,depthBuffer:true,samples:0});
  const swaps=[],hidden=[],materials=[];const owned=new Set();
  for(const label of labels)for(const mesh of labelMeshes(label)){owned.add(mesh);swaps.push([mesh,mesh.material,mesh.castShadow,mesh.receiveShadow,label]);}
@@ -61,7 +61,7 @@ export function renderPasses({renderer,scene,camera,width,height,labels,light,li
   // surface facing the light read exactly 1 with Lambert's 1/π BRDF; a lamp or spot is
   // scaled by distance² so a surface at the target reads 1 and nearer/farther ones differ.
   const lit=new THREE.MeshLambertMaterial({color:0xffffff});materials.push(lit);
-  for(const [mesh,, , ,label]of swaps){mesh.material=lit;mesh.castShadow=label.kind==='person'||label.kind==='prop';mesh.receiveShadow=true;}
+  for(const [mesh,, , ,label]of swaps){mesh.material=lit;mesh.castShadow=label.kind==='person'||label.kind==='prop'||(castWalls&&label.kind==='wall');mesh.receiveShadow=true;}
   if(ambient)ambient.visible=false;const reference=light.isDirectionalLight||!lightTarget?1:light.getWorldPosition(new THREE.Vector3()).distanceTo(new THREE.Vector3(...lightTarget))||1;
   light.intensity=Math.PI*reference*reference;light.color.set(0xffffff);light.castShadow=true;
   if(!light.isPointLight&&light.shadow.mapSize.x<2048){light.shadow.map?.dispose();light.shadow.map=null;light.shadow.mapSize.set(2048,2048);}
@@ -178,13 +178,13 @@ export function drawPose(canvas,facts,labels,source=null){
 // lit or the dark side, which joints sit in another object's cast shadow, and for a
 // lamp/spot how far the light is and whether the person is inside the cone.
 const JOINT={head:'머리',chest:'가슴',pelvis:'골반',wristL:'왼손',wristR:'오른손',kneeL:'왼무릎',kneeR:'오른무릎'};
-export function lightingNotes({facts,lighting,labels}){
+export function lightingNotes({facts,lighting,labels,walls=false}){
  if(!lighting?.position)return new Map();
  const type=lighting.type||'sun',L=new THREE.Vector3(...lighting.position),T=new THREE.Vector3(...(lighting.target||[0,0,0])),sunDir=L.clone().sub(T).normalize(),reference=L.distanceTo(T)||1,axis=T.clone().sub(L).normalize();
  const half=(lighting.coneDeg??50)*Math.PI/360,inner=half*(1-(lighting.softness??.3));
  const toLight=p=>type==='sun'?sunDir.clone():L.clone().sub(p).normalize();
  const cam=new THREE.Vector3(...facts.camera.position),ray=new THREE.Raycaster(),out=new Map();
- const owned=new Map();for(const l of labels)if(l.kind==='person'||l.kind==='prop')for(const m of labelMeshes(l))owned.set(m,l);const meshes=[...owned.keys()];
+ const owned=new Map();for(const l of labels)if(l.kind==='person'||l.kind==='prop'||(walls&&l.kind==='wall'))for(const m of labelMeshes(l))owned.set(m,l);const meshes=[...owned.keys()];
  const rootOf=new Map(labels.filter(l=>l.root).map(l=>[l.root,l])),meshOwner={get(object){for(let n=object;n;n=n.parent){if(owned.has(n))return owned.get(n);if(rootOf.has(n))return rootOf.get(n);}return undefined;}};
  for(const actor of facts.actors){
   const self=labels.find(l=>l.kind==='person'&&l.id===actor.id);if(!self)continue;
