@@ -16,6 +16,8 @@ const EXPECT={
  squatting:{stance:/^쪼그려 앉음, 상체를 앞으로/,touch:[[['footL','footR'],2,.005]]},
  crouching:{stance:/^웅크려 앉음, 상체를 앞으로/,touch:[[['footL','footR'],2,.005]]},
  lying:{stance:/등을 대고 누움/,touch:[[['thorax'],1,.02],[['head'],1,.04]]},
+ 'lying-prone':{stance:/엎드림/,touch:[[['thorax'],1,.03]]},
+ 'lying-side':{stance:/옆으로 누움/,touch:[[['upperL','upperR','foreL','foreR'],1,.01]]},
 };
 await mkdir(out,{recursive:true});
 const browser=await chromium.launch({channel:'chrome',headless:true,args:['--enable-webgl','--use-gl=angle','--use-angle=swiftshader']});

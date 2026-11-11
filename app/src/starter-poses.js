@@ -16,4 +16,6 @@ export const STARTER_POSES=[
   ['squatting','쪼그려 앉기','squatting',{}],
   ['crouching','웅크려 앉기','crouching',{}],
   ['lying','바닥에 눕기','lying',{}],
+  ['lying-prone','엎드려 눕기','lying-prone',{}],
+  ['lying-side','옆으로 눕기','lying-side',{}],
 ].map(([key,name,pose,joints])=>({id:'starter-'+key,name,source:'cutscene-studio-authored-3d',pose:{pose,joints},thumbnail:'/pose-library/'+key+'.png',createdAt:'2026-11-02'}));

@@ -323,7 +323,7 @@ export function initCutsceneStudio(api) {
     const lookIssues=[];
     const lookScene={actors:built.map(b=>({id:b.actor.id,root:b.m})),props:next.props.map(p=>({id:p.id,center:new THREE.Vector3(p.position[0],p.position[1]+p.size[1]/2,p.position[2])}))};
     for(const {actor,m} of built){
-      if(actor.lookAt===undefined||actor.pose==='lying')continue;
+      if(actor.lookAt===undefined||actor.pose.startsWith('lying'))continue;
       const target=lookTarget(actor.lookAt,lookScene),result=target&&aimHead(m,target,{constrain:constrainBody});
       if(result?.clamped)lookIssues.push(actor.name+'의 시선은 목·머리 회전 한계까지만 돌렸습니다. 몸 방향(yaw)도 돌리세요.');
     }

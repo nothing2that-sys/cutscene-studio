@@ -2,7 +2,8 @@ import {validateBodyV1State} from './body-v1-adapter.js';
 import {validateScene,JOINTS} from './scene-format.js';
 import {analyzeEditorState} from './scene-feedback.js';
 export const POSE_NAMES={standing:'서기',sitting:'앉기',pointing:'가리키기',reaching:'손 뻗기',kneeling:'무릎 꿇기',
-  'half-kneeling':'한쪽 무릎 꿇기',squatting:'쪼그려 앉기',crouching:'웅크려 앉기',lying:'바닥에 눕기'};
+  'half-kneeling':'한쪽 무릎 꿇기',squatting:'쪼그려 앉기',crouching:'웅크려 앉기',lying:'바닥에 눕기',
+  'lying-prone':'엎드려 눕기','lying-side':'옆으로 눕기'};
 const orders=['XYZ','XZY','YXZ','YZX','ZXY','ZYX'];
 const jointKeys=new Set(['body','pelvis',...Object.keys(JOINTS),...['l','r'].flatMap(side=>['fingers','nails',...Array.from({length:5},(_,i)=>'finger_'+i)].map(part=>side+'_'+part))]);
 function rotations(value){

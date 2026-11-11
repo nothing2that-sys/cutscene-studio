@@ -27,6 +27,9 @@ export const POSES = {
   squatting: { l_leg: { raise: 110 }, r_leg: { raise: 110 }, l_knee: { bend: 145 }, r_knee: { bend: 145 }, l_ankle: { bend: -30 }, r_ankle: { bend: -30 }, torso: { bend: 30 }, l_arm: { raise: 50 }, r_arm: { raise: 50 }, l_elbow: { bend: 60 }, r_elbow: { bend: 60 } },
   crouching: { l_leg: { raise: 90 }, r_leg: { raise: 90 }, l_knee: { bend: 140 }, r_knee: { bend: 140 }, l_ankle: { bend: -30 }, r_ankle: { bend: -30 }, torso: { bend: 45 }, l_arm: { raise: 30 }, r_arm: { raise: 30 }, l_elbow: { bend: 20 }, r_elbow: { bend: 20 } },
   lying: { body: { bend: -90 }, l_arm: { raise: -10 }, r_arm: { raise: -10 } },
+  // Face down, head turned to one side; and on the side with knees drawn up a little.
+  'lying-prone': { body: { bend: 90 }, l_arm: { raise: -30 }, r_arm: { raise: -30 }, l_ankle: { bend: 45 }, r_ankle: { bend: 45 }, head: { turn: 60 } },
+  'lying-side': { body: { tilt: 90 }, l_leg: { raise: 35 }, r_leg: { raise: 25 }, l_knee: { bend: 50 }, r_knee: { bend: 40 }, l_arm: { raise: 40 }, r_arm: { raise: 40 }, l_elbow: { bend: 100 }, r_elbow: { bend: 100 } },
 };
 export const PROP_TYPES = ['box', 'table', 'chair', 'sphere', 'cylinder', 'door', 'window', 'bed', 'sofa', 'stairs'];
 // Editor names and the size [width, height, depth] used when a prop is added by hand.
@@ -128,7 +131,7 @@ export function analyzeScene(input) {
     if(typeof a.lookAt!=='string')return;const p='actors['+i+'].lookAt';
     if(a.lookAt===a.id)error(p,'SELF_LOOK_TARGET','자기 자신을 바라볼 수는 없습니다.','other actor or prop id',a.lookAt);
     else if(!actors.some(o=>o.id===a.lookAt)&&!props.some(o=>o.id===a.lookAt))error(p,'UNKNOWN_LOOK_TARGET','이 장면에 없는 인물·소품 ID입니다.',[...actors.map(o=>o.id),...props.map(o=>o.id)].filter(x=>x!==a.id),a.lookAt);
-    if(a.pose==='lying')warn(p,'LOOK_AT_LYING','누운 자세에서는 시선을 자동으로 맞추지 않습니다. 필요하면 joints로 머리를 돌리세요.');
+    if(a.pose.startsWith('lying'))warn(p,'LOOK_AT_LYING','누운 자세에서는 시선을 자동으로 맞추지 않습니다. 필요하면 joints로 머리를 돌리세요.');
   });
   const shotIds=new Set();
   const shots=list(raw.shots===undefined?[]:raw.shots,'shots',24).map((s,i)=>{
