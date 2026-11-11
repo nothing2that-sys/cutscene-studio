@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "checks": [
+    "straight leg folds toward ankle target; unknown reference joints rejected",
+    "body mesh drag moves whole actor and preserves bone layout",
+    "camera and root movement do not archive false poses",
+    "knee handle moves knee; lower leg follows; root stays",
+    "ankle drag coordinates leg with fixed segment lengths",
+    "named poses are searchable",
+    "auto archive, manual naming and duplicate suppression",
+    "library persists across reload and backs up",
+    "pose JSON changes selected actor only, preserves identity and placement",
+    "library backup restore is deduplicated",
+    "deletions persist, empty library stays empty, backup recovers it",
+    "production bundle: whole drag, knee target, fixed bones and persistent library"
+  ],
+  "metrics": {
+    "straightLeg": {
+      "initialError": 0.1606490770563903,
+      "finalError": 3.180557660677441e-16,
+      "kneeBend": 73.79094558514826
+    },
+    "kneeMoved": 0.17651135547862382,
+    "ankleFollowed": 0.34125528725867266,
+    "ankleMoved": 0.29877810148574896,
+    "kneeBendAfter": 97.89713540765761
+  },
+  "pageErrors": []
+}

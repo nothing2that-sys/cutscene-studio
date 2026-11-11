@@ -1,0 +1,11 @@
+{
+  "validated": 1001,
+  "checks": [
+    "converted card applies real rotations to selected actor; preserves other actor, proportions, locked bones, XZ and scene camera",
+    "converted pose and grounding participate in Undo/Redo",
+    "lying conversion reframes visible head and ankles without changing the stored scene camera",
+    "quality filter separates unresolved drafts",
+    "stale image/hash mismatch rejected before scene mutation"
+  ],
+  "pageErrors": []
+}

@@ -1,0 +1,11 @@
+{"version":1,"units":"meters","title":"비교 E1 · 랜턴 불빛 아래 두 사람",
+ "sourceText":"정전된 밤의 작은 방. 캠핑 랜턴 하나만 켜져 있다. 두 사람이 서서 그 불빛 쪽을 바라본다.",
+ "assumptions":"비교 실험용 장면. 랜턴은 바닥 가까이 둔 점광원.",
+ "room":{"size":[6,3,5],"color":"#8a8a80","walls":true},
+ "actors":[
+  {"id":"e1a","name":"왼쪽 · 남색 셔츠 남자","position":[-0.55,0,0],"yaw":35,"height":1.78,"pose":"standing","description":"남색 셔츠, 짧은 검은 머리 30대 남성"},
+  {"id":"e1b","name":"오른쪽 · 베이지 코트 여자","position":[0.55,0,-0.3],"yaw":40,"height":1.66,"pose":"standing","description":"베이지 트렌치코트, 어깨 길이 갈색 머리 30대 여성"}],
+ "props":[],
+ "camera":{"position":[0,1.45,4.2],"target":[0,1.2,0],"fov":40},
+ "lighting":{"type":"lamp","position":[2.4,0.35,1.6],"target":[0,1.3,0],"color":"#ffcf8a","intensity":2.6,"ambient":0.18},
+ "shots":[{"id":"e1","name":"E1 아래 조명","purpose":"화면 밖·낮은 광원의 명암과 그림자 방향","camera":{"position":[0,1.45,4.2],"target":[0,1.2,0],"fov":40}}]}

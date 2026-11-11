@@ -1,0 +1,270 @@
+{
+  "date": "2026-11-02",
+  "baseCommit": "3eee2219b43b6befc898adf478bbdf0c2fa1b89f",
+  "node": "v24.22.2",
+  "build": {
+    "passed": true,
+    "vite": "8.3.5",
+    "modules": 55
+  },
+  "unitTests": {
+    "passed": 13,
+    "failed": 0
+  },
+  "starterPoses": {
+    "count": 10,
+    "source": "cutscene-studio-authored-3d",
+    "externalGalleryImagesUsed": false
+  },
+  "storage": {
+    "type": "IndexedDB",
+    "scope": "browser profile and origin",
+    "backupFormat": "pose-library version 1"
+  },
+  "audit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "reports": {
+    "direct": {
+      "passed": true,
+      "checks": [
+        "straight leg folds toward ankle target; unknown reference joints rejected",
+        "body mesh drag moves whole actor and preserves bone layout",
+        "camera and root movement do not archive false poses",
+        "knee handle moves knee; lower leg follows; root stays",
+        "ankle drag coordinates leg with fixed segment lengths",
+        "named poses are searchable",
+        "auto archive, manual naming and duplicate suppression",
+        "library persists across reload and backs up",
+        "pose JSON changes selected actor only, preserves identity and placement",
+        "library backup restore is deduplicated",
+        "deletions persist, empty library stays empty, backup recovers it",
+        "production bundle: whole drag, knee target, fixed bones and persistent library"
+      ],
+      "metrics": {
+        "straightLeg": {
+          "initialError": 0.1606490770563903,
+          "finalError": 3.180557660677441e-16,
+          "kneeBend": 73.79094558514826
+        },
+        "kneeMoved": 0.17651165748707248,
+        "ankleFollowed": 0.34125587114167344,
+        "ankleMoved": 0.2987780993818825,
+        "kneeBendAfter": 97.89711964913708
+      },
+      "pageErrors": []
+    },
+    "browser": {
+      "passed": true,
+      "poseComparisonTolerance": 1e-8,
+      "checks": [
+        "offline assets",
+        "example placement",
+        "head joint edit and undo",
+        "prop list selection and position edit",
+        "prop add and undo",
+        "room edit",
+        "camera shot save",
+        "project save/reload with mannequin transforms preserved",
+        "invalid proposal preserves scene",
+        "color/depth 1600x900",
+        "portrait 900x1600",
+        "LLM packet"
+      ],
+      "pageErrors": [],
+      "externalRequests": []
+    },
+    "jsonUI": {
+      "passed": true,
+      "checks": [
+        "multiple errors visible",
+        "exact original JSON in clipboard repair request",
+        "report JSON download",
+        "invalid scene preserves current scene",
+        "validate-only keeps scene",
+        "spatial warnings apply with warning status",
+        "corrected JSON clears old issues",
+        "syntax errors",
+        "bad project rejected before mutation",
+        "file import source recorded",
+        "clipboard denial offers selectable fallback"
+      ],
+      "pageErrors": []
+    },
+    "body": {
+      "passed": true,
+      "engine": {
+        "measured": [
+          {
+            "profile": {
+              "height": 1.8,
+              "headUnits": 5
+            },
+            "measuredHeight": 1.8,
+            "measuredHeadUnits": 4.999999999999999
+          },
+          {
+            "profile": {
+              "height": 1.8,
+              "headUnits": 8
+            },
+            "measuredHeight": 1.8,
+            "measuredHeadUnits": 7.999999999999997
+          },
+          {
+            "profile": {
+              "height": 1.8,
+              "headUnits": 9.5
+            },
+            "measuredHeight": 1.7999999999999998,
+            "measuredHeadUnits": 9.500000000000004
+          },
+          {
+            "profile": {
+              "height": 1.4,
+              "headUnits": 5
+            },
+            "measuredHeight": 1.4,
+            "measuredHeadUnits": 4.999999999999999
+          }
+        ],
+        "randomPoses": 80,
+        "reachable": {
+          "reached": false,
+          "error": 0.06969007835615215,
+          "reach": 0.609358568144929,
+          "targetClamped": false,
+          "continuityLimited": false
+        },
+        "far": {
+          "reached": false,
+          "error": 149.39239890424525,
+          "reach": 0.8032453852819519,
+          "targetClamped": true,
+          "continuityLimited": false
+        },
+        "boneLengthPreserved": true
+      },
+      "ui": [
+        "independent height/headUnits per actor",
+        "5 and 9.5 head presets",
+        "joint translation fields removed",
+        "numeric angle clamped",
+        "local bone offsets and scales preserved",
+        "profile roundtrip",
+        "stretched project rejected"
+      ],
+      "pageErrors": []
+    },
+    "ik": {
+      "baseline": false,
+      "passed": true,
+      "results": [
+        {
+          "part": "Head",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 19.999459907641032,
+          "boneDrift": 2.220446049250313e-16
+        },
+        {
+          "part": "Neck",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 18.342029061729857,
+          "boneDrift": 3.3306690738754696e-16
+        },
+        {
+          "part": "Right_Wrist",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 11.053397389439386,
+          "boneDrift": 1.6653345369377348e-16
+        },
+        {
+          "part": "Left_Ankle",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 5.730173235351459,
+          "boneDrift": 1.6653345369377348e-16
+        }
+      ],
+      "convergence": {
+        "initialError": 0.3163691785703939,
+        "finalError": 3.1923738649662414e-15,
+        "iterations": 60,
+        "monotone": true
+      },
+      "pageErrors": []
+    },
+    "chest": {
+      "passed": true,
+      "engine": {
+        "torsoFollow": true,
+        "localAnchorsLocked": true,
+        "boneDrift": 1.1102230246251565e-16,
+        "heightError": 0,
+        "ratioError": 0,
+        "toggleRemoval": true
+      },
+      "checks": [
+        "torso-following local anchors, length lock, height/head ratio and removal",
+        "independent per-actor chest controls",
+        "Undo/Redo and save reload",
+        "single-character From File preserves chest",
+        "visible color/depth geometry and camera-projected chest anchors in handoff"
+      ],
+      "anatomyReferences": [
+        {
+          "actorIndex": 0,
+          "actorId": "seoyeon",
+          "name": "서연",
+          "chest": {
+            "kind": "chest-volume-centers",
+            "space": "world-meters",
+            "left": [
+              0.06006534457428586,
+              1.300793299553469,
+              0.03091886473918177
+            ],
+            "right": [
+              -0.06006534457428585,
+              1.300793299553469,
+              0.030918864739181796
+            ],
+            "leftImage": {
+              "point": [
+                0.5067366526725744,
+                0.388990253696968
+              ],
+              "inFrame": true
+            },
+            "rightImage": {
+              "point": [
+                0.48347225720112447,
+                0.38810405191965996
+              ],
+              "inFrame": true
+            }
+          },
+          "imageCoordinates": "normalized, origin top-left; inFrame does not test occlusion"
+        }
+      ],
+      "pageErrors": []
+    },
+    "reviewRegression": {
+      "passed": true,
+      "checks": [
+        "F1/F2 From File rejects malformed/stretched/syntax, preserves state, valid import and Undo",
+        "F6 immutable initial proposal, current environment and packet",
+        "F8 direction UI restored by Load/Undo and custom preset",
+        "F6 save roundtrip and explicit legacy provenance",
+        "F7 missing rig lock warning",
+        "F9 keyboard/trash both permit empty scene, Undo and reload",
+        "F11 license text MIME"
+      ],
+      "pageErrors": []
+    }
+  }
+}

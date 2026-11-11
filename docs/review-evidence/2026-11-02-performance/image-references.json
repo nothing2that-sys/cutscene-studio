@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "1001 image references registered in 20 categories; only 36 cards mounted per page",
+    "ID search resolves verified local PNG",
+    "pinned 2D reference links current real 3D pose; linkage included in backup",
+    "category filter and reference close work"
+  ],
+  "pageErrors": []
+}

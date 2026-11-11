@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-02",
+  "baselineCommit": "3902a2c",
+  "unitTests": {
+    "passed": 17,
+    "failed": 0,
+    "command": "node --test scripts/scene-format.test.mjs scripts/scene-feedback.test.mjs scripts/pose-format.test.mjs scripts/scene-object-info.test.mjs"
+  },
+  "productionBuild": {
+    "passed": true,
+    "entry": "app/dist/index.html",
+    "bundle": "index-BxYwEx7Q.js",
+    "largeChunkWarningRemains": true
+  },
+  "browser": "installed Chrome, Playwright headless, WebGL ANGLE D3D11",
+  "verified": [
+    "scene-usability.json",
+    "human-body.json",
+    "direct-editor.json",
+    "chest-reference.json",
+    "converted-poses.json",
+    "solo-view.json"
+  ],
+  "limitations": [
+    "Body proxy uses rigid anatomical volumes, not continuous skin deformation.",
+    "Overlap checks are approximate per-mesh oriented bounds, not exact physics or self-collision.",
+    "External GLB asset-specific behavior and long manual sessions not independently verified."
+  ]
+}

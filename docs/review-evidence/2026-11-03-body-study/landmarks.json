@@ -1,0 +1,174 @@
+{
+  "camera": "orthographic, front +Z, image 960×1280 → render 480×640",
+  "note": "These are authored pose anchors, not independently measured silhouette accuracy or a visual score.",
+  "points": [
+    {
+      "name": "crown",
+      "sourcePixels": [
+        449,
+        80
+      ],
+      "renderPixels": [
+        224.5,
+        40
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "chin",
+      "sourcePixels": [
+        475,
+        227
+      ],
+      "renderPixels": [
+        237.5,
+        113.50000000000001
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "shoulderL",
+      "sourcePixels": [
+        378,
+        273
+      ],
+      "renderPixels": [
+        189.00000000000003,
+        136.5
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "elbowL",
+      "sourcePixels": [
+        258,
+        387
+      ],
+      "renderPixels": [
+        129.00000000000003,
+        193.5
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "wristL",
+      "sourcePixels": [
+        352,
+        476
+      ],
+      "renderPixels": [
+        176,
+        237.99999999999997
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "shoulderR",
+      "sourcePixels": [
+        543,
+        266
+      ],
+      "renderPixels": [
+        271.5,
+        132.99999999999997
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "elbowR",
+      "sourcePixels": [
+        637,
+        166
+      ],
+      "renderPixels": [
+        318.5,
+        82.99999999999997
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "wristR",
+      "sourcePixels": [
+        522,
+        108
+      ],
+      "renderPixels": [
+        261,
+        53.999999999999986
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "hipL",
+      "sourcePixels": [
+        382,
+        567
+      ],
+      "renderPixels": [
+        191,
+        283.5
+      ],
+      "visibility": "inferred center under surface"
+    },
+    {
+      "name": "kneeL",
+      "sourcePixels": [
+        392,
+        820
+      ],
+      "renderPixels": [
+        196,
+        410
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "ankleL",
+      "sourcePixels": [
+        406,
+        1085
+      ],
+      "renderPixels": [
+        203,
+        542.5
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "hipR",
+      "sourcePixels": [
+        507,
+        579
+      ],
+      "renderPixels": [
+        253.49999999999997,
+        289.5
+      ],
+      "visibility": "inferred center under surface"
+    },
+    {
+      "name": "kneeR",
+      "sourcePixels": [
+        607,
+        816
+      ],
+      "renderPixels": [
+        303.5,
+        408
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "ankleR",
+      "sourcePixels": [
+        674,
+        1067
+      ],
+      "renderPixels": [
+        337,
+        533.5
+      ],
+      "visibility": "manually read from drawing"
+    }
+  ]
+}

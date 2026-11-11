@@ -1,0 +1,92 @@
+[
+  {
+    "name": "reference",
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  },
+  {
+    "name": "neutral",
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  },
+  {
+    "name": "squat",
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  },
+  {
+    "name": "raised",
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  },
+  {
+    "name": "step",
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  },
+  {
+    "name": "elbow-max",
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  },
+  {
+    "name": "knee-max",
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  },
+  {
+    "name": "hip-fold",
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  },
+  {
+    "name": "arm-cross",
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  },
+  {
+    "name": "waist-twist",
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  },
+  {
+    "name": "elbow-right",
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  },
+  {
+    "name": "knee-right",
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  },
+  {
+    "name": "hip-right",
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  },
+  {
+    "name": "arm-right",
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  },
+  {
+    "name": "waist-right",
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  }
+]

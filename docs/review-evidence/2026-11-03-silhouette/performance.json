@@ -1,0 +1,25 @@
+{
+  "loadedMs": 1837.812,
+  "rigidDelta": 0,
+  "bodyRigidDelta": 0,
+  "curlDelta": 6,
+  "bodyBendDelta": 1,
+  "captureMs": [
+    99.59999996423721,
+    59.200000047683716,
+    54.799999952316284
+  ],
+  "previewFetches": [
+    {
+      "name": "http://127.0.0.1:3001/doll-full-core/preview.json",
+      "transferSize": 2774
+    },
+    {
+      "name": "http://127.0.0.1:3001/doll-full-core/preview.bin",
+      "transferSize": 180348
+    }
+  ],
+  "workerFetches": 0,
+  "triangles": 28720,
+  "draws": 15
+}

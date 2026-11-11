@@ -1,0 +1,48 @@
+{
+  "results": [
+    {
+      "name": "neutral-rig",
+      "height": 1.7607979638770792,
+      "drawCalls": 97,
+      "triangles": 20220
+    },
+    {
+      "name": "neutral-human",
+      "height": 1.751448159674465,
+      "drawCalls": 1,
+      "triangles": 11988
+    },
+    {
+      "name": "squat-rig",
+      "height": 1.2269707271842976,
+      "drawCalls": 97,
+      "triangles": 20220
+    },
+    {
+      "name": "squat-human",
+      "height": 1.2034883190126642,
+      "drawCalls": 1,
+      "triangles": 11988
+    },
+    {
+      "name": "reaching-rig",
+      "height": 2.001182185462389,
+      "drawCalls": 97,
+      "triangles": 20220
+    },
+    {
+      "name": "reaching-human",
+      "height": 1.9991187115492821,
+      "drawCalls": 1,
+      "triangles": 11988
+    }
+  ],
+  "checks": [
+    "appearance toggles preserve all joints, locked layout, profile and root in neutral/squat/reaching poses",
+    "5/8/9.5-head sizing remains accurate",
+    "human surface has no additional draw calls or triangles",
+    "human neutral visible height matches configured stature within 5mm; rig transforms are unchanged",
+    "UI toggle and local preference persist across reload"
+  ],
+  "pageErrors": []
+}

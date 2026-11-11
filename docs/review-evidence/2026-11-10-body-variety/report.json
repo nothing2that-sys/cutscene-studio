@@ -1,0 +1,192 @@
+{
+  "stats": [
+    "성인 여성 · 8등신 (현재)   생성 378ms · 키 1.65m · 머리 23.7cm · 등신 6.96",
+    "성인 남성 · 8등신        생성 285ms · 키 1.78m · 머리 25.7cm · 등신 6.93",
+    "중성 · 8등신           생성 220ms · 키 1.72m · 머리 24.6cm · 등신 7.00",
+    "아이 · 약 5.5등신       생성 202ms · 키 1.15m · 머리 24.2cm · 등신 4.74",
+    "성인 남성 · 큰 체격       생성 215ms · 키 1.78m · 머리 25.7cm · 등신 6.93"
+  ],
+  "audit": {
+    "neutral": {
+      "default": {
+        "total": 0,
+        "pairs": []
+      },
+      "male": {
+        "total": 0,
+        "pairs": []
+      },
+      "neutral": {
+        "total": 0,
+        "pairs": []
+      },
+      "child": {
+        "total": 1,
+        "pairs": [
+          {
+            "a": "neck",
+            "b": "head",
+            "count": 1,
+            "depthMm": 4.5
+          }
+        ]
+      },
+      "male-heavy": {
+        "total": 7,
+        "pairs": [
+          {
+            "a": "thorax",
+            "b": "upperL",
+            "count": 5,
+            "depthMm": 12.5
+          },
+          {
+            "a": "thorax",
+            "b": "upperR",
+            "count": 2,
+            "depthMm": 16
+          }
+        ]
+      }
+    },
+    "raised": {
+      "default": {
+        "total": 0,
+        "pairs": []
+      },
+      "male": {
+        "total": 0,
+        "pairs": []
+      },
+      "neutral": {
+        "total": 0,
+        "pairs": []
+      },
+      "child": {
+        "total": 1,
+        "pairs": [
+          {
+            "a": "neck",
+            "b": "head",
+            "count": 1,
+            "depthMm": 4.3
+          }
+        ]
+      },
+      "male-heavy": {
+        "total": 23,
+        "pairs": [
+          {
+            "a": "thorax",
+            "b": "upperL",
+            "count": 11,
+            "depthMm": 22.3
+          },
+          {
+            "a": "thorax",
+            "b": "upperR",
+            "count": 12,
+            "depthMm": 22
+          }
+        ]
+      }
+    },
+    "squat": {
+      "default": {
+        "total": 0,
+        "pairs": []
+      },
+      "male": {
+        "total": 0,
+        "pairs": []
+      },
+      "neutral": {
+        "total": 0,
+        "pairs": []
+      },
+      "child": {
+        "total": 1,
+        "pairs": [
+          {
+            "a": "neck",
+            "b": "head",
+            "count": 1,
+            "depthMm": 5.5
+          }
+        ]
+      },
+      "male-heavy": {
+        "total": 30,
+        "pairs": [
+          {
+            "a": "thorax",
+            "b": "upperL",
+            "count": 14,
+            "depthMm": 42.1
+          },
+          {
+            "a": "thorax",
+            "b": "upperR",
+            "count": 16,
+            "depthMm": 41.6
+          }
+        ]
+      }
+    },
+    "step": {
+      "default": {
+        "total": 0,
+        "pairs": []
+      },
+      "male": {
+        "total": 0,
+        "pairs": []
+      },
+      "neutral": {
+        "total": 0,
+        "pairs": []
+      },
+      "child": {
+        "total": 10,
+        "pairs": [
+          {
+            "a": "thorax",
+            "b": "upperR",
+            "count": 7,
+            "depthMm": 3.8
+          },
+          {
+            "a": "thorax",
+            "b": "foreR",
+            "count": 2,
+            "depthMm": 2.8
+          },
+          {
+            "a": "neck",
+            "b": "head",
+            "count": 1,
+            "depthMm": 4.6
+          }
+        ]
+      },
+      "male-heavy": {
+        "total": 17,
+        "pairs": [
+          {
+            "a": "thorax",
+            "b": "upperL",
+            "count": 9,
+            "depthMm": 19.9
+          },
+          {
+            "a": "thorax",
+            "b": "upperR",
+            "count": 8,
+            "depthMm": 10
+          }
+        ]
+      }
+    }
+  },
+  "errors": []
+}

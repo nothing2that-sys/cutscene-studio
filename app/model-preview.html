@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>관절별 작화 인체 · 외형 비교</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#202734;font:14px system-ui,sans-serif}header{padding:22px 28px 15px;border-bottom:1px solid #dde1e7;background:white}h1{font-size:21px;margin:0 0 7px}p{margin:7px 0;color:#626b79}a{color:#3e5e9f}nav{display:flex;gap:14px;margin-top:12px}.toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:16px;padding:14px 28px;background:white;border-bottom:1px solid #dde1e7}label{display:flex;align-items:center;gap:7px}select,input,button{font:inherit;border:1px solid #cdd3dd;background:white;color:inherit;border-radius:7px;padding:7px 10px}input{width:75px}button{cursor:pointer}button:hover{background:#edf1f8}main{position:relative;height:calc(100dvh - 195px);min-height:440px}canvas{display:block}.view-labels{position:absolute;inset:13px 0 auto;display:grid;grid-template-columns:repeat(3,1fr);pointer-events:none;text-align:center;color:#737d8e;font-size:12px}.status{position:absolute;bottom:10px;left:22px;font-size:12px;color:#6f7988}.single .view-labels{display:none}@media(max-width:700px){header{padding:15px}h1{font-size:18px}.toolbar{padding:12px;gap:9px}main{height:65dvh}}
+</style></head><body>
+<header><h1>관절별 작화 인체 · 외형 비교</h1><p>같은 체형과 자세를 정면·측면·사선에서 비교합니다. 원본 그림과의 완전한 일치 판정은 아닙니다.</p><nav><a href="/">편집기로 돌아가기</a><a href="https://ai-pose-gallery.pages.dev/" target="_blank" rel="noreferrer">비례 참고 갤러리</a></nav></header>
+<section class="toolbar">
+ <label>체형<select id="preview-body"><option value="feminine">여성형</option><option value="neutral">기본형</option></select></label>
+ <label>키<input id="preview-height" type="number" value="175" min="50" max="300" step="1">cm</label>
+ <label>등신<select id="preview-heads"><option>5</option><option selected>8</option><option>9.5</option></select></label>
+ <label>자세<select id="preview-pose"><option value="hips" selected>양손을 허리에</option><option value="reference">한팔 머리 위 · 손을 허리에</option><option value="standing">편하게 서기</option><option value="raised">팔 올리기</option><option value="squat">앉기</option></select></label>
+ <label>보기<select id="preview-view"><option value="compare">3면 비교</option><option value="free">마우스로 회전</option><option value="front">정면</option><option value="side">측면</option></select></label>
+ <label><input id="preview-guides" type="checkbox" checked style="width:auto">구조선</label>
+ <button id="preview-capture">PNG 저장</button>
+</section>
+<main id="preview"><div class="view-labels"><span>정면</span><span>측면</span><span>사선</span></div><output class="status" id="preview-status"></output></main>
+<script type="module" src="/src/model-preview-loader.js"></script></body></html>

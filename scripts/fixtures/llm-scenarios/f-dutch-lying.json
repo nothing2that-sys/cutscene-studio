@@ -1,0 +1,9 @@
+{"version":1,"units":"meters","title":"기능 C1 · 기울어진 화면의 두 사람",
+ "sourceText":"새벽 공원 잔디밭. 한 사람은 엎드려 있고, 다른 한 사람은 옆으로 누워 있다.",
+ "room":{"size":[10,3,8],"color":"#6f8a5a","walls":false},
+ "actors":[{"id":"c1a","name":"엎드린 남자","position":[-1.0,0,0],"yaw":90,"height":1.78,"bodyType":"male","pose":"lying-prone","description":"파란 트레이닝복, 20대 남성"},
+  {"id":"c1b","name":"옆으로 누운 여자","position":[1.0,0,0.3],"yaw":-90,"height":1.65,"pose":"lying-side","description":"노란 원피스, 20대 여성"}],
+ "props":[],
+ "camera":{"position":[0,1.8,4.2],"target":[0,0.2,0],"fov":45,"roll":15},
+ "lighting":{"type":"sun","position":[-3,6,3],"target":[0,0,0],"color":"#fff0d6","intensity":2,"ambient":0.5},
+ "shots":[{"id":"c1","name":"C1","purpose":"더치 앵글과 눕기 자세","camera":{"position":[0,1.8,4.2],"target":[0,0.2,0],"fov":45,"roll":15}}]}

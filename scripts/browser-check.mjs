@@ -1,0 +1,70 @@
+import { loadPlaywright } from './playwright-runtime.mjs';
+import { mkdir,readFile,writeFile } from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const {chromium}=loadPlaywright();
+await mkdir('validation',{recursive:true});
+const browser=await chromium.launch({channel:'chrome',headless:true,args:['--enable-webgl','--use-gl=angle','--use-angle=swiftshader']});
+const page=await browser.newPage({viewport:{width:1600,height:1000},acceptDownloads:true});
+const errors=[],external=[];
+const precise=value=>JSON.parse(JSON.stringify(value,(_k,v)=>typeof v==='number'?Math.round(v*1e8)/1e8:v));
+page.on('pageerror',e=>errors.push(e.message));
+await page.route('**/*',route=>{
+  const url=route.request().url();
+  if(url.startsWith('http')&&!url.startsWith('http://127.0.0.1:3001')){external.push(url);return route.abort();}
+  return route.continue();
+});
+async function download(selector,name){const pending=page.waitForEvent('download');await page.locator(selector).click();const d=await pending;await d.saveAs(`validation/${name}`);return readFile(`validation/${name}`);}
+try {
+  await page.goto('http://127.0.0.1:3001');
+  await page.locator('[data-edit-mode="advanced"]').click();
+  await page.locator('#studio-example').click();
+  await page.waitForFunction(()=>document.querySelector('#studio-status')?.textContent.includes('인물 2명'));
+  const first=JSON.parse(await download('#btn-save','project-initial.json'));
+  assert.equal(first.mannequins.length,2);assert.equal(first.importedModels.length,2);
+  assert.equal(first.studio.shots.length,2);
+  await page.locator('#body-part-select').selectOption('Head');
+  await page.locator('#num-rot-turn').fill('35');await page.locator('#num-rot-turn').press('Tab');
+  const posed=JSON.parse(await download('#btn-save','project-posed.json'));
+  assert.notDeepEqual(precise(posed.mannequins[0].joints.head.rotation),precise(first.mannequins[0].joints.head.rotation));
+  await page.locator('#btn-undo').click();
+  await page.locator('.layer-item[data-imported="true"][data-idx="0"] span').first().click();
+  await page.locator('#num-pos-x').fill('0.4');await page.locator('#num-pos-x').press('Tab');
+  const moved=JSON.parse(await download('#btn-save','project-moved.json'));
+  assert.equal(moved.importedModels[0].position[0],0.4);
+  await page.locator('#btn-undo').click();
+  await page.getByText('소품 추가',{exact:true}).click();
+  await page.locator('[data-prop="chair"]').click();
+  const added=JSON.parse(await download('#btn-save','project-added.json'));
+  assert.equal(added.importedModels.length,3);
+  await page.locator('#btn-undo').click();
+  const undone=JSON.parse(await download('#btn-save','project-undone.json'));
+  assert.equal(undone.importedModels.length,2);
+  await page.locator('#studio-room-x').fill('8');await page.locator('#studio-room-x').press('Tab');
+  await page.locator('#studio-shot-name').fill('수정한 컷');await page.locator('#studio-shot-add').click();
+  const saved=JSON.parse(await download('#btn-save','project-saved.json'));
+  assert.equal(saved.studio.document.room.size[0],8);assert.equal(saved.studio.shots.length,3);
+  await page.locator('#btn-load').setInputFiles('validation/project-initial.json');
+  await page.waitForFunction(()=>document.querySelector('#studio-room-x').value==='6');
+  const loaded=JSON.parse(await download('#btn-save','project-loaded.json'));
+  assert.deepEqual(precise(loaded.mannequins),precise(first.mannequins));assert.deepEqual(loaded.studio.shots,first.studio.shots);
+  await page.locator('#studio-json').locator('..').locator('summary').click();
+  await page.locator('#studio-json').fill('{"version":1,"units":"cm"}');await page.locator('#studio-apply').click();
+  assert.equal(await page.locator('#studio-status').getAttribute('class'),'error');
+  const intact=JSON.parse(await download('#btn-save','project-after-error.json'));
+  assert.deepEqual(precise(intact.mannequins),precise(first.mannequins));
+  const png=await download('#studio-color','color.png');
+  assert.equal(png.readUInt32BE(16),1600);assert.equal(png.readUInt32BE(20),900);
+  const depth=await download('#studio-depth','depth.png');
+  assert.equal(depth.readUInt32BE(16),1600);assert.equal(depth.readUInt32BE(20),900);
+  const packet=JSON.parse(await download('#studio-packet','handoff.json'));
+  assert.equal(packet.editorState.mannequins.length,2);assert.ok(packet.images.depth.startsWith('data:image/png;base64,'));
+  await page.locator('#studio-aspect').selectOption('0.5625');
+  const portrait=await download('#studio-color','portrait.png');assert.equal(portrait.readUInt32BE(16),900);assert.equal(portrait.readUInt32BE(20),1600);
+  await page.locator('#studio-aspect').selectOption('1.7777777777777777');
+  await page.screenshot({path:'validation/editor.png'});
+  // The invalid proposal intentionally logs its validation error.
+  assert.deepEqual(errors,[]);assert.deepEqual(external,[]);
+  const report={passed:true,poseComparisonTolerance:1e-8,checks:['offline assets','example placement','head joint edit and undo','prop list selection and position edit','prop add and undo','room edit','camera shot save','project save/reload with mannequin transforms preserved','invalid proposal preserves scene','color/depth 1600x900','portrait 900x1600','LLM packet'],pageErrors:errors,externalRequests:external};
+  await writeFile('validation/browser-report.json',JSON.stringify(report,null,2));
+  console.log(JSON.stringify(report,null,2));
+} finally {await browser.close();}

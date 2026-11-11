@@ -1,0 +1,170 @@
+{
+  "checkedOn": "2026-11-01",
+  "scope": "Public project documentation, selected source files and licenses. No bulk pose image or model library scraping.",
+  "runtimeVerification": "Only the local pose-toolkit derivative is run. Other project capabilities are source or README observations.",
+  "projects": [
+    {
+      "key": "pose",
+      "repo": "fanverseio/pose-toolkit",
+      "license": "GPL-3.0",
+      "role": "implementation-base",
+      "commit": "5ad2d16ae107c8e5ee3304fd30bbadb7ed213e33",
+      "files": [
+        "https://github.com/fanverseio/pose-toolkit/blob/5ad2d16ae107c8e5ee3304fd30bbadb7ed213e33/src/main.js",
+        "https://github.com/fanverseio/pose-toolkit/blob/5ad2d16ae107c8e5ee3304fd30bbadb7ed213e33/src/exportSystem.js",
+        "https://github.com/fanverseio/pose-toolkit/blob/5ad2d16ae107c8e5ee3304fd30bbadb7ed213e33/package.json",
+        "https://github.com/fanverseio/pose-toolkit/blob/5ad2d16ae107c8e5ee3304fd30bbadb7ed213e33/LICENSE"
+      ],
+      "defaultBranch": "main",
+      "pushedAt": "2026-04-08T08:56:35Z",
+      "archived": false,
+      "url": "https://github.com/fanverseio/pose-toolkit"
+    },
+    {
+      "key": "mannequin",
+      "repo": "boytchev/mannequin.js",
+      "license": "GPL-3.0",
+      "role": "runtime-dependency",
+      "files": [
+        "https://github.com/boytchev/mannequin.js/blob/main/src/mannequin.js",
+        "https://github.com/boytchev/mannequin.js/blob/main/src/scene.js",
+        "https://github.com/boytchev/mannequin.js/blob/main/src/bodies/Mannequin.js"
+      ],
+      "defaultBranch": "main",
+      "pushedAt": "2025-10-05T16:00:59Z",
+      "archived": false,
+      "url": "https://github.com/boytchev/mannequin.js"
+    },
+    {
+      "key": "a3d",
+      "repo": "n0neye/A3D",
+      "license": "AGPL-3.0",
+      "role": "architecture-reference-no-code-copied",
+      "commit": "fc396833aebcb4fea785c587caad1b314f6cf8f8",
+      "files": [
+        "https://github.com/n0neye/A3D/blob/fc396833aebcb4fea785c587caad1b314f6cf8f8/frontend/app/engine/services/RenderService.ts",
+        "https://github.com/n0neye/A3D/blob/fc396833aebcb4fea785c587caad1b314f6cf8f8/frontend/app/engine/managers/CameraManager.ts",
+        "https://github.com/n0neye/A3D/blob/fc396833aebcb4fea785c587caad1b314f6cf8f8/frontend/app/engine/managers/ProjectManager.ts",
+        "https://github.com/n0neye/A3D/blob/fc396833aebcb4fea785c587caad1b314f6cf8f8/LICENSE"
+      ],
+      "defaultBranch": "main",
+      "pushedAt": "2025-09-21T00:46:37Z",
+      "archived": false,
+      "url": "https://github.com/n0neye/A3D"
+    },
+    {
+      "key": "storyboarder",
+      "repo": "wonderunit/storyboarder",
+      "license": "Custom EULA observed in build/license_en.txt",
+      "role": "workflow-reference-no-code-copied",
+      "commit": "8b81a25c71d5f7ca46e8d5b8e3d4f7b3968f95c2",
+      "files": [
+        "https://github.com/wonderunit/storyboarder/blob/8b81a25c71d5f7ca46e8d5b8e3d4f7b3968f95c2/src/js/shot-generator/utils/cameraUtils.js",
+        "https://github.com/wonderunit/storyboarder/blob/8b81a25c71d5f7ca46e8d5b8e3d4f7b3968f95c2/src/js/shot-generator/hooks/use-save-to-storyboarder.js",
+        "https://github.com/wonderunit/storyboarder/blob/8b81a25c71d5f7ca46e8d5b8e3d4f7b3968f95c2/build/license_en.txt",
+        "https://github.com/wonderunit/storyboarder/blob/8b81a25c71d5f7ca46e8d5b8e3d4f7b3968f95c2/package.json"
+      ],
+      "defaultBranch": "master",
+      "pushedAt": "2024-03-17T12:03:55Z",
+      "archived": false,
+      "url": "https://github.com/wonderunit/storyboarder"
+    },
+    {
+      "key": "storyblender",
+      "repo": "EngineeringAI-LAB/StoryBlender",
+      "license": "GPL-3.0-or-later declared in blender_manifest.toml; GitHub API license null",
+      "role": "pipeline-reference",
+      "commit": "7b06d28b0409eb6aa2be4c27ac60b025127789e6",
+      "files": [
+        "https://github.com/EngineeringAI-LAB/StoryBlender/blob/7b06d28b0409eb6aa2be4c27ac60b025127789e6/README.md",
+        "https://github.com/EngineeringAI-LAB/StoryBlender/blob/7b06d28b0409eb6aa2be4c27ac60b025127789e6/blender_manifest.toml",
+        "https://github.com/EngineeringAI-LAB/StoryBlender/blob/7b06d28b0409eb6aa2be4c27ac60b025127789e6/src/gradio_app/step_3_formulate_scene_core_spatial_layout_by_layout_artist.py",
+        "https://github.com/EngineeringAI-LAB/StoryBlender/blob/7b06d28b0409eb6aa2be4c27ac60b025127789e6/src/gradio_app/step_10_camera_blocking_by_layout_artist.py"
+      ],
+      "defaultBranch": "main",
+      "pushedAt": "2026-10-19T09:47:35Z",
+      "archived": false,
+      "url": "https://github.com/EngineeringAI-LAB/StoryBlender"
+    },
+    {
+      "key": "cinevision",
+      "repo": "TonyHongtaoWu/CineVision",
+      "license": "MIT",
+      "role": "research-reference-readme-and-figures-only",
+      "files": [
+        "https://github.com/TonyHongtaoWu/CineVision/blob/main/README.md",
+        "https://github.com/TonyHongtaoWu/CineVision/blob/main/LICENSE"
+      ],
+      "defaultBranch": "main",
+      "pushedAt": "2025-07-30T13:19:01Z",
+      "archived": false,
+      "url": "https://github.com/TonyHongtaoWu/CineVision"
+    },
+    {
+      "key": "openpose",
+      "repo": "ZhUyU1997/open-pose-editor",
+      "license": "MIT",
+      "role": "future-pose-and-control-map-reference",
+      "files": [
+        "https://github.com/ZhUyU1997/open-pose-editor/blob/main/README.md"
+      ],
+      "defaultBranch": "main",
+      "pushedAt": "2024-02-25T22:12:16Z",
+      "archived": false,
+      "url": "https://github.com/ZhUyU1997/open-pose-editor"
+    },
+    {
+      "key": "openpose-webui",
+      "repo": "nonnonstop/sd-webui-3d-open-pose-editor",
+      "license": "MIT",
+      "role": "integration-reference",
+      "files": [
+        "https://github.com/nonnonstop/sd-webui-3d-open-pose-editor/blob/main/README.md"
+      ],
+      "defaultBranch": "main",
+      "pushedAt": "2023-06-18T10:58:33Z",
+      "archived": false,
+      "url": "https://github.com/nonnonstop/sd-webui-3d-open-pose-editor"
+    },
+    {
+      "key": "three",
+      "repo": "mrdoob/three.js",
+      "license": "MIT",
+      "role": "runtime-dependency",
+      "files": [
+        "https://github.com/mrdoob/three.js/blob/dev/README.md"
+      ],
+      "defaultBranch": "dev",
+      "pushedAt": "2026-10-31T19:45:20Z",
+      "archived": false,
+      "url": "https://github.com/mrdoob/three.js"
+    },
+    {
+      "key": "fullik",
+      "repo": "lo-th/fullik",
+      "license": "MIT",
+      "role": "future-ik-solver-candidate",
+      "files": [
+        "https://github.com/lo-th/fullik/blob/gh-pages/README.md",
+        "https://github.com/lo-th/fullik/blob/gh-pages/LICENSE"
+      ],
+      "defaultBranch": "gh-pages",
+      "pushedAt": "2025-05-17T07:05:50Z",
+      "archived": false,
+      "url": "https://github.com/lo-th/fullik"
+    },
+    {
+      "key": "three-vrm",
+      "repo": "pixiv/three-vrm",
+      "license": "MIT",
+      "role": "future-vrm-support-candidate",
+      "files": [
+        "https://github.com/pixiv/three-vrm/blob/dev/README.md"
+      ],
+      "defaultBranch": "dev",
+      "pushedAt": "2026-10-22T05:14:04Z",
+      "archived": false,
+      "url": "https://github.com/pixiv/three-vrm"
+    }
+  ]
+}

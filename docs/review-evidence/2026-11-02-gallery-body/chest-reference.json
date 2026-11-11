@@ -1,0 +1,55 @@
+{
+  "passed": true,
+  "engine": {
+    "torsoFollow": true,
+    "localAnchorsLocked": true,
+    "boneDrift": 1.1102230246251565e-16,
+    "heightError": 0,
+    "ratioError": 0,
+    "toggleRemoval": true
+  },
+  "checks": [
+    "torso-following local anchors, length lock, height/head ratio and removal",
+    "independent per-actor chest controls",
+    "Undo/Redo and save reload",
+    "single-character From File preserves chest",
+    "visible color/depth geometry and camera-projected chest anchors in handoff"
+  ],
+  "anatomyReferences": [
+    {
+      "actorIndex": 0,
+      "actorId": "seoyeon",
+      "name": "서연",
+      "chest": {
+        "kind": "chest-volume-centers",
+        "space": "world-meters",
+        "left": [
+          0.1051624886127217,
+          1.2184973112272721,
+          0.12076004527129841
+        ],
+        "right": [
+          -0.10521768539841077,
+          1.2184317482205977,
+          0.12078721479695789
+        ],
+        "leftImage": {
+          "point": [
+            0.5009109521500196,
+            0.428537887124316
+          ],
+          "inFrame": true
+        },
+        "rightImage": {
+          "point": [
+            0.46002343054926953,
+            0.42563562886559386
+          ],
+          "inFrame": true
+        }
+      },
+      "imageCoordinates": "normalized, origin top-left; inFrame does not test occlusion"
+    }
+  ],
+  "pageErrors": []
+}

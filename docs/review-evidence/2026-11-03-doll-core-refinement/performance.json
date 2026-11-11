@@ -1,0 +1,58 @@
+{
+  "method": "Four interleaved passes; each has 20 warmups + 12 batches × 40 renders, gl.finish wall time; optional 40-render GPU elapsed query. Same final browser/material/camera/resolution. Batch means reduce timer quantization; this is not target-PC FPS.",
+  "result": {
+    "before": [
+      {
+        "medianBatchMeanMs": 0.04249999970197678,
+        "p95BatchMeanMs": 0.07999999970197677,
+        "gpuMeanMs": 0.32455077499999996,
+        "gpuStatus": "valid batched query",
+        "glError": 0,
+        "triangles": 46708,
+        "draws": 3,
+        "vertices": 23360,
+        "geometryBytes": 840888
+      },
+      {
+        "medianBatchMeanMs": 0.02250000089406967,
+        "p95BatchMeanMs": 0.029999999701976775,
+        "gpuMeanMs": 0.324330725,
+        "gpuStatus": "valid batched query",
+        "glError": 0,
+        "triangles": 46708,
+        "draws": 3,
+        "vertices": 23360,
+        "geometryBytes": 840888
+      }
+    ],
+    "after": [
+      {
+        "medianBatchMeanMs": 0.020000000298023225,
+        "p95BatchMeanMs": 0.029999999701976775,
+        "gpuMeanMs": 0.21248304999999998,
+        "gpuStatus": "valid batched query",
+        "glError": 0,
+        "triangles": 11600,
+        "draws": 3,
+        "vertices": 5806,
+        "geometryBytes": 208944
+      },
+      {
+        "medianBatchMeanMs": 0.015000000596046448,
+        "p95BatchMeanMs": 0.032500000298023225,
+        "gpuMeanMs": 0.211507775,
+        "gpuStatus": "valid batched query",
+        "glError": 0,
+        "triangles": 11600,
+        "draws": 3,
+        "vertices": 5806,
+        "geometryBytes": 208944
+      }
+    ],
+    "viewport": {
+      "width": 547,
+      "height": 729
+    }
+  },
+  "pageErrors": []
+}

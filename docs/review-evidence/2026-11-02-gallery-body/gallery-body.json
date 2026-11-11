@@ -1,0 +1,77 @@
+{
+  "checks": [
+    "built-in preview renders front, side and three-quarter from one body/pose; PNG export has actual nonempty image data",
+    "height/spacing/projection change actual connected skin and measured chest anchors without stretching rig",
+    "5/8/9.5-head figures, squat/hips pose and free/side/compare view controls run without page errors",
+    "preview performs no GPU drawing while idle",
+    "production build preview, proportions/pose/view controls and three-view PNG export run successfully",
+    "production page without WebGL displays actual static 8-head comparison and disables unavailable 3D controls without uncaught errors"
+  ],
+  "morphs": [
+    {
+      "name": "base",
+      "anchors": [
+        [
+          6.348046556434922,
+          8.020733843407221,
+          -4.026843190920557
+        ],
+        [
+          6.34917390380941,
+          8.018261166527688,
+          4.028956765861062
+        ]
+      ],
+      "sum": 40219.92711935233
+    },
+    {
+      "name": "high",
+      "anchors": [
+        [
+          6.344266600537525,
+          8.414065241872677,
+          -4.026832584783303
+        ],
+        [
+          6.345392076666965,
+          8.411762434234578,
+          4.028946138098503
+        ]
+      ],
+      "sum": 41291.65690256917
+    },
+    {
+      "name": "wide",
+      "anchors": [
+        [
+          6.273649583598703,
+          8.00581394148426,
+          -4.259047482598837
+        ],
+        [
+          6.274727647425301,
+          8.003331236367195,
+          4.2613145367452585
+        ]
+      ],
+      "sum": 40054.586055722495
+    },
+    {
+      "name": "volume",
+      "anchors": [
+        [
+          6.721601999538357,
+          7.5895788766476215,
+          -4.141930089843286
+        ],
+        [
+          6.722976437648332,
+          7.5868221355583945,
+          4.144118667826453
+        ]
+      ],
+      "sum": 39899.64635677129
+    }
+  ],
+  "pageErrors": []
+}

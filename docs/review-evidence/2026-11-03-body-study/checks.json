@@ -1,0 +1,175 @@
+{
+  "pageErrors": [],
+  "display": {
+    "frame": [
+      516,
+      688
+    ],
+    "canvas": [
+      516,
+      688
+    ],
+    "overlayHidden": true
+  },
+  "geometry": [
+    {
+      "name": "trunk",
+      "vertices": 1858,
+      "triangles": 3712
+    },
+    {
+      "name": "head",
+      "vertices": 706,
+      "triangles": 1408
+    },
+    {
+      "name": "armL",
+      "vertices": 1186,
+      "triangles": 2368
+    },
+    {
+      "name": "legL",
+      "vertices": 1186,
+      "triangles": 2368
+    },
+    {
+      "name": "palmL",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "fingerL0",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "fingerL1",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "fingerL2",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "fingerL3",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "thumbL",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "footL",
+      "vertices": 514,
+      "triangles": 1024
+    },
+    {
+      "name": "toeL0",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "toeL1",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "toeL2",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "toeL3",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "toeL4",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "armR",
+      "vertices": 1186,
+      "triangles": 2368
+    },
+    {
+      "name": "legR",
+      "vertices": 1186,
+      "triangles": 2368
+    },
+    {
+      "name": "palmR",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "fingerR0",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "fingerR1",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "fingerR2",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "fingerR3",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "thumbR",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "footR",
+      "vertices": 514,
+      "triangles": 1024
+    },
+    {
+      "name": "toeR0",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "toeR1",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "toeR2",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "toeR3",
+      "vertices": 322,
+      "triangles": 640
+    },
+    {
+      "name": "toeR4",
+      "vertices": 322,
+      "triangles": 640
+    }
+  ],
+  "checks": [
+    "Actual WebGL captures in reference pose and four neutral directions",
+    "XYZ cage edits change geometry",
+    "JSON download and import preserve edited geometry",
+    "Reset restores authored cage",
+    "Comparison canvas and image share display size; overlay really hides",
+    "Existing model preview still opens"
+  ],
+  "scope": "No visual acceptance verdict; production rig and editor untouched"
+}

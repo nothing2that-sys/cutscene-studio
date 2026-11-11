@@ -1,0 +1,280 @@
+[
+  {
+    "name": "elbow",
+    "requested": 155,
+    "unprotected": {
+      "name": "elbow-unprotected",
+      "total": 2077,
+      "maxDepthPixels": 50.17877336406895,
+      "pairs": [
+        {
+          "a": "thorax",
+          "b": "foreL",
+          "count": 93,
+          "samples": 2472,
+          "maxDepthPixels": 29.56421718410133,
+          "first": [
+            -0.40393221378326416,
+            1.4209848630428314,
+            -0.05821610987186432
+          ]
+        },
+        {
+          "a": "thorax",
+          "b": "handL",
+          "count": 1937,
+          "samples": 4039,
+          "maxDepthPixels": 50.17877336406895,
+          "first": [
+            -0.2942703052065179,
+            1.583188326267033,
+            0.03500000014901161
+          ]
+        },
+        {
+          "a": "upperL",
+          "b": "foreL",
+          "count": 47,
+          "samples": 564,
+          "maxDepthPixels": 20.761232082983604,
+          "first": [
+            -0.5504423170455589,
+            1.4067900196266838,
+            0.050810325890779495
+          ]
+        }
+      ]
+    },
+    "protected": {
+      "applied": 18.16015625,
+      "elapsedMs": 35.39999997615814,
+      "constraint": {
+        "kind": "joint",
+        "joint": "foreL",
+        "axis": "z",
+        "requested": 155,
+        "applied": 18.16015625,
+        "pairs": [
+          [
+            "handL",
+            "thighL"
+          ]
+        ]
+      }
+    },
+    "audit": {
+      "name": "elbow-protected",
+      "total": 0,
+      "maxDepthPixels": 0,
+      "pairs": []
+    }
+  },
+  {
+    "name": "knee",
+    "requested": 145,
+    "unprotected": {
+      "name": "knee-unprotected",
+      "total": 71,
+      "maxDepthPixels": 33.72480839100665,
+      "pairs": [
+        {
+          "a": "thighL",
+          "b": "shinL",
+          "count": 71,
+          "samples": 717,
+          "maxDepthPixels": 33.72480839100665,
+          "first": [
+            -0.2908055478967015,
+            -0.3643031722999404,
+            -0.20502055704593658
+          ]
+        }
+      ]
+    },
+    "protected": {
+      "applied": 95.0703125,
+      "elapsedMs": 31.69999998807907,
+      "constraint": {
+        "kind": "joint",
+        "joint": "shinL",
+        "axis": "x",
+        "requested": 145,
+        "applied": 95.0703125,
+        "pairs": [
+          [
+            "thighL",
+            "shinL"
+          ]
+        ]
+      }
+    },
+    "audit": {
+      "name": "knee-protected",
+      "total": 0,
+      "maxDepthPixels": 0,
+      "pairs": []
+    }
+  },
+  {
+    "name": "hip",
+    "requested": -110,
+    "unprotected": {
+      "name": "hip-unprotected",
+      "total": 44,
+      "maxDepthPixels": 17.848883385990018,
+      "pairs": [
+        {
+          "a": "pelvis",
+          "b": "thighL",
+          "count": 44,
+          "samples": 2183,
+          "maxDepthPixels": 17.848883385990018,
+          "first": [
+            -0.5074747204780579,
+            0.5136358138173819,
+            0.10605917870998383
+          ]
+        }
+      ]
+    },
+    "protected": {
+      "applied": -77.3359375,
+      "elapsedMs": 44,
+      "constraint": {
+        "kind": "joint",
+        "joint": "thighL",
+        "axis": "x",
+        "requested": -110,
+        "applied": -77.3359375,
+        "pairs": [
+          [
+            "pelvis",
+            "thighL"
+          ]
+        ]
+      }
+    },
+    "audit": {
+      "name": "hip-protected",
+      "total": 0,
+      "maxDepthPixels": 0,
+      "pairs": []
+    }
+  },
+  {
+    "name": "arm",
+    "requested": 70,
+    "unprotected": {
+      "name": "arm-unprotected",
+      "total": 501,
+      "maxDepthPixels": 50.900288825743544,
+      "pairs": [
+        {
+          "a": "thorax",
+          "b": "upperL",
+          "count": 197,
+          "samples": 2198,
+          "maxDepthPixels": 50.900288825743544,
+          "first": [
+            -0.34615281224250793,
+            1.784727840423584,
+            -0.10826932638883591
+          ]
+        },
+        {
+          "a": "thorax",
+          "b": "foreL",
+          "count": 223,
+          "samples": 2472,
+          "maxDepthPixels": 48.411209233350114,
+          "first": [
+            0.41877296566963196,
+            1.6242740142345429,
+            -0.06026193127036095
+          ]
+        },
+        {
+          "a": "foreL",
+          "b": "upperR",
+          "count": 81,
+          "samples": 779,
+          "maxDepthPixels": 23.703279196709,
+          "first": [
+            0.4637848046141684,
+            1.6676500383781547,
+            0.04362712427973747
+          ]
+        }
+      ]
+    },
+    "protected": {
+      "applied": -14.548611111111114,
+      "elapsedMs": 47.700000047683716,
+      "constraint": {
+        "kind": "joint",
+        "joint": "upperL",
+        "axis": "z",
+        "requested": 70,
+        "applied": -14.548611111111114,
+        "pairs": [
+          [
+            "thorax",
+            "upperL"
+          ]
+        ]
+      }
+    },
+    "audit": {
+      "name": "arm-protected",
+      "total": 0,
+      "maxDepthPixels": 0,
+      "pairs": []
+    }
+  },
+  {
+    "name": "waist",
+    "requested": 65,
+    "unprotected": {
+      "name": "waist-unprotected",
+      "total": 69,
+      "maxDepthPixels": 6.961385426125791,
+      "pairs": [
+        {
+          "a": "thorax",
+          "b": "abdomen",
+          "count": 69,
+          "samples": 3258,
+          "maxDepthPixels": 6.961385426125791,
+          "first": [
+            -0.1879171186558503,
+            1.2518490540981293,
+            -0.03240901924559143
+          ]
+        }
+      ]
+    },
+    "protected": {
+      "applied": 10.218749999999998,
+      "elapsedMs": 169.5,
+      "constraint": {
+        "kind": "joint",
+        "joint": "thorax",
+        "axis": "y",
+        "requested": 65,
+        "applied": 10.218749999999998,
+        "pairs": [
+          [
+            "thorax",
+            "abdomen"
+          ]
+        ]
+      }
+    },
+    "audit": {
+      "name": "waist-protected",
+      "total": 0,
+      "maxDepthPixels": 0,
+      "pairs": []
+    }
+  }
+]

@@ -1,0 +1,86 @@
+{
+  "parts": [
+    {
+      "name": "thorax",
+      "vertices": 2102,
+      "triangles": 4200,
+      "boundaryEdges": 0,
+      "nonManifoldEdges": 0,
+      "inconsistentWinding": 0,
+      "nonfinite": 0,
+      "signedVolume": 0.21679548881170907
+    },
+    {
+      "name": "abdomen",
+      "vertices": 1202,
+      "triangles": 2400,
+      "boundaryEdges": 0,
+      "nonManifoldEdges": 0,
+      "inconsistentWinding": 0,
+      "nonfinite": 0,
+      "signedVolume": 0.09254890261383494
+    },
+    {
+      "name": "pelvis",
+      "vertices": 2502,
+      "triangles": 5000,
+      "boundaryEdges": 0,
+      "nonManifoldEdges": 0,
+      "inconsistentWinding": 0,
+      "nonfinite": 0,
+      "signedVolume": 0.1416682353026822
+    }
+  ],
+  "socketChecks": [
+    {
+      "name": "shoulderL",
+      "probe": [
+        -74,
+        274,
+        0
+      ],
+      "withoutSocket": -3.157297245058451,
+      "withSocket": 16
+    },
+    {
+      "name": "shoulderR",
+      "probe": [
+        74,
+        274,
+        0
+      ],
+      "withoutSocket": -3.157297245058451,
+      "withSocket": 16
+    },
+    {
+      "name": "hipL",
+      "probe": [
+        -33.5,
+        584,
+        1
+      ],
+      "withoutSocket": -23.628142823772183,
+      "withSocket": 24
+    },
+    {
+      "name": "hipR",
+      "probe": [
+        33.5,
+        584,
+        1
+      ],
+      "withoutSocket": -23.628142823772183,
+      "withSocket": 24
+    }
+  ],
+  "stats": "11,600 shell triangles · 3 draws · mesh 53 ms",
+  "pageErrors": [],
+  "checks": [
+    "Actual core/part front-side-back-oblique WebGL captures",
+    "Real socket surfaces and rigid joint motion are inspectable",
+    "Core local geometry unchanged by bend/twist presets",
+    "Chest edit changes vertices; JSON download/import and reset preserve geometry",
+    "Closed indexed part meshes with positive volume"
+  ],
+  "scope": "No visual acceptance or manufacturing/clearance verdict; existing app rig unchanged"
+}

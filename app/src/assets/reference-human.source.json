@@ -1,0 +1,29 @@
+{
+  "sourceCommit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+  "licenseURL": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/LICENSE.ASSETS.md",
+  "sourceFiles": {
+    "base.obj": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/3dobjs/base.obj",
+    "default.mhskel": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/rigs/default.mhskel",
+    "default_weights.mhw": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/rigs/default_weights.mhw",
+    "neutral-chest.target": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/breast/female-young-averagemuscle-averageweight-mincup-maxfirmness.target"
+  },
+  "date": "2026-11-02",
+  "sourceRepository": "https://github.com/makehumancommunity/makehuman",
+  "license": "CC0-1.0",
+  "keptGroups": [
+    "body",
+    "helper-l-eye",
+    "helper-r-eye"
+  ],
+  "excluded": "All clothing, genital, tongue, hair, lash, teeth and joint helper groups",
+  "preparation": "Three.js SimplifyModifier; exact retained-source-vertex weight transfer; top 4 normalized influences; anatomical bone aggregation",
+  "vertices": 6000,
+  "triangles": 11988,
+  "bones": 46,
+  "sourceHashes": {
+    "base.obj": "8e761e6624b8f54536409135d1636da63b32486a90d4897f84e121d144f6fb4c",
+    "default.mhskel": "99f179bce0aa850b45d4191a1d0d234c5851f881c057439470ded3bddf729a24",
+    "default_weights.mhw": "0f3641d651ae3d00ad6b4ccee43142edb109d3bd909d27d9e4139ef1beed8625",
+    "neutral-chest.target": "65e4ca16353f6c0e23b420cf5d9b31d8993943b76e6cd3a6961943371dd6bc2f"
+  }
+}

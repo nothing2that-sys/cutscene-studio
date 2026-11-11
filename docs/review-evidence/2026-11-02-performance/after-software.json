@@ -1,0 +1,35 @@
+{
+  "phase": "after",
+  "software": true,
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "actors": 6,
+  "idle": {
+    "durationMs": 2513.5,
+    "animationFrames": 49,
+    "mainRenderCount": 0,
+    "mainRenderFps": 0,
+    "averageRenderCpuMs": 0,
+    "averageDrawCalls": 0,
+    "averageTriangles": 0,
+    "averageVisibleActors": 0,
+    "buffer": [
+      1024,
+      704
+    ]
+  },
+  "moving": {
+    "durationMs": 2748,
+    "animationFrames": 13,
+    "mainRenderCount": 12,
+    "mainRenderFps": 4.366812227074236,
+    "averageRenderCpuMs": 14.541666646798452,
+    "averageDrawCalls": 97,
+    "averageTriangles": 20220,
+    "averageVisibleActors": 1,
+    "buffer": [
+      1024,
+      704
+    ]
+  },
+  "pageErrors": []
+}

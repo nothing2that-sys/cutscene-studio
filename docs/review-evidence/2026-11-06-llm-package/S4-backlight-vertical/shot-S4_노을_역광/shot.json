@@ -1,0 +1,477 @@
+{
+  "format": "cutscene-shot-package",
+  "version": 1,
+  "scene": {
+    "title": "검증 S4 · 노을 역광 세로 컷",
+    "sourceText": "해 질 녘 언덕 위. 지는 해를 바라보는 두 사람의 뒷모습. 화면 왼쪽 사람이 오른팔을 뻗어 해 쪽을 가리키고, 오른쪽 사람은 팔을 내린 채 그쪽을 본다.",
+    "assumptions": "검증용 장면. 낮게 깔린 해를 평행광으로 둠."
+  },
+  "shot": {
+    "name": "S4 노을 역광",
+    "purpose": "역광 실루엣·세로 화면비·오른팔 확인"
+  },
+  "image": {
+    "width": 900,
+    "height": 1600,
+    "aspect": 0.563,
+    "origin": "top-left, x right, y down, coordinates normalized 0..1"
+  },
+  "files": {
+    "color": "color.png",
+    "label": "label.png",
+    "depth": "depth.png",
+    "depth16": "depth16.png",
+    "light": "light.png",
+    "pose": "pose.png"
+  },
+  "camera": {
+    "position": [
+      0.3,
+      1.3,
+      3.6
+    ],
+    "heightM": 1.3,
+    "pitchDeg": -0.8,
+    "verticalFovDeg": 45,
+    "focal35mm": 46,
+    "aspect": 0.56,
+    "lookAt": [
+      0,
+      1.25,
+      0
+    ]
+  },
+  "depth": {
+    "metric": "euclidean distance from the camera centre to the surface, metres",
+    "depthPng": {
+      "nearM": 3.29,
+      "farM": 4.71,
+      "mapping": "linear: nearM=255 (white), farM and beyond=40, background=0"
+    },
+    "depth16Png": {
+      "unit": "millimetres",
+      "background": 0
+    }
+  },
+  "lighting": {
+    "type": "sun",
+    "typeText": "태양광(평행광): 장면 전체에 같은 방향·같은 세기로 비추고 그림자가 서로 평행하게 떨어짐",
+    "positionWorld": [
+      1.5,
+      1.4,
+      -8
+    ],
+    "targetWorld": [
+      0,
+      1,
+      0
+    ],
+    "directionToLightCamera": [
+      0.26,
+      0.06,
+      -0.96
+    ],
+    "cameraFrame": "+x screen right, +y screen up, +z toward the viewer; direction measured from the lit target point",
+    "text": "빛은 화면 가운데, 피사체 뒤쪽(역광)에서 들어옴",
+    "color": "#ffb070",
+    "intensity": 3,
+    "intensityMeaning": "brightness reached at targetWorld",
+    "ambient": 0.25,
+    "lightPng": "direct light only: surface facing the light with nothing in between = white; turned away or in a cast shadow = black. Ambient light is excluded. Background is also black; use label.png to tell them apart."
+  },
+  "labels": [
+    {
+      "index": 1,
+      "color": "#e6194b",
+      "kind": "person",
+      "id": "b1",
+      "name": "가리키는 사람 · 갈색 재킷",
+      "notes": {
+        "role": "",
+        "intent": "",
+        "description": "갈색 가죽 재킷, 짧은 머리 남성. 오른팔로 먼 곳을 가리킴"
+      },
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.117,
+          0.334,
+          0.557,
+          0.919
+        ],
+        "pixelShare": 0.094
+      },
+      "distanceM": {
+        "min": 3.55,
+        "median": 3.66,
+        "max": 4.03
+      },
+      "directLight": {
+        "mean": 0,
+        "litShare": 0.01,
+        "darkShare": 0.98
+      },
+      "pose": {
+        "text": "화면 왼쪽(가로 32%), 화면 높이의 56%. 화면 오른쪽을 향해 돌아선 3/4 뒷모습. 서 있음. 오른팔: 앞으로 어깨보다 높이 듦, 팔을 폄, 손은 얼굴 높이(화면 오른쪽). 왼팔: 앞옆으로 약간 듦, 팔을 폄, 손은 허리 높이(화면 왼쪽). 두 발 모두 바닥에 닿음",
+        "stance": "서 있음",
+        "yawToCameraDeg": 148.2,
+        "joints": {
+          "headTop": {
+            "xy": [
+              0.24,
+              0.33
+            ],
+            "distanceM": 3.64,
+            "visible": true
+          },
+          "pelvis": {
+            "xy": [
+              0.24,
+              0.59
+            ],
+            "distanceM": 3.65,
+            "visible": true
+          },
+          "chest": {
+            "xy": [
+              0.24,
+              0.52
+            ],
+            "distanceM": 3.65,
+            "visible": true
+          },
+          "neck": {
+            "xy": [
+              0.24,
+              0.42
+            ],
+            "distanceM": 3.65,
+            "visible": true
+          },
+          "head": {
+            "xy": [
+              0.24,
+              0.41
+            ],
+            "distanceM": 3.65,
+            "visible": true
+          },
+          "shoulderL": {
+            "xy": [
+              0.16,
+              0.44
+            ],
+            "distanceM": 3.71,
+            "visible": true
+          },
+          "shoulderR": {
+            "xy": [
+              0.31,
+              0.44
+            ],
+            "distanceM": 3.58,
+            "visible": true
+          },
+          "elbowL": {
+            "xy": [
+              0.15,
+              0.52
+            ],
+            "distanceM": 3.83,
+            "visible": true
+          },
+          "elbowR": {
+            "xy": [
+              0.42,
+              0.41
+            ],
+            "distanceM": 3.77,
+            "visible": true
+          },
+          "wristL": {
+            "xy": [
+              0.14,
+              0.58
+            ],
+            "distanceM": 3.92,
+            "visible": true
+          },
+          "wristR": {
+            "xy": [
+              0.5,
+              0.39
+            ],
+            "distanceM": 3.92,
+            "visible": true
+          },
+          "hipL": {
+            "xy": [
+              0.18,
+              0.59
+            ],
+            "distanceM": 3.71,
+            "visible": true
+          },
+          "hipR": {
+            "xy": [
+              0.3,
+              0.6
+            ],
+            "distanceM": 3.61,
+            "visible": true
+          },
+          "kneeL": {
+            "xy": [
+              0.18,
+              0.74
+            ],
+            "distanceM": 3.71,
+            "visible": true
+          },
+          "kneeR": {
+            "xy": [
+              0.3,
+              0.74
+            ],
+            "distanceM": 3.61,
+            "visible": true
+          },
+          "ankleL": {
+            "xy": [
+              0.18,
+              0.88
+            ],
+            "distanceM": 3.72,
+            "visible": true
+          },
+          "ankleR": {
+            "xy": [
+              0.3,
+              0.89
+            ],
+            "distanceM": 3.62,
+            "visible": true
+          }
+        }
+      },
+      "lightCondition": {
+        "facingLight": 0.99,
+        "cameraSeesLitSide": -0.92,
+        "castShadowFrom": {},
+        "text": "빛을 정면으로 받음(얼굴·가슴 쪽이 밝고 등은 어두움) · 카메라는 그늘진 면을 봄(역광, 윤곽만 밝음)"
+      }
+    },
+    {
+      "index": 2,
+      "color": "#3cb44b",
+      "kind": "person",
+      "id": "b2",
+      "name": "보는 사람 · 하늘색 원피스",
+      "notes": {
+        "role": "",
+        "intent": "",
+        "description": "하늘색 원피스, 긴 생머리 여성"
+      },
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.596,
+          0.383,
+          0.922,
+          0.892
+        ],
+        "pixelShare": 0.075
+      },
+      "distanceM": {
+        "min": 3.8,
+        "median": 3.89,
+        "max": 4.21
+      },
+      "directLight": {
+        "mean": 0,
+        "litShare": 0,
+        "darkShare": 1
+      },
+      "pose": {
+        "text": "화면 오른쪽(가로 77%), 화면 높이의 49%. 화면 왼쪽을 향해 돌아선 3/4 뒷모습. 서 있음. 오른팔: 내림, 팔을 폄, 손은 허리 높이(화면 오른쪽). 왼팔: 내림, 팔을 폄, 손은 허리 높이(화면 왼쪽). 두 발 모두 바닥에 닿음",
+        "stance": "서 있음",
+        "yawToCameraDeg": 157.1,
+        "joints": {
+          "headTop": {
+            "xy": [
+              0.79,
+              0.38
+            ],
+            "distanceM": 3.87,
+            "visible": true
+          },
+          "pelvis": {
+            "xy": [
+              0.79,
+              0.6
+            ],
+            "distanceM": 3.87,
+            "visible": true
+          },
+          "chest": {
+            "xy": [
+              0.79,
+              0.54
+            ],
+            "distanceM": 3.87,
+            "visible": true
+          },
+          "neck": {
+            "xy": [
+              0.79,
+              0.46
+            ],
+            "distanceM": 3.87,
+            "visible": true
+          },
+          "head": {
+            "xy": [
+              0.79,
+              0.45
+            ],
+            "distanceM": 3.87,
+            "visible": true
+          },
+          "shoulderL": {
+            "xy": [
+              0.72,
+              0.48
+            ],
+            "distanceM": 3.83,
+            "visible": true
+          },
+          "shoulderR": {
+            "xy": [
+              0.86,
+              0.48
+            ],
+            "distanceM": 3.91,
+            "visible": true
+          },
+          "elbowL": {
+            "xy": [
+              0.67,
+              0.55
+            ],
+            "distanceM": 3.87,
+            "visible": true
+          },
+          "elbowR": {
+            "xy": [
+              0.89,
+              0.55
+            ],
+            "distanceM": 3.99,
+            "visible": true
+          },
+          "wristL": {
+            "xy": [
+              0.63,
+              0.61
+            ],
+            "distanceM": 3.9,
+            "visible": true
+          },
+          "wristR": {
+            "xy": [
+              0.9,
+              0.6
+            ],
+            "distanceM": 4.05,
+            "visible": true
+          },
+          "hipL": {
+            "xy": [
+              0.73,
+              0.61
+            ],
+            "distanceM": 3.85,
+            "visible": true
+          },
+          "hipR": {
+            "xy": [
+              0.85,
+              0.61
+            ],
+            "distanceM": 3.91,
+            "visible": true
+          },
+          "kneeL": {
+            "xy": [
+              0.73,
+              0.74
+            ],
+            "distanceM": 3.85,
+            "visible": true
+          },
+          "kneeR": {
+            "xy": [
+              0.85,
+              0.73
+            ],
+            "distanceM": 3.91,
+            "visible": true
+          },
+          "ankleL": {
+            "xy": [
+              0.73,
+              0.87
+            ],
+            "distanceM": 3.86,
+            "visible": true
+          },
+          "ankleR": {
+            "xy": [
+              0.85,
+              0.86
+            ],
+            "distanceM": 3.92,
+            "visible": true
+          }
+        }
+      },
+      "lightCondition": {
+        "facingLight": 0.86,
+        "cameraSeesLitSide": -0.99,
+        "castShadowFrom": {},
+        "text": "빛을 정면으로 받음(얼굴·가슴 쪽이 밝고 등은 어두움) · 카메라는 그늘진 면을 봄(역광, 윤곽만 밝음)"
+      }
+    },
+    {
+      "index": 3,
+      "color": "#505050",
+      "kind": "floor",
+      "id": "floor",
+      "name": "바닥",
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0,
+          0.643,
+          1,
+          1
+        ],
+        "pixelShare": 0.284
+      },
+      "distanceM": {
+        "min": 3.29,
+        "median": 4.52,
+        "max": 9.94
+      },
+      "directLight": {
+        "mean": 0.04,
+        "litShare": 0,
+        "darkShare": 1
+      }
+    }
+  ],
+  "shotDescription": "촬영 설명 (편집기 3D 장면의 촬영 카메라에서 계산한 값입니다. 첨부 color PNG와 같은 카메라입니다.)\n- 컷: S4 노을 역광 — 역광 실루엣·세로 화면비·오른팔 확인\n- 카메라: 풀샷(전신) · 수평에 가까운 앵글(카메라 높이 1.3m, 가리키는 사람 · 갈색 재킷의 눈높이보다 0.3m 아래, 아래로 1°), 표준 화각 · 35mm 환산 약 46mm · 화면비 0.56:1\n- 가리키는 사람 · 갈색 재킷: 화면 왼쪽(가로 32%), 화면 높이의 56%. 화면 오른쪽을 향해 돌아선 3/4 뒷모습. 서 있음. 오른팔: 앞으로 어깨보다 높이 듦, 팔을 폄, 손은 얼굴 높이(화면 오른쪽). 왼팔: 앞옆으로 약간 듦, 팔을 폄, 손은 허리 높이(화면 왼쪽). 두 발 모두 바닥에 닿음.\n- 보는 사람 · 하늘색 원피스: 화면 오른쪽(가로 77%), 화면 높이의 49%. 화면 왼쪽을 향해 돌아선 3/4 뒷모습. 서 있음. 오른팔: 내림, 팔을 폄, 손은 허리 높이(화면 오른쪽). 왼팔: 내림, 팔을 폄, 손은 허리 높이(화면 왼쪽). 두 발 모두 바닥에 닿음.\n- 앞뒤 관계: 카메라에서 가까운 순서로 가리키는 사람 · 갈색 재킷(3.7m) → 보는 사람 · 하늘색 원피스(3.9m).\n- 빛: 주광은 화면 정면 쪽, 인물 뒤쪽(역광)에서 비춤 → 그림자는 카메라 쪽으로 떨어짐.\n좌우 표기: \"화면 왼쪽/오른쪽\"은 이미지 기준, \"왼팔/오른팔·왼발/오른발\"은 인물 자신 기준입니다. 시선·표정·손가락 모양은 계산하지 않았으니 원문과 캐릭터 설명을 따르세요."
+}

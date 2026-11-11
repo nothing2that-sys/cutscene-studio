@@ -1,0 +1,875 @@
+{
+  "format": "cutscene-shot-package",
+  "version": 1,
+  "scene": {
+    "title": "검증 S2 · 전등 앞에 줄 선 사람들",
+    "sourceText": "밤, 골목 끝 가로등 하나 아래로 네 사람이 한 줄로 서서 기다린다. 맨 앞 사람만 불빛을 정면으로 받고, 뒤로 갈수록 앞사람 그림자에 묻힌다.",
+    "assumptions": "검증용 장면. 가로등은 낮게 둔 점광원으로 근사."
+  },
+  "shot": {
+    "name": "S2 줄 선 사람들",
+    "purpose": "전등 그림자와 거리 감쇠 확인"
+  },
+  "image": {
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.778,
+    "origin": "top-left, x right, y down, coordinates normalized 0..1"
+  },
+  "files": {
+    "color": "color.png",
+    "label": "label.png",
+    "depth": "depth.png",
+    "depth16": "depth16.png",
+    "light": "light.png",
+    "pose": "pose.png"
+  },
+  "camera": {
+    "position": [
+      3.2,
+      1.6,
+      4.5
+    ],
+    "heightM": 1.6,
+    "pitchDeg": -5.2,
+    "verticalFovDeg": 40,
+    "focal35mm": 29,
+    "aspect": 1.78,
+    "lookAt": [
+      0,
+      1.1,
+      0
+    ]
+  },
+  "depth": {
+    "metric": "euclidean distance from the camera centre to the surface, metres",
+    "depthPng": {
+      "nearM": 3.82,
+      "farM": 7.51,
+      "mapping": "linear: nearM=255 (white), farM and beyond=40, background=0"
+    },
+    "depth16Png": {
+      "unit": "millimetres",
+      "background": 0
+    }
+  },
+  "lighting": {
+    "type": "lamp",
+    "typeText": "전등(점광원): 광원에서 사방으로 퍼짐. 광원에 가까울수록 밝고 멀수록 어두워지며, 그림자는 광원 반대쪽으로 방사형으로 퍼지고 멀수록 커짐",
+    "positionWorld": [
+      0.6,
+      1.7,
+      3
+    ],
+    "targetWorld": [
+      0,
+      1.3,
+      1.5
+    ],
+    "source": {
+      "xy": [
+        0.144,
+        0.325
+      ],
+      "inFrame": true,
+      "distanceFromCameraM": 3
+    },
+    "directionToLightCamera": [
+      -0.23,
+      0.15,
+      0.96
+    ],
+    "cameraFrame": "+x screen right, +y screen up, +z toward the viewer; direction measured from the lit target point",
+    "text": "비추는 곳 기준으로 빛은 화면 가운데, 카메라 쪽(순광)에서 들어옴 · 광원이 화면 안 (14%, 33%)에 보임",
+    "color": "#ffd9a0",
+    "intensity": 2.4,
+    "intensityMeaning": "brightness reached at targetWorld",
+    "ambient": 0.25,
+    "lightPng": "direct light only: surface facing the light with nothing in between = white; turned away or in a cast shadow = black. Ambient light is excluded. Background is also black; use label.png to tell them apart. A lamp/spot fades with distance: the lit target reads white, nearer surfaces clip to white, farther ones are greyer."
+  },
+  "labels": [
+    {
+      "index": 1,
+      "color": "#e6194b",
+      "kind": "person",
+      "id": "q1",
+      "name": "맨 앞 · 노란 우비 여자",
+      "notes": {
+        "role": "",
+        "intent": "",
+        "description": "노란 우비, 단발머리 20대 여성"
+      },
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.286,
+          0.36,
+          0.377,
+          0.896
+        ],
+        "pixelShare": 0.023
+      },
+      "distanceM": {
+        "min": 4.12,
+        "median": 4.39,
+        "max": 4.71
+      },
+      "directLight": {
+        "mean": 0.57,
+        "litShare": 0.84,
+        "darkShare": 0.06
+      },
+      "pose": {
+        "text": "화면 가운데(가로 34%), 화면 높이의 50%. 몸이 화면 왼쪽을 향한 3/4 정면. 서 있음. 오른팔: 내림, 팔을 폄, 손은 허리 높이(화면 왼쪽). 왼팔: 내림, 팔을 폄, 손은 허리 높이(화면 오른쪽). 두 발 모두 바닥에 닿음",
+        "stance": "서 있음",
+        "yawToCameraDeg": 46.8,
+        "joints": {
+          "headTop": {
+            "xy": [
+              0.34,
+              0.36
+            ],
+            "distanceM": 4.28,
+            "visible": true
+          },
+          "pelvis": {
+            "xy": [
+              0.35,
+              0.59
+            ],
+            "distanceM": 4.34,
+            "visible": true
+          },
+          "chest": {
+            "xy": [
+              0.34,
+              0.53
+            ],
+            "distanceM": 4.32,
+            "visible": true
+          },
+          "neck": {
+            "xy": [
+              0.34,
+              0.44
+            ],
+            "distanceM": 4.3,
+            "visible": true
+          },
+          "head": {
+            "xy": [
+              0.34,
+              0.42
+            ],
+            "distanceM": 4.3,
+            "visible": true
+          },
+          "shoulderL": {
+            "xy": [
+              0.36,
+              0.46
+            ],
+            "distanceM": 4.22,
+            "visible": true
+          },
+          "shoulderR": {
+            "xy": [
+              0.33,
+              0.45
+            ],
+            "distanceM": 4.39,
+            "visible": true
+          },
+          "elbowL": {
+            "xy": [
+              0.37,
+              0.54
+            ],
+            "distanceM": 4.15,
+            "visible": true
+          },
+          "elbowR": {
+            "xy": [
+              0.31,
+              0.53
+            ],
+            "distanceM": 4.4,
+            "visible": true
+          },
+          "wristL": {
+            "xy": [
+              0.37,
+              0.6
+            ],
+            "distanceM": 4.1,
+            "visible": true
+          },
+          "wristR": {
+            "xy": [
+              0.3,
+              0.59
+            ],
+            "distanceM": 4.42,
+            "visible": true
+          },
+          "hipL": {
+            "xy": [
+              0.36,
+              0.6
+            ],
+            "distanceM": 4.28,
+            "visible": true
+          },
+          "hipR": {
+            "xy": [
+              0.33,
+              0.59
+            ],
+            "distanceM": 4.41,
+            "visible": true
+          },
+          "kneeL": {
+            "xy": [
+              0.36,
+              0.73
+            ],
+            "distanceM": 4.32,
+            "visible": true
+          },
+          "kneeR": {
+            "xy": [
+              0.33,
+              0.72
+            ],
+            "distanceM": 4.45,
+            "visible": true
+          },
+          "ankleL": {
+            "xy": [
+              0.36,
+              0.86
+            ],
+            "distanceM": 4.35,
+            "visible": true
+          },
+          "ankleR": {
+            "xy": [
+              0.33,
+              0.85
+            ],
+            "distanceM": 4.48,
+            "visible": true
+          }
+        }
+      },
+      "lightCondition": {
+        "facingLight": 0.93,
+        "cameraSeesLitSide": 0.91,
+        "castShadowFrom": {},
+        "distanceToLightM": 1.71,
+        "brightnessVsTarget": 0.94,
+        "text": "빛을 정면으로 받음(얼굴·가슴 쪽이 밝고 등은 어두움) · 카메라는 빛을 받는 면을 봄 · 광원에서 1.7m · 비추는 곳 대비 밝기 94%"
+      }
+    },
+    {
+      "index": 2,
+      "color": "#3cb44b",
+      "kind": "person",
+      "id": "q2",
+      "name": "둘째 · 회색 정장 남자",
+      "notes": {
+        "role": "",
+        "intent": "",
+        "description": "회색 정장, 서류 가방 없음, 40대 남성"
+      },
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.4,
+          0.321,
+          0.489,
+          0.813
+        ],
+        "pixelShare": 0.021
+      },
+      "distanceM": {
+        "min": 4.83,
+        "median": 5.1,
+        "max": 5.4
+      },
+      "directLight": {
+        "mean": 0.22,
+        "litShare": 0.52,
+        "darkShare": 0.29
+      },
+      "pose": {
+        "text": "화면 가운데(가로 44%), 화면 높이의 46%. 몸이 화면 왼쪽을 향한 3/4 정면. 서 있음. 오른팔: 내림, 팔을 폄, 손은 허리 높이(화면 왼쪽). 왼팔: 내림, 팔을 폄, 손은 허리 높이(화면 오른쪽). 두 발 모두 바닥에 닿음",
+        "stance": "서 있음",
+        "yawToCameraDeg": 38.7,
+        "joints": {
+          "headTop": {
+            "xy": [
+              0.46,
+              0.32
+            ],
+            "distanceM": 5.08,
+            "visible": true
+          },
+          "pelvis": {
+            "xy": [
+              0.46,
+              0.53
+            ],
+            "distanceM": 5.15,
+            "visible": true
+          },
+          "chest": {
+            "xy": [
+              0.46,
+              0.48
+            ],
+            "distanceM": 5.13,
+            "visible": true
+          },
+          "neck": {
+            "xy": [
+              0.46,
+              0.39
+            ],
+            "distanceM": 5.1,
+            "visible": true
+          },
+          "head": {
+            "xy": [
+              0.46,
+              0.38
+            ],
+            "distanceM": 5.1,
+            "visible": true
+          },
+          "shoulderL": {
+            "xy": [
+              0.48,
+              0.41
+            ],
+            "distanceM": 5.01,
+            "visible": true
+          },
+          "shoulderR": {
+            "xy": [
+              0.44,
+              0.41
+            ],
+            "distanceM": 5.2,
+            "visible": true
+          },
+          "elbowL": {
+            "xy": [
+              0.48,
+              0.48
+            ],
+            "distanceM": 4.94,
+            "visible": true
+          },
+          "elbowR": {
+            "xy": [
+              0.42,
+              0.48
+            ],
+            "distanceM": 5.21,
+            "visible": true
+          },
+          "wristL": {
+            "xy": [
+              0.48,
+              0.54
+            ],
+            "distanceM": 4.88,
+            "visible": true
+          },
+          "wristR": {
+            "xy": [
+              0.41,
+              0.53
+            ],
+            "distanceM": 5.23,
+            "visible": true
+          },
+          "hipL": {
+            "xy": [
+              0.47,
+              0.54
+            ],
+            "distanceM": 5.08,
+            "visible": true
+          },
+          "hipR": {
+            "xy": [
+              0.44,
+              0.54
+            ],
+            "distanceM": 5.22,
+            "visible": true
+          },
+          "kneeL": {
+            "xy": [
+              0.47,
+              0.66
+            ],
+            "distanceM": 5.12,
+            "visible": true
+          },
+          "kneeR": {
+            "xy": [
+              0.44,
+              0.65
+            ],
+            "distanceM": 5.26,
+            "visible": true
+          },
+          "ankleL": {
+            "xy": [
+              0.47,
+              0.78
+            ],
+            "distanceM": 5.16,
+            "visible": true
+          },
+          "ankleR": {
+            "xy": [
+              0.44,
+              0.77
+            ],
+            "distanceM": 5.3,
+            "visible": true
+          }
+        }
+      },
+      "lightCondition": {
+        "facingLight": 0.97,
+        "cameraSeesLitSide": 0.91,
+        "castShadowFrom": {
+          "맨 앞 · 노란 우비 여자": [
+            "wristR"
+          ]
+        },
+        "distanceToLightM": 2.61,
+        "brightnessVsTarget": 0.41,
+        "text": "빛을 정면으로 받음(얼굴·가슴 쪽이 밝고 등은 어두움) · 카메라는 빛을 받는 면을 봄 · 광원에서 2.6m · 비추는 곳 대비 밝기 41% · 오른손은 맨 앞 · 노란 우비 여자의 그림자 안"
+      }
+    },
+    {
+      "index": 3,
+      "color": "#4363d8",
+      "kind": "person",
+      "id": "q3",
+      "name": "셋째 · 빨간 후드 소년",
+      "notes": {
+        "role": "",
+        "intent": "",
+        "description": "빨간 후드티, 10대 소년"
+      },
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.494,
+          0.388,
+          0.564,
+          0.751
+        ],
+        "pixelShare": 0.012
+      },
+      "distanceM": {
+        "min": 5.71,
+        "median": 5.93,
+        "max": 6.17
+      },
+      "directLight": {
+        "mean": 0.06,
+        "litShare": 0,
+        "darkShare": 0.62
+      },
+      "pose": {
+        "text": "화면 가운데(가로 53%), 화면 높이의 34%. 몸이 화면 왼쪽을 향한 3/4 정면. 서 있음. 오른팔: 내림, 팔을 폄, 손은 허리 높이(화면 왼쪽). 왼팔: 내림, 팔을 폄, 손은 허리 높이(화면 오른쪽). 두 발 모두 바닥에 닿음",
+        "stance": "서 있음",
+        "yawToCameraDeg": 32.6,
+        "joints": {
+          "headTop": {
+            "xy": [
+              0.54,
+              0.39
+            ],
+            "distanceM": 5.91,
+            "visible": true
+          },
+          "pelvis": {
+            "xy": [
+              0.54,
+              0.54
+            ],
+            "distanceM": 5.97,
+            "visible": true
+          },
+          "chest": {
+            "xy": [
+              0.54,
+              0.5
+            ],
+            "distanceM": 5.95,
+            "visible": true
+          },
+          "neck": {
+            "xy": [
+              0.54,
+              0.44
+            ],
+            "distanceM": 5.93,
+            "visible": true
+          },
+          "head": {
+            "xy": [
+              0.54,
+              0.43
+            ],
+            "distanceM": 5.93,
+            "visible": true
+          },
+          "shoulderL": {
+            "xy": [
+              0.55,
+              0.45
+            ],
+            "distanceM": 5.86,
+            "visible": true
+          },
+          "shoulderR": {
+            "xy": [
+              0.52,
+              0.45
+            ],
+            "distanceM": 6.01,
+            "visible": true
+          },
+          "elbowL": {
+            "xy": [
+              0.56,
+              0.51
+            ],
+            "distanceM": 5.79,
+            "visible": true
+          },
+          "elbowR": {
+            "xy": [
+              0.51,
+              0.5
+            ],
+            "distanceM": 6.03,
+            "visible": true
+          },
+          "wristL": {
+            "xy": [
+              0.56,
+              0.55
+            ],
+            "distanceM": 5.74,
+            "visible": true
+          },
+          "wristR": {
+            "xy": [
+              0.5,
+              0.54
+            ],
+            "distanceM": 6.04,
+            "visible": true
+          },
+          "hipL": {
+            "xy": [
+              0.55,
+              0.55
+            ],
+            "distanceM": 5.91,
+            "visible": true
+          },
+          "hipR": {
+            "xy": [
+              0.53,
+              0.55
+            ],
+            "distanceM": 6.03,
+            "visible": true
+          },
+          "kneeL": {
+            "xy": [
+              0.55,
+              0.64
+            ],
+            "distanceM": 5.95,
+            "visible": true
+          },
+          "kneeR": {
+            "xy": [
+              0.53,
+              0.63
+            ],
+            "distanceM": 6.07,
+            "visible": true
+          },
+          "ankleL": {
+            "xy": [
+              0.55,
+              0.73
+            ],
+            "distanceM": 5.98,
+            "visible": true
+          },
+          "ankleR": {
+            "xy": [
+              0.53,
+              0.72
+            ],
+            "distanceM": 6.1,
+            "visible": true
+          }
+        }
+      },
+      "lightCondition": {
+        "facingLight": 0.99,
+        "cameraSeesLitSide": 0.92,
+        "castShadowFrom": {
+          "둘째 · 회색 정장 남자": [
+            "head",
+            "wristR",
+            "kneeR"
+          ]
+        },
+        "distanceToLightM": 3.61,
+        "brightnessVsTarget": 0.21,
+        "text": "빛을 정면으로 받음(얼굴·가슴 쪽이 밝고 등은 어두움) · 카메라는 빛을 받는 면을 봄 · 광원에서 3.6m · 비추는 곳 대비 밝기 21% · 머리·오른손·오른무릎은 둘째 · 회색 정장 남자의 그림자 안"
+      }
+    },
+    {
+      "index": 4,
+      "color": "#f58231",
+      "kind": "person",
+      "id": "q4",
+      "name": "넷째 · 검은 코트 노인",
+      "notes": {
+        "role": "",
+        "intent": "",
+        "description": "검은 롱코트, 백발 노인"
+      },
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.561,
+          0.351,
+          0.628,
+          0.707
+        ],
+        "pixelShare": 0.011
+      },
+      "distanceM": {
+        "min": 6.54,
+        "median": 6.78,
+        "max": 7.01
+      },
+      "directLight": {
+        "mean": 0.05,
+        "litShare": 0,
+        "darkShare": 0.57
+      },
+      "pose": {
+        "text": "화면 가운데(가로 59%), 화면 높이의 34%. 몸이 화면 왼쪽을 향한 3/4 정면. 서 있음. 오른팔: 내림, 팔을 폄, 손은 허리 높이(화면 왼쪽). 왼팔: 내림, 팔을 폄, 손은 허리 높이(화면 오른쪽). 두 발 모두 바닥에 닿음",
+        "stance": "서 있음",
+        "yawToCameraDeg": 28.1,
+        "joints": {
+          "headTop": {
+            "xy": [
+              0.6,
+              0.35
+            ],
+            "distanceM": 6.71,
+            "visible": true
+          },
+          "pelvis": {
+            "xy": [
+              0.6,
+              0.5
+            ],
+            "distanceM": 6.77,
+            "visible": true
+          },
+          "chest": {
+            "xy": [
+              0.6,
+              0.46
+            ],
+            "distanceM": 6.76,
+            "visible": true
+          },
+          "neck": {
+            "xy": [
+              0.6,
+              0.4
+            ],
+            "distanceM": 6.73,
+            "visible": true
+          },
+          "head": {
+            "xy": [
+              0.6,
+              0.39
+            ],
+            "distanceM": 6.72,
+            "visible": true
+          },
+          "shoulderL": {
+            "xy": [
+              0.62,
+              0.42
+            ],
+            "distanceM": 6.65,
+            "visible": true
+          },
+          "shoulderR": {
+            "xy": [
+              0.58,
+              0.41
+            ],
+            "distanceM": 6.82,
+            "visible": true
+          },
+          "elbowL": {
+            "xy": [
+              0.62,
+              0.47
+            ],
+            "distanceM": 6.57,
+            "visible": true
+          },
+          "elbowR": {
+            "xy": [
+              0.57,
+              0.46
+            ],
+            "distanceM": 6.84,
+            "visible": true
+          },
+          "wristL": {
+            "xy": [
+              0.62,
+              0.51
+            ],
+            "distanceM": 6.52,
+            "visible": true
+          },
+          "wristR": {
+            "xy": [
+              0.56,
+              0.5
+            ],
+            "distanceM": 6.85,
+            "visible": true
+          },
+          "hipL": {
+            "xy": [
+              0.61,
+              0.51
+            ],
+            "distanceM": 6.71,
+            "visible": true
+          },
+          "hipR": {
+            "xy": [
+              0.59,
+              0.51
+            ],
+            "distanceM": 6.84,
+            "visible": true
+          },
+          "kneeL": {
+            "xy": [
+              0.61,
+              0.6
+            ],
+            "distanceM": 6.75,
+            "visible": true
+          },
+          "kneeR": {
+            "xy": [
+              0.59,
+              0.59
+            ],
+            "distanceM": 6.88,
+            "visible": true
+          },
+          "ankleL": {
+            "xy": [
+              0.61,
+              0.69
+            ],
+            "distanceM": 6.79,
+            "visible": true
+          },
+          "ankleR": {
+            "xy": [
+              0.59,
+              0.68
+            ],
+            "distanceM": 6.92,
+            "visible": true
+          }
+        }
+      },
+      "lightCondition": {
+        "facingLight": 0.99,
+        "cameraSeesLitSide": 0.94,
+        "castShadowFrom": {
+          "셋째 · 빨간 후드 소년": [
+            "chest",
+            "wristR"
+          ],
+          "둘째 · 회색 정장 남자": [
+            "kneeR"
+          ]
+        },
+        "distanceToLightM": 4.57,
+        "brightnessVsTarget": 0.13,
+        "text": "빛을 정면으로 받음(얼굴·가슴 쪽이 밝고 등은 어두움) · 카메라는 빛을 받는 면을 봄 · 광원에서 4.6m · 비추는 곳 대비 밝기 13% · 가슴·오른손은 셋째 · 빨간 후드 소년의 그림자 안, 오른무릎은 둘째 · 회색 정장 남자의 그림자 안"
+      }
+    },
+    {
+      "index": 5,
+      "color": "#505050",
+      "kind": "floor",
+      "id": "floor",
+      "name": "바닥",
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0,
+          0.561,
+          1,
+          1
+        ],
+        "pixelShare": 0.352
+      },
+      "distanceM": {
+        "min": 3.76,
+        "median": 5.4,
+        "max": 11.07
+      },
+      "directLight": {
+        "mean": 0.17,
+        "litShare": 0.24,
+        "darkShare": 0.32
+      }
+    }
+  ],
+  "shotDescription": "촬영 설명 (편집기 3D 장면의 촬영 카메라에서 계산한 값입니다. 첨부 color PNG와 같은 카메라입니다.)\n- 컷: S2 줄 선 사람들 — 전등 그림자와 거리 감쇠 확인\n- 카메라: 풀샷(전신) · 수평에 가까운 앵글(카메라 높이 1.6m, 맨 앞 · 노란 우비 여자의 눈높이, 아래로 5°), 광각 · 35mm 환산 약 29mm · 화면비 1.78:1\n- 맨 앞 · 노란 우비 여자: 화면 가운데(가로 34%), 화면 높이의 50%. 몸이 화면 왼쪽을 향한 3/4 정면. 서 있음. 오른팔: 내림, 팔을 폄, 손은 허리 높이(화면 왼쪽). 왼팔: 내림, 팔을 폄, 손은 허리 높이(화면 오른쪽). 두 발 모두 바닥에 닿음.\n- 둘째 · 회색 정장 남자: 화면 가운데(가로 44%), 화면 높이의 46%. 몸이 화면 왼쪽을 향한 3/4 정면. 서 있음. 오른팔: 내림, 팔을 폄, 손은 허리 높이(화면 왼쪽). 왼팔: 내림, 팔을 폄, 손은 허리 높이(화면 오른쪽). 두 발 모두 바닥에 닿음.\n- 셋째 · 빨간 후드 소년: 화면 가운데(가로 53%), 화면 높이의 34%. 몸이 화면 왼쪽을 향한 3/4 정면. 서 있음. 오른팔: 내림, 팔을 폄, 손은 허리 높이(화면 왼쪽). 왼팔: 내림, 팔을 폄, 손은 허리 높이(화면 오른쪽). 두 발 모두 바닥에 닿음.\n- 넷째 · 검은 코트 노인: 화면 가운데(가로 59%), 화면 높이의 34%. 몸이 화면 왼쪽을 향한 3/4 정면. 서 있음. 오른팔: 내림, 팔을 폄, 손은 허리 높이(화면 왼쪽). 왼팔: 내림, 팔을 폄, 손은 허리 높이(화면 오른쪽). 두 발 모두 바닥에 닿음.\n- 앞뒤 관계: 카메라에서 가까운 순서로 맨 앞 · 노란 우비 여자(4.3m) → 둘째 · 회색 정장 남자(5.2m) → 셋째 · 빨간 후드 소년(6m) → 넷째 · 검은 코트 노인(6.8m).\n- 빛: 전등은 화면 왼쪽, 카메라 쪽(앞)에서 비춤 → 그림자는 화면 오른쪽 인물 뒤쪽으로 퍼지며 떨어짐.\n좌우 표기: \"화면 왼쪽/오른쪽\"은 이미지 기준, \"왼팔/오른팔·왼발/오른발\"은 인물 자신 기준입니다. 시선·표정·손가락 모양은 계산하지 않았으니 원문과 캐릭터 설명을 따르세요."
+}

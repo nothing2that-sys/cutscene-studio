@@ -1,0 +1,13 @@
+{
+  "checks": [
+    "unchanged pose view performs no GPU draw calls",
+    "solo save preserves all actors, props, equivalent joint rotations and original working camera",
+    "solo color PNG equals whole-scene PNG byte for byte",
+    "full-size depth export remains available during solo",
+    "editing quality toggle does not change capture quality or composition",
+    "selecting another actor keeps solo and original scene camera",
+    "manual preview refresh and solo exit restore whole-scene editing",
+    "move exits solo; renderer diagnostics display capped editing resolution"
+  ],
+  "pageErrors": []
+}

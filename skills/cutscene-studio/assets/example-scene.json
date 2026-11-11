@@ -1,0 +1,158 @@
+{
+  "version": 1,
+  "units": "meters",
+  "title": "문 앞의 방문자",
+  "sourceText": "지훈은 탁자 앞에 서 있었다. 문가에 멈춰 선 서연이 그를 바라봤다. 탁자 위에는 작은 상자가 놓여 있었다.",
+  "assumptions": "방 크기·인물 키·위치·저녁빛은 연출을 위한 추정이다. 두 인물과 상자가 함께 읽히는 한 순간을 선택했다.",
+  "room": {
+    "size": [
+      6,
+      3,
+      5
+    ],
+    "color": "#b9b5ac",
+    "walls": true
+  },
+  "actors": [
+    {
+      "id": "jihoon",
+      "name": "지훈",
+      "position": [
+        -0.8,
+        0,
+        0
+      ],
+      "yaw": 35,
+      "height": 1.78,
+      "pose": "standing",
+      "joints": {
+        "head": {
+          "turn": 25
+        }
+      },
+      "intent": "문가의 서연을 돌아본다",
+      "headUnits": 8
+    },
+    {
+      "id": "seoyeon",
+      "name": "서연",
+      "position": [
+        1.6,
+        0,
+        -1.4
+      ],
+      "yaw": -40,
+      "height": 1.65,
+      "pose": "standing",
+      "joints": {
+        "head": {
+          "turn": -15
+        }
+      },
+      "intent": "지훈을 바라본다",
+      "headUnits": 8
+    }
+  ],
+  "props": [
+    {
+      "id": "table",
+      "name": "탁자",
+      "type": "table",
+      "position": [
+        0,
+        0,
+        -0.2
+      ],
+      "size": [
+        1.5,
+        0.75,
+        0.8
+      ],
+      "yaw": 0,
+      "color": "#8c7965"
+    },
+    {
+      "id": "box",
+      "name": "작은 상자",
+      "type": "box",
+      "position": [
+        0.2,
+        0.75,
+        -0.2
+      ],
+      "size": [
+        0.3,
+        0.22,
+        0.25
+      ],
+      "yaw": 10,
+      "color": "#b48c58"
+    }
+  ],
+  "camera": {
+    "position": [
+      4,
+      2.5,
+      6
+    ],
+    "target": [
+      0.1,
+      1,
+      -0.5
+    ],
+    "fov": 42
+  },
+  "shots": [
+    {
+      "id": "wide",
+      "name": "관계와 공간",
+      "purpose": "두 인물과 탁자의 상자를 함께 보여준다",
+      "camera": {
+        "position": [
+          4,
+          2.5,
+          6
+        ],
+        "target": [
+          0.1,
+          1,
+          -0.5
+        ],
+        "fov": 42
+      }
+    },
+    {
+      "id": "low",
+      "name": "상자 너머",
+      "purpose": "탁자를 전경에 두고 방문자를 바라본다",
+      "camera": {
+        "position": [
+          -2.2,
+          1.15,
+          2.5
+        ],
+        "target": [
+          1,
+          1.2,
+          -1.2
+        ],
+        "fov": 48
+      }
+    }
+  ],
+  "lighting": {
+    "position": [
+      -3,
+      5,
+      2
+    ],
+    "target": [
+      0,
+      1,
+      -0.5
+    ],
+    "color": "#ffe1b0",
+    "intensity": 2.4,
+    "ambient": 0.6
+  }
+}

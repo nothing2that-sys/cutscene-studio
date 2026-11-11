@@ -1,0 +1,222 @@
+{
+  "date": "2026-11-02",
+  "baseCommit": "fb34e79e1a3f7ed63ab0154a56e9aee1a956e130",
+  "node": "v24.22.2",
+  "vite": "8.3.5",
+  "rolldown": "1.2.16",
+  "esbuildInLock": false,
+  "nodeEngine": "^20.19.0 || >=22.12.0",
+  "freshNpmCi": true,
+  "build": {
+    "passed": true,
+    "modules": 50,
+    "warning": "JavaScript chunk exceeds 500kB"
+  },
+  "unitTests": {
+    "passed": 9,
+    "failed": 0
+  },
+  "auditBefore": {
+    "info": 0,
+    "low": 0,
+    "moderate": 1,
+    "high": 1,
+    "critical": 0,
+    "total": 2
+  },
+  "auditAfter": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "auditProduction": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "reports": {
+    "browser": {
+      "passed": true,
+      "poseComparisonTolerance": 1e-8,
+      "checks": [
+        "offline assets",
+        "example placement",
+        "head joint edit and undo",
+        "prop list selection and position edit",
+        "prop add and undo",
+        "room edit",
+        "camera shot save",
+        "project save/reload with mannequin transforms preserved",
+        "invalid proposal preserves scene",
+        "color/depth 1600x900",
+        "portrait 900x1600",
+        "LLM packet"
+      ],
+      "pageErrors": [],
+      "externalRequests": []
+    },
+    "jsonUI": {
+      "passed": true,
+      "checks": [
+        "multiple errors visible",
+        "exact original JSON in clipboard repair request",
+        "report JSON download",
+        "invalid scene preserves current scene",
+        "validate-only keeps scene",
+        "spatial warnings apply with warning status",
+        "corrected JSON clears old issues",
+        "syntax errors",
+        "bad project rejected before mutation",
+        "file import source recorded",
+        "clipboard denial offers selectable fallback"
+      ],
+      "pageErrors": []
+    },
+    "bodyRig": {
+      "passed": true,
+      "engine": {
+        "measured": [
+          {
+            "profile": {
+              "height": 1.8,
+              "headUnits": 5
+            },
+            "measuredHeight": 1.8,
+            "measuredHeadUnits": 4.999999999999999
+          },
+          {
+            "profile": {
+              "height": 1.8,
+              "headUnits": 8
+            },
+            "measuredHeight": 1.8,
+            "measuredHeadUnits": 7.999999999999997
+          },
+          {
+            "profile": {
+              "height": 1.8,
+              "headUnits": 9.5
+            },
+            "measuredHeight": 1.7999999999999998,
+            "measuredHeadUnits": 9.500000000000004
+          },
+          {
+            "profile": {
+              "height": 1.4,
+              "headUnits": 5
+            },
+            "measuredHeight": 1.4,
+            "measuredHeadUnits": 4.999999999999999
+          }
+        ],
+        "randomPoses": 80,
+        "reachable": {
+          "reached": false,
+          "error": 0.06969007835615684,
+          "reach": 0.609358568144929,
+          "targetClamped": false,
+          "continuityLimited": false
+        },
+        "far": {
+          "reached": false,
+          "error": 149.39239890424525,
+          "reach": 0.8032453852819519,
+          "targetClamped": true,
+          "continuityLimited": false
+        },
+        "boneLengthPreserved": true
+      },
+      "ui": [
+        "independent height/headUnits per actor",
+        "5 and 9.5 head presets",
+        "joint translation fields removed",
+        "numeric angle clamped",
+        "local bone offsets and scales preserved",
+        "profile roundtrip",
+        "stretched project rejected"
+      ],
+      "pageErrors": []
+    },
+    "ik": {
+      "baseline": false,
+      "passed": true,
+      "results": [
+        {
+          "part": "Head",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 19.999459907641032,
+          "boneDrift": 2.7755575615628914e-16
+        },
+        {
+          "part": "Neck",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 18.342029061729857,
+          "boneDrift": 3.3306690738754696e-16
+        },
+        {
+          "part": "Right_Wrist",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 9.30309541692473,
+          "boneDrift": 1.6653345369377348e-16
+        },
+        {
+          "part": "Left_Ankle",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 7.219022526472231,
+          "boneDrift": 1.6653345369377348e-16
+        }
+      ],
+      "convergence": {
+        "initialError": 0.3163691785703939,
+        "finalError": 0.0000039819913282309554,
+        "iterations": 60,
+        "monotone": true
+      },
+      "pageErrors": []
+    },
+    "regression": {
+      "passed": true,
+      "checks": [
+        "F1/F2 From File rejects malformed/stretched/syntax, preserves state, valid import and Undo",
+        "F6 immutable initial proposal, current environment and packet",
+        "F8 direction UI restored by Load/Undo and custom preset",
+        "F6 save roundtrip and explicit legacy provenance",
+        "F7 missing rig lock warning",
+        "F9 keyboard/trash both permit empty scene, Undo and reload",
+        "F11 license text MIME"
+      ],
+      "pageErrors": []
+    },
+    "launcher": {
+      "passed": true,
+      "node": "D:\\github\\cutscene-studio\\.review-tools\\node\\node.exe",
+      "customPort": 3013,
+      "systemPathWithoutNode": true,
+      "output": "Open http://127.0.0.1:3013 in your browser.\r\n컷신 스튜디오: http://127.0.0.1:3013\n종료하려면 Ctrl+C를 누르세요.\n"
+    },
+    "skill": {
+      "passed": true,
+      "checks": [
+        "app discovery",
+        "live app schema validation",
+        "normalized output refuses accidental overwrite",
+        "duplicate ID rejection",
+        "edited native state and capture camera override initial proposal/working view",
+        "byte-exact PNG/project extraction and no overwrite",
+        "invalid image rejected before creating output folder",
+        "offline bundled schema fallback",
+        "optional gallery helper works from local metadata without retired skill paths/network"
+      ],
+      "skipped": [],
+      "packetSource": "validation/handoff.json",
+      "output": "D:\\github\\cutscene-studio\\validation\\skill-1793592736311",
+      "independentLLMRun": false
+    }
+  }
+}

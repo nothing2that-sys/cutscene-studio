@@ -1,0 +1,77 @@
+{
+  "parts": [
+    {
+      "name": "thorax",
+      "vertices": 7964,
+      "triangles": 15924,
+      "boundaryEdges": 0,
+      "nonManifoldEdges": 0,
+      "inconsistentWinding": 0,
+      "nonfinite": 0,
+      "signedVolume": 0.2223031169692323
+    },
+    {
+      "name": "abdomen",
+      "vertices": 5138,
+      "triangles": 10272,
+      "boundaryEdges": 0,
+      "nonManifoldEdges": 0,
+      "inconsistentWinding": 0,
+      "nonfinite": 0,
+      "signedVolume": 0.09246441006121653
+    },
+    {
+      "name": "pelvis",
+      "vertices": 10258,
+      "triangles": 20512,
+      "boundaryEdges": 0,
+      "nonManifoldEdges": 0,
+      "inconsistentWinding": 0,
+      "nonfinite": 0,
+      "signedVolume": 0.1414934000257025
+    }
+  ],
+  "socketChecks": [
+    {
+      "name": "shoulderL",
+      "probe": [
+        -74,
+        274,
+        0
+      ],
+      "withoutSocket": -3.2376884931425396,
+      "withSocket": 16
+    },
+    {
+      "name": "shoulderR",
+      "probe": [
+        74,
+        274,
+        0
+      ],
+      "withoutSocket": -3.2376884931425396,
+      "withSocket": 16
+    },
+    {
+      "name": "hipL",
+      "probe": [
+        -33.5,
+        584,
+        1
+      ],
+      "withoutSocket": -23.628142823772183,
+      "withSocket": 24
+    },
+    {
+      "name": "hipR",
+      "probe": [
+        33.5,
+        584,
+        1
+      ],
+      "withoutSocket": -23.628142823772183,
+      "withSocket": 24
+    }
+  ],
+  "stats": "46,708 shell triangles · 3 draws · mesh 834 ms"
+}

@@ -1,0 +1,24 @@
+{
+  "source": {
+    "url": "http://127.0.0.1:3015/gallery-p015.png",
+    "width": 900,
+    "height": 1200
+  },
+  "profile": "gallery-p015",
+  "poseRoundTrip": true,
+  "wrongProfileRejectedAtomically": true,
+  "undoRedo": true,
+  "sourceImageExcludedFromExports": true,
+  "fixedPanZoomXyzRenders": 0,
+  "maxBoneLengthDrift": 4.440892098500626e-16,
+  "triangles": 28720,
+  "draws": 15,
+  "finite": true,
+  "contact": {
+    "total": 0,
+    "maxDepthPixels": 0,
+    "pairs": []
+  },
+  "constraint": null,
+  "pageErrors": []
+}

@@ -1,0 +1,5 @@
+Add-Type -AssemblyName System.Drawing
+$pelvisRoot=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../docs/review-evidence/2026-11-03-pelvis-pose'))
+function Sheet($name,$files,$labels){$b=New-Object System.Drawing.Bitmap (400*$files.Count),570;$g=[System.Drawing.Graphics]::FromImage($b);$g.Clear([System.Drawing.Color]::White);$f=New-Object System.Drawing.Font 'Segoe UI',12;for($i=0;$i -lt $files.Count;$i++){$g.DrawString($labels[$i],$f,[System.Drawing.Brushes]::Black,($i*400+8),9);$im=[System.Drawing.Image]::FromFile((Join-Path $pelvisRoot $files[$i]));$g.DrawImage($im,($i*400),35,400,533);$im.Dispose()};$b.Save((Join-Path $pelvisRoot $name),[System.Drawing.Imaging.ImageFormat]::Png);$g.Dispose();$f.Dispose();$b.Dispose()}
+Sheet 'pelvis-comparison.png' @('before-line-front.png','after-line-front.png','after-oblique-depth.png') @('BEFORE / PELVIS 0 DEG','AFTER / PELVIS 32 DEG','BLUE R / FRONT - GOLD L / BACK')
+Sheet 'stance-side.png' @('before-side.png','after-side-depth.png') @('PREVIOUS / SIDE','CORRECTED / R FRONT, L BACK')

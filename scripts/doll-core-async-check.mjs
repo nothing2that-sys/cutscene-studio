@@ -1,0 +1,16 @@
+import {loadPlaywright} from './playwright-runtime.mjs';
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const out='docs/review-evidence/2026-11-03-doll-core-refinement';await mkdir(out,{recursive:true});
+const {chromium}=loadPlaywright(),browser=await chromium.launch({channel:'chrome',headless:true,args:['--enable-webgl','--use-gl=angle','--use-angle=d3d11']});const page=await browser.newPage({viewport:{width:1500,height:1100}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+try{
+ const t=performance.now();await page.goto('http://127.0.0.1:3001/doll-core.html');await page.waitForFunction(()=>window.dollCore&&!window.dollCore.pending,{},{timeout:120000});const startup={navigationToReadyMs:performance.now()-t,workerCount:page.workers().length,stats:await page.locator('#stats').textContent()};assert.equal(startup.workerCount,0);
+ await page.evaluate(()=>{const p=document.getElementById('projection');p.value=47;p.dispatchEvent(new Event('change'));const part=document.getElementById('edit-part');part.value='pelvis';part.dispatchEvent(new Event('change'));const input=document.querySelector('#section-rows input');input.value=68;input.dispatchEvent(new Event('change'));});
+ const responsive=await page.evaluate(async()=>{const pendingAtStart=window.dollCore.pending,exportBlocked=document.getElementById('save-obj').disabled,view=document.getElementById('view');view.value='oblique';view.dispatchEvent(new Event('change'));const cameraMoves=window.dollCore.camera.position.x>0,times=[];let last=performance.now();while(window.dollCore.pending){await new Promise(requestAnimationFrame);const now=performance.now();times.push(now-last);last=now;}return {pendingAtStart,exportBlocked,cameraMoves,frames:times.length,maxGapMs:Math.max(0,...times)};});
+ assert.ok(responsive.pendingAtStart&&responsive.exportBlocked&&responsive.cameraMoves&&responsive.frames>3);
+ const before=await page.evaluate(()=>[...window.dollCore.meshes].map(([n,m])=>[n,Array.from(m.geometry.attributes.position.array)]));await page.evaluate(()=>window.dollCore.rebuild());const rebuilt=await page.evaluate(()=>[...window.dollCore.meshes].map(([n,m])=>[n,Array.from(m.geometry.attributes.position.array)]));assert.deepEqual(before,rebuilt,'Rapid edits of different parts must commit together');
+ await page.locator('#reset').click();await page.waitForFunction(()=>!window.dollCore.pending);
+ const oldPath='docs/review-evidence/2026-11-03-doll-core/core-design.json',old=JSON.parse(await readFile(oldPath,'utf8'));await page.locator('#file').setInputFiles(oldPath);await page.waitForFunction(()=>window.dollCore.design.resolution===64&&!window.dollCore.pending);
+ const imported=await page.evaluate(()=>window.dollCore.design);for(const name of ['thorax','abdomen','pelvis'])assert.deepEqual(imported[name],old[name]);assert.equal(imported.displayQuality,'balanced');assert.equal(await page.locator('#error').textContent(),'');assert.deepEqual(errors,[]);
+ await writeFile(out+'/interaction-checks.json',JSON.stringify({startup,responsive,rapidEditsPreserved:true,legacyJsonValuesPreserved:true,pageErrors:errors},null,2));console.log(JSON.stringify({startup,responsive}));
+}finally{await browser.close();}

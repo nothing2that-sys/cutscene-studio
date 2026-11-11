@@ -1,0 +1,15 @@
+# Ignore all files and folders starting with a '.'
+.*
+!.gitignore
+
+# Ignore development/build artifacts
+node_modules/
+dist/
+
+# Ignore root development-only/session files
+DEV_SUMMARY.md
+MEMORY.md
+SESSION_STARTUP.md
+CRITICAL_MAINJS_CORRUPTED.md
+AGENTS.md
+PRD.md

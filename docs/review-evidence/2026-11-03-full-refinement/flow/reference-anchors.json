@@ -1,0 +1,149 @@
+{
+  "note": "Pose anchors are construction targets, not independent visual acceptance. Hidden depths inferred.",
+  "points": [
+    {
+      "name": "upperL",
+      "target": [
+        378,
+        273
+      ],
+      "projected": [
+        370.7702493491697,
+        261.45611534106644
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "foreL",
+      "target": [
+        258,
+        387
+      ],
+      "projected": [
+        239.4853918058651,
+        364.66904213012083
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "wristL",
+      "target": [
+        352,
+        476
+      ],
+      "projected": [
+        323.7360298198207,
+        456.3060284083979
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "upperR",
+      "target": [
+        543,
+        266
+      ],
+      "projected": [
+        565.8372296457219,
+        285.83564487674516
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "foreR",
+      "target": [
+        637,
+        166
+      ],
+      "projected": [
+        627.4066582496356,
+        164.4817012348907
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "wristR",
+      "target": [
+        522,
+        108
+      ],
+      "projected": [
+        518.9989730749058,
+        101.57958829240684
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "thighL",
+      "target": [
+        382,
+        567
+      ],
+      "projected": [
+        382.75755431509685,
+        571.2101176600357
+      ],
+      "visibility": "inferred hip center"
+    },
+    {
+      "name": "shinL",
+      "target": [
+        392,
+        820
+      ],
+      "projected": [
+        354.8011571487044,
+        819.2992572135989
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "ankleL",
+      "target": [
+        406,
+        1085
+      ],
+      "projected": [
+        337.9629821522081,
+        1083.7183351467227
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "thighR",
+      "target": [
+        507,
+        579
+      ],
+      "projected": [
+        504.08922555002624,
+        583.9625901786895
+      ],
+      "visibility": "inferred hip center"
+    },
+    {
+      "name": "shinR",
+      "target": [
+        607,
+        816
+      ],
+      "projected": [
+        607,
+        816.0000000000001
+      ],
+      "visibility": "manually read from drawing"
+    },
+    {
+      "name": "ankleR",
+      "target": [
+        674,
+        1067
+      ],
+      "projected": [
+        674,
+        1067
+      ],
+      "visibility": "manually read from drawing"
+    }
+  ]
+}

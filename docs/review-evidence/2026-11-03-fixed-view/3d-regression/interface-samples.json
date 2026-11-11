@@ -1,0 +1,121 @@
+{
+  "note": "Diagnostic samples of visible shell vertices inside another authored solid. Field values are not exact clearance distances. Not a collision solver or visual acceptance test.",
+  "poses": [
+    {
+      "pose": "neutral",
+      "pairs": [
+        {
+          "from": "thorax",
+          "into": "abdomen",
+          "sampled": 211,
+          "inside": 2
+        },
+        {
+          "from": "abdomen",
+          "into": "thorax",
+          "sampled": 121,
+          "inside": 0
+        },
+        {
+          "from": "abdomen",
+          "into": "pelvis",
+          "sampled": 121,
+          "inside": 0
+        },
+        {
+          "from": "pelvis",
+          "into": "abdomen",
+          "sampled": 251,
+          "inside": 0
+        }
+      ]
+    },
+    {
+      "pose": "bend",
+      "pairs": [
+        {
+          "from": "thorax",
+          "into": "abdomen",
+          "sampled": 211,
+          "inside": 3
+        },
+        {
+          "from": "abdomen",
+          "into": "thorax",
+          "sampled": 121,
+          "inside": 5
+        },
+        {
+          "from": "abdomen",
+          "into": "pelvis",
+          "sampled": 121,
+          "inside": 0
+        },
+        {
+          "from": "pelvis",
+          "into": "abdomen",
+          "sampled": 251,
+          "inside": 0
+        }
+      ]
+    },
+    {
+      "pose": "twist",
+      "pairs": [
+        {
+          "from": "thorax",
+          "into": "abdomen",
+          "sampled": 211,
+          "inside": 10
+        },
+        {
+          "from": "abdomen",
+          "into": "thorax",
+          "sampled": 121,
+          "inside": 7
+        },
+        {
+          "from": "abdomen",
+          "into": "pelvis",
+          "sampled": 121,
+          "inside": 0
+        },
+        {
+          "from": "pelvis",
+          "into": "abdomen",
+          "sampled": 251,
+          "inside": 0
+        }
+      ]
+    },
+    {
+      "pose": "reference",
+      "pairs": [
+        {
+          "from": "thorax",
+          "into": "abdomen",
+          "sampled": 211,
+          "inside": 9
+        },
+        {
+          "from": "abdomen",
+          "into": "thorax",
+          "sampled": 121,
+          "inside": 14
+        },
+        {
+          "from": "abdomen",
+          "into": "pelvis",
+          "sampled": 121,
+          "inside": 19
+        },
+        {
+          "from": "pelvis",
+          "into": "abdomen",
+          "sampled": 251,
+          "inside": 10
+        }
+      ]
+    }
+  ]
+}

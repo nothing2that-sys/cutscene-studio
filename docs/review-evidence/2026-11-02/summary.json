@@ -1,0 +1,321 @@
+{
+  "reviewDate": "2026-11-02",
+  "baseCommit": "ca222a146593ff461e9f4821b9271fdb15055c0f",
+  "environment": {
+    "platform": "win32",
+    "node": "v24.22.2",
+    "browser": "Google Chrome via Playwright",
+    "ikRenderer": "ANGLE D3D11",
+    "existingSuiteRenderer": "ANGLE SwiftShader"
+  },
+  "unitTests": {
+    "passed": 9,
+    "failed": 0
+  },
+  "build": {
+    "passed": true,
+    "modules": 49,
+    "warning": "JavaScript chunk exceeds 500kB"
+  },
+  "reports": {
+    "ikBefore": {
+      "baseline": true,
+      "passed": null,
+      "results": [
+        {
+          "part": "Head",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 44.88084279909598,
+          "boneDrift": 2.7755575615628914e-16
+        },
+        {
+          "part": "Neck",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 30.8943906671581,
+          "boneDrift": 2.220446049250313e-16
+        },
+        {
+          "part": "Right_Wrist",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 8.714738232254483,
+          "boneDrift": 1.6653345369377348e-16
+        },
+        {
+          "part": "Left_Ankle",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 5.714279553221885,
+          "boneDrift": 1.6653345369377348e-16
+        }
+      ],
+      "pageErrors": []
+    },
+    "ikAfter": {
+      "baseline": false,
+      "passed": true,
+      "results": [
+        {
+          "part": "Head",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 19.999459907641032,
+          "boneDrift": 2.7755575615628914e-16
+        },
+        {
+          "part": "Neck",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 18.342029061729857,
+          "boneDrift": 3.3306690738754696e-16
+        },
+        {
+          "part": "Right_Wrist",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 9.30309541692473,
+          "boneDrift": 1.6653345369377348e-16
+        },
+        {
+          "part": "Left_Ankle",
+          "handle": "XYZ",
+          "worstWorldStepDegrees": 7.219022526472231,
+          "boneDrift": 1.6653345369377348e-16
+        }
+      ],
+      "convergence": {
+        "initialError": 0.3163691785703939,
+        "finalError": 0.0000039819913282309554,
+        "iterations": 60,
+        "monotone": true
+      },
+      "pageErrors": []
+    },
+    "browser": {
+      "passed": true,
+      "poseComparisonTolerance": 1e-8,
+      "checks": [
+        "offline assets",
+        "example placement",
+        "head joint edit and undo",
+        "prop list selection and position edit",
+        "prop add and undo",
+        "room edit",
+        "camera shot save",
+        "project save/reload with mannequin transforms preserved",
+        "invalid proposal preserves scene",
+        "color/depth 1600x900",
+        "portrait 900x1600",
+        "LLM packet"
+      ],
+      "pageErrors": [],
+      "externalRequests": []
+    },
+    "jsonUI": {
+      "passed": true,
+      "checks": [
+        "multiple errors visible",
+        "exact original JSON in clipboard repair request",
+        "report JSON download",
+        "invalid scene preserves current scene",
+        "validate-only keeps scene",
+        "spatial warnings apply with warning status",
+        "corrected JSON clears old issues",
+        "syntax errors",
+        "bad project rejected before mutation",
+        "file import source recorded",
+        "clipboard denial offers selectable fallback"
+      ],
+      "pageErrors": []
+    },
+    "bodyRig": {
+      "passed": true,
+      "engine": {
+        "measured": [
+          {
+            "profile": {
+              "height": 1.8,
+              "headUnits": 5
+            },
+            "measuredHeight": 1.8,
+            "measuredHeadUnits": 4.999999999999999
+          },
+          {
+            "profile": {
+              "height": 1.8,
+              "headUnits": 8
+            },
+            "measuredHeight": 1.8,
+            "measuredHeadUnits": 7.999999999999997
+          },
+          {
+            "profile": {
+              "height": 1.8,
+              "headUnits": 9.5
+            },
+            "measuredHeight": 1.7999999999999998,
+            "measuredHeadUnits": 9.500000000000004
+          },
+          {
+            "profile": {
+              "height": 1.4,
+              "headUnits": 5
+            },
+            "measuredHeight": 1.4,
+            "measuredHeadUnits": 4.999999999999999
+          }
+        ],
+        "randomPoses": 80,
+        "reachable": {
+          "reached": false,
+          "error": 0.06969007835615684,
+          "reach": 0.609358568144929,
+          "targetClamped": false,
+          "continuityLimited": false
+        },
+        "far": {
+          "reached": false,
+          "error": 149.39239890424525,
+          "reach": 0.8032453852819519,
+          "targetClamped": true,
+          "continuityLimited": false
+        },
+        "boneLengthPreserved": true
+      },
+      "ui": [
+        "independent height/headUnits per actor",
+        "5 and 9.5 head presets",
+        "joint translation fields removed",
+        "numeric angle clamped",
+        "local bone offsets and scales preserved",
+        "profile roundtrip",
+        "stretched project rejected"
+      ],
+      "pageErrors": []
+    },
+    "regression": {
+      "passed": true,
+      "checks": [
+        "F1/F2 From File rejects malformed/stretched/syntax, preserves state, valid import and Undo",
+        "F6 immutable initial proposal, current environment and packet",
+        "F8 direction UI restored by Load/Undo and custom preset",
+        "F6 save roundtrip and explicit legacy provenance",
+        "F7 missing rig lock warning",
+        "F9 keyboard/trash both permit empty scene, Undo and reload",
+        "F11 license text MIME"
+      ],
+      "pageErrors": []
+    },
+    "inheritedFixes": {
+      "checks": {
+        "F1-fromfile-broken-object-rejected": {
+          "pass": true,
+          "layersBefore": 4,
+          "layersAfter": 4,
+          "rendersAfter": true,
+          "savedMannequins": 2,
+          "reopenStatus": "입력 적용 완료 · 오류 0개 / 경고 0개",
+          "issues": "오류 · object.position · INVALID_TRANSFORM\n\n유한한 숫자 3개의 변환 배열이 필요합니다.\n\n허용: three finite numbers / 입력: [1,\"x\",3]\n오류 · object.posture · INVALID_POSTURE\n\n지원하는 마네킹 v7 자세 데이터 형식이 아닙니다.\n\n허용: version 7; 26 correctly shaped numeric rows / 입력: {\"version\":7,\"data\":[]}"
+        },
+        "F2-fromfile-stretched-object-rejected": {
+          "pass": true,
+          "layersBefore": 4,
+          "layersAfter": 4,
+          "status": "JSON 오류 2개 · 입력을 적용하지 않았습니다.",
+          "issues": "오류 · object.joints.l_knee · BONE_LENGTH_LOCKED\n\n관절 위치·길이·크기가 고정값과 다릅니다. 포즈는 회전으로만 수정하세요.\n\n오류 · object.joints.l_elbow · BONE_LENGTH_LOCKED\n\n관절 위치·길이·크기가 고정값과 다릅니다. 포즈는 회전으로만 수정하세요."
+        },
+        "F1b-fromfile-syntax-error-reported": {
+          "pass": true,
+          "layersAfter": 4,
+          "issues": "오류 · $ · JSON_SYNTAX\n\nJSON 문법 오류입니다. 쉼표·따옴표·괄호를 확인하세요. (1행 21열)"
+        },
+        "F1c-fromfile-valid-object-still-works": {
+          "pass": true,
+          "before": 4,
+          "afterAdd": 5,
+          "afterUndo": 4,
+          "rendersAfterUndo": true
+        },
+        "F5-delete-earlier-shot-keeps-active": {
+          "pass": true,
+          "activeBefore": "상자 너머 · 인물과 포즈는 공유 · 1.78:1",
+          "activeAfter": "상자 너머 · 인물과 포즈는 공유 · 1.78:1",
+          "savedActiveShot": 0,
+          "shots": [
+            "상자 너머",
+            "C-new"
+          ]
+        },
+        "F4-panel-synced-after-gizmo": {
+          "pass": true,
+          "hit": [
+            637.4500028577901,
+            481.51230636602384
+          ],
+          "before": {
+            "actual": {
+              "bend": 2,
+              "tilt": 0,
+              "turn": 0
+            },
+            "panel": {
+              "bend": 2,
+              "tilt": 0,
+              "turn": 0
+            }
+          },
+          "afterGizmo": {
+            "actual": {
+              "bend": 89.99999999999999,
+              "tilt": 0,
+              "turn": 0
+            },
+            "panel": {
+              "bend": 90,
+              "tilt": 0,
+              "turn": 0
+            }
+          },
+          "afterNudge": {
+            "actual": {
+              "bend": 89.5,
+              "tilt": 0,
+              "turn": 0
+            },
+            "panel": {
+              "bend": 89.5,
+              "tilt": 0,
+              "turn": 0
+            }
+          },
+          "panelGapDeg": 1.4210854715202004e-14,
+          "nudgeJumpDeg": 0.4999999999999858
+        }
+      },
+      "pageErrors301": [],
+      "dialogs": [],
+      "pageErrors302": [],
+      "passed": true
+    },
+    "launcher": {
+      "passed": true,
+      "node": "D:\\github\\cutscene-studio\\.review-tools\\node\\node.exe",
+      "customPort": 3013,
+      "systemPathWithoutNode": true,
+      "output": "Open http://127.0.0.1:3013 in your browser.\r\n컷신 스튜디오: http://127.0.0.1:3013\n종료하려면 Ctrl+C를 누르세요.\n"
+    },
+    "skill": {
+      "passed": true,
+      "checks": [
+        "app discovery",
+        "live app schema validation",
+        "normalized output refuses accidental overwrite",
+        "duplicate ID rejection",
+        "edited native state and capture camera override initial proposal/working view",
+        "byte-exact PNG/project extraction and no overwrite",
+        "invalid image rejected before creating output folder",
+        "offline bundled schema fallback",
+        "optional gallery helper works from local metadata without retired skill paths/network"
+      ],
+      "skipped": [],
+      "packetSource": "validation/handoff.json",
+      "output": "D:\\github\\cutscene-studio\\validation\\skill-1793591300070",
+      "independentLLMRun": false
+    }
+  }
+}

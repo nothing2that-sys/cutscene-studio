@@ -1,0 +1,17 @@
+{
+  "descriptionJsonRoundTrip": true,
+  "descriptionTextExport": true,
+  "descriptionUndoRedo": true,
+  "mainDescriptionPersists": true,
+  "handoffAndPromptIncludeHandsFeetPolicy": true,
+  "topology": {
+    "legacyDescriptionAccepted": true,
+    "vertices": 5002,
+    "triangles": 10000,
+    "nonManifoldEdges": 0,
+    "euler": 2,
+    "finiteNormals": true,
+    "invalidDescriptionRejectedAtomically": true
+  },
+  "pageErrors": []
+}

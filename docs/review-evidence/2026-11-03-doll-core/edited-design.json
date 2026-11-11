@@ -1,0 +1,306 @@
+{
+  "version": 1,
+  "kind": "articulated-doll-core",
+  "resolution": 64,
+  "thorax": {
+    "sections": [
+      [
+        239,
+        25,
+        24,
+        23
+      ],
+      [
+        250,
+        52,
+        30,
+        28
+      ],
+      [
+        266,
+        78,
+        37,
+        35
+      ],
+      [
+        286,
+        82,
+        42,
+        38
+      ],
+      [
+        310,
+        83,
+        43,
+        39
+      ],
+      [
+        336,
+        86,
+        42,
+        40
+      ],
+      [
+        359,
+        84,
+        39,
+        40
+      ],
+      [
+        378,
+        77,
+        37,
+        39
+      ],
+      [
+        395,
+        66,
+        35,
+        37
+      ],
+      [
+        410,
+        62,
+        34,
+        36
+      ],
+      [
+        423,
+        59,
+        33,
+        34
+      ]
+    ],
+    "relief": {
+      "projection": 45,
+      "spacing": 39,
+      "width": 32,
+      "upper": 54,
+      "lower": 26,
+      "centerY": 355,
+      "clavicle": 4.5
+    },
+    "sockets": [
+      {
+        "name": "shoulderL",
+        "center": [
+          -91,
+          274,
+          0
+        ],
+        "radius": [
+          34,
+          35,
+          32
+        ]
+      },
+      {
+        "name": "shoulderR",
+        "center": [
+          91,
+          274,
+          0
+        ],
+        "radius": [
+          34,
+          35,
+          32
+        ]
+      },
+      {
+        "name": "waistUpper",
+        "center": [
+          0,
+          419,
+          0
+        ],
+        "radius": [
+          63,
+          30,
+          36
+        ]
+      }
+    ]
+  },
+  "abdomen": {
+    "sections": [
+      [
+        389,
+        3,
+        3,
+        3
+      ],
+      [
+        395,
+        37,
+        24,
+        23
+      ],
+      [
+        405,
+        55,
+        31,
+        31
+      ],
+      [
+        419,
+        60,
+        34,
+        33
+      ],
+      [
+        438,
+        58,
+        35,
+        33
+      ],
+      [
+        455,
+        60,
+        37,
+        34
+      ],
+      [
+        474,
+        67,
+        39,
+        37
+      ],
+      [
+        485,
+        70,
+        40,
+        39
+      ],
+      [
+        496,
+        62,
+        35,
+        35
+      ],
+      [
+        505,
+        40,
+        23,
+        23
+      ],
+      [
+        511,
+        2,
+        2,
+        2
+      ]
+    ],
+    "sockets": []
+  },
+  "pelvis": {
+    "sections": [
+      [
+        473,
+        66,
+        35,
+        37
+      ],
+      [
+        488,
+        77,
+        40,
+        44
+      ],
+      [
+        507,
+        96,
+        45,
+        56
+      ],
+      [
+        529,
+        111,
+        47,
+        66
+      ],
+      [
+        547,
+        116,
+        45,
+        70
+      ],
+      [
+        563,
+        115,
+        41,
+        69
+      ],
+      [
+        579,
+        106,
+        37,
+        62
+      ],
+      [
+        594,
+        80,
+        32,
+        49
+      ],
+      [
+        608,
+        37,
+        24,
+        32
+      ],
+      [
+        617,
+        3,
+        3,
+        3
+      ]
+    ],
+    "sockets": [
+      {
+        "name": "waistLower",
+        "center": [
+          0,
+          481,
+          0
+        ],
+        "radius": [
+          72,
+          30,
+          42
+        ]
+      },
+      {
+        "name": "hipL",
+        "center": [
+          -61,
+          584,
+          1
+        ],
+        "radius": [
+          55,
+          55,
+          48
+        ]
+      },
+      {
+        "name": "hipR",
+        "center": [
+          61,
+          584,
+          1
+        ],
+        "radius": [
+          55,
+          55,
+          48
+        ]
+      }
+    ]
+  },
+  "assumptions": [
+    "Posterior shape, depths, socket interiors and pivot axes are authored assumptions.",
+    "Reference pose is a rigid three-part assembly preset, not a recovered camera or physical doll mechanism.",
+    "Socket clearance is for a digital study; not manufacturing tolerance."
+  ]
+}

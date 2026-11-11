@@ -1,0 +1,77 @@
+{
+  "checks": [
+    "built-in preview renders front, side and three-quarter from one body/pose; PNG export has actual nonempty image data",
+    "height/spacing/projection change actual segmented body and measured chest anchors without stretching rig",
+    "5/8/9.5-head figures, squat/hips pose and free/side/compare view controls run without page errors",
+    "preview performs no GPU drawing while idle",
+    "production build preview, proportions/pose/view controls and three-view PNG export run successfully",
+    "production page without WebGL displays actual static 8-head comparison and disables unavailable 3D controls without uncaught errors"
+  ],
+  "morphs": [
+    {
+      "name": "base",
+      "anchors": [
+        [
+          3.4,
+          10.75,
+          -2.3000000000000003
+        ],
+        [
+          3.4,
+          10.75,
+          2.3000000000000003
+        ]
+      ],
+      "sum": -53905.35304198938
+    },
+    {
+      "name": "high",
+      "anchors": [
+        [
+          3.4,
+          12.62,
+          -2.3000000000000003
+        ],
+        [
+          3.4,
+          12.62,
+          2.3000000000000003
+        ]
+      ],
+      "sum": -42853.6528905459
+    },
+    {
+      "name": "wide",
+      "anchors": [
+        [
+          3.4,
+          10.75,
+          -2.9
+        ],
+        [
+          3.4,
+          10.75,
+          2.9
+        ]
+      ],
+      "sum": -53910.75305474701
+    },
+    {
+      "name": "volume",
+      "anchors": [
+        [
+          3.4,
+          10.75,
+          -2.3000000000000003
+        ],
+        [
+          3.4,
+          10.75,
+          2.3000000000000003
+        ]
+      ],
+      "sum": -53897.03541226464
+    }
+  ],
+  "pageErrors": []
+}

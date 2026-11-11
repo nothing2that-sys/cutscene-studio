@@ -1,0 +1,53 @@
+{
+  "note": "Only joint center calibration; not an independent silhouette score. Camera and hidden depths inferred.",
+  "points": [
+    {
+      "name": "shoulderL",
+      "drawing": [
+        378,
+        273
+      ],
+      "projectedOriginalPixels": [
+        378.14179574783554,
+        272.94604237559946
+      ],
+      "sourceVisibility": "manually read circle center"
+    },
+    {
+      "name": "shoulderR",
+      "drawing": [
+        543,
+        266
+      ],
+      "projectedOriginalPixels": [
+        542.9451255525294,
+        266.0387363223111
+      ],
+      "sourceVisibility": "manually read circle center"
+    },
+    {
+      "name": "hipL",
+      "drawing": [
+        382,
+        567
+      ],
+      "projectedOriginalPixels": [
+        371.95755431509684,
+        567.9101176600359
+      ],
+      "sourceVisibility": "inferred under surface"
+    },
+    {
+      "name": "hipR",
+      "drawing": [
+        507,
+        579
+      ],
+      "projectedOriginalPixels": [
+        493.2892255500262,
+        580.6625901786896
+      ],
+      "sourceVisibility": "inferred under surface"
+    }
+  ]
+}

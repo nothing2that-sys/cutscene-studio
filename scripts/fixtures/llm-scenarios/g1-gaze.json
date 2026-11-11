@@ -1,0 +1,11 @@
+{"version":1,"units":"meters","title":"비교 G1 · 서로를 보는 두 사람",
+ "sourceText":"비 갠 저녁 골목. 남자와 여자가 몇 걸음 떨어져 서 있다.",
+ "assumptions":"비교 실험용 장면. 시선 필드(lookAt·expression)만 켜고 끈다.",
+ "room":{"size":[10,3,8],"color":"#7a7d82","walls":false},
+ "actors":[
+  {"id":"g1man","name":"남자","position":[-1.2,0,0],"yaw":30,"height":1.78,"bodyType":"male","pose":"standing","lookAt":"g1woman","expression":"걱정스럽게 눈썹을 모은 얼굴","description":"남색 재킷, 짧은 검은 머리 30대 남성"},
+  {"id":"g1woman","name":"여자","position":[1.2,0,0.8],"yaw":-30,"height":1.65,"pose":"standing","lookAt":"g1man","expression":"옅게 미소 짓는 얼굴","description":"베이지 코트, 어깨 길이 갈색 머리 30대 여성"}],
+ "props":[],
+ "camera":{"position":[0,1.5,5.2],"target":[0,1.3,0.3],"fov":40},
+ "lighting":{"type":"sun","position":[-3,5,4],"target":[0,1,0],"color":"#ffe8c8","intensity":2,"ambient":0.5},
+ "shots":[{"id":"g1","name":"G1 시선","purpose":"두 사람이 서로를 보는지","camera":{"position":[0,1.5,5.2],"target":[0,1.3,0.3],"fov":40}}]}

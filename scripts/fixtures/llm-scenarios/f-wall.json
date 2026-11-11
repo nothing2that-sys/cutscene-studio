@@ -1,0 +1,8 @@
+{"version":1,"units":"meters","title":"기능 W1 · 담장 그늘",
+ "sourceText":"해 질 무렵 골목. 높은 담장 앞에 남자가 서 있다. 해는 담장 너머에 있다.",
+ "room":{"size":[8,3,6],"color":"#9a948a","walls":true,"wallShadows":true},
+ "actors":[{"id":"w1man","name":"남자","position":[0,0,-1.6],"yaw":0,"height":1.75,"pose":"standing","bodyType":"male","description":"카키색 점퍼, 30대 남성"}],
+ "props":[],
+ "camera":{"position":[0,1.4,3.2],"target":[0,1.1,-1.4],"fov":45},
+ "lighting":{"type":"sun","position":[0.5,3.2,-8],"target":[0,1,-1.6],"color":"#ffcf8a","intensity":2.4,"ambient":0.35},
+ "shots":[{"id":"w1","name":"W1","purpose":"담장 그림자","camera":{"position":[0,1.4,3.2],"target":[0,1.1,-1.4],"fov":45}}]}

@@ -1,0 +1,21 @@
+{
+  "checks": [
+    "featureless head with direction guides, hourglass torso, rounded chest and shaped limbs render in neutral and raised-arm poses",
+    "female drawing preset changes selected surface only and preserves stature, head units and locked bone layout",
+    "drawing preset participates in Undo/Redo",
+    "neutral drawing preset removes chest without changing other actors"
+  ],
+  "renders": [
+    {
+      "pose": "neutral",
+      "calls": 2,
+      "triangles": 44624
+    },
+    {
+      "pose": "reference",
+      "calls": 2,
+      "triangles": 44624
+    }
+  ],
+  "pageErrors": []
+}

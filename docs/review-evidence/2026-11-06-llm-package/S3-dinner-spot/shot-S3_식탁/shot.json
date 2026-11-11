@@ -1,0 +1,654 @@
+{
+  "format": "cutscene-shot-package",
+  "version": 1,
+  "scene": {
+    "title": "검증 S3 · 펜던트 조명 아래 식탁",
+    "sourceText": "어두운 부엌, 식탁 위에 매달린 펜던트 조명 하나만 켜져 있다. 마주 앉은 두 사람 중 오른팔을 식탁 너머로 뻗은 사람이 상대에게 무언가를 건네려 한다.",
+    "assumptions": "검증용 장면. 펜던트는 아래로 향한 스포트로 근사. 의자 좌판 높이와 앉은 자세는 근사."
+  },
+  "shot": {
+    "name": "S3 식탁",
+    "purpose": "앉은 자세·식탁 가림·스포트 원 확인"
+  },
+  "image": {
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.778,
+    "origin": "top-left, x right, y down, coordinates normalized 0..1"
+  },
+  "files": {
+    "color": "color.png",
+    "label": "label.png",
+    "depth": "depth.png",
+    "depth16": "depth16.png",
+    "light": "light.png",
+    "pose": "pose.png"
+  },
+  "camera": {
+    "position": [
+      2.6,
+      1.35,
+      1.7
+    ],
+    "heightM": 1.35,
+    "pitchDeg": -8.2,
+    "verticalFovDeg": 40,
+    "focal35mm": 29,
+    "aspect": 1.78,
+    "lookAt": [
+      0,
+      0.9,
+      0
+    ]
+  },
+  "depth": {
+    "metric": "euclidean distance from the camera centre to the surface, metres",
+    "depthPng": {
+      "nearM": 2.38,
+      "farM": 4.57,
+      "mapping": "linear: nearM=255 (white), farM and beyond=40, background=0"
+    },
+    "depth16Png": {
+      "unit": "millimetres",
+      "background": 0
+    }
+  },
+  "lighting": {
+    "type": "spot",
+    "typeText": "스포트: 광원에서 원뿔 모양으로만 비춤. 원 밖은 직사광이 없고, 원 안도 거리에 따라 어두워짐",
+    "positionWorld": [
+      0,
+      2.4,
+      0
+    ],
+    "targetWorld": [
+      0,
+      0.75,
+      0
+    ],
+    "coneDeg": 70,
+    "softness": 0.35,
+    "source": {
+      "xy": [
+        0.5,
+        -0.197
+      ],
+      "inFrame": false,
+      "distanceFromCameraM": 3.28
+    },
+    "directionToLightCamera": [
+      0,
+      0.99,
+      0.14
+    ],
+    "cameraFrame": "+x screen right, +y screen up, +z toward the viewer; direction measured from the lit target point",
+    "text": "비추는 곳 기준으로 빛은 화면 가운데 위, 옆쪽에서 들어옴",
+    "color": "#ffe2b0",
+    "intensity": 2.6,
+    "intensityMeaning": "brightness reached at targetWorld",
+    "ambient": 0.15,
+    "lightPng": "direct light only: surface facing the light with nothing in between = white; turned away or in a cast shadow = black. Ambient light is excluded. Background is also black; use label.png to tell them apart. A lamp/spot fades with distance: the lit target reads white, nearer surfaces clip to white, farther ones are greyer."
+  },
+  "labels": [
+    {
+      "index": 1,
+      "color": "#e6194b",
+      "kind": "person",
+      "id": "d1",
+      "name": "안쪽 · 흰 셔츠 여자",
+      "notes": {
+        "role": "",
+        "intent": "",
+        "description": "흰 셔츠, 긴 머리를 묶은 30대 여성"
+      },
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.537,
+          0.346,
+          0.687,
+          0.864
+        ],
+        "pixelShare": 0.022
+      },
+      "distanceM": {
+        "min": 3.29,
+        "median": 3.56,
+        "max": 3.8
+      },
+      "directLight": {
+        "mean": 0.13,
+        "litShare": 0.25,
+        "darkShare": 0.62
+      },
+      "pose": {
+        "text": "화면 가운데(가로 63%), 화면 높이의 48%. 몸이 화면 왼쪽을 향한 3/4 정면. 앉은 자세(엉덩이 아래 받침 없음). 오른팔: 앞옆으로 약간 듦, 팔꿈치를 직각 정도로 굽힘, 손은 허리 아래(화면 왼쪽). 왼팔: 앞옆으로 약간 듦, 팔꿈치를 직각 정도로 굽힘, 손은 허리 아래(화면 왼쪽). 두 발 모두 바닥에 닿음. 식탁에 가려짐: 골반·왼손·오른손·왼쪽 엉덩이·오른쪽 엉덩이·왼쪽 무릎·오른쪽 무릎",
+        "stance": "앉은 자세(엉덩이 아래 받침 없음)",
+        "yawToCameraDeg": 45.6,
+        "joints": {
+          "headTop": {
+            "xy": [
+              0.65,
+              0.34
+            ],
+            "distanceM": 3.55,
+            "visible": true
+          },
+          "pelvis": {
+            "xy": [
+              0.65,
+              0.62
+            ],
+            "distanceM": 3.65,
+            "visible": false,
+            "hiddenBy": "식탁"
+          },
+          "chest": {
+            "xy": [
+              0.65,
+              0.55
+            ],
+            "distanceM": 3.63,
+            "visible": true
+          },
+          "neck": {
+            "xy": [
+              0.65,
+              0.44
+            ],
+            "distanceM": 3.59,
+            "visible": true
+          },
+          "head": {
+            "xy": [
+              0.65,
+              0.42
+            ],
+            "distanceM": 3.58,
+            "visible": true
+          },
+          "shoulderL": {
+            "xy": [
+              0.68,
+              0.47
+            ],
+            "distanceM": 3.47,
+            "visible": true
+          },
+          "shoulderR": {
+            "xy": [
+              0.63,
+              0.46
+            ],
+            "distanceM": 3.71,
+            "visible": true
+          },
+          "elbowL": {
+            "xy": [
+              0.67,
+              0.57
+            ],
+            "distanceM": 3.4,
+            "visible": true
+          },
+          "elbowR": {
+            "xy": [
+              0.61,
+              0.54
+            ],
+            "distanceM": 3.77,
+            "visible": true
+          },
+          "wristL": {
+            "xy": [
+              0.64,
+              0.58
+            ],
+            "distanceM": 3.29,
+            "visible": false,
+            "hiddenBy": "식탁"
+          },
+          "wristR": {
+            "xy": [
+              0.57,
+              0.55
+            ],
+            "distanceM": 3.66,
+            "visible": false,
+            "hiddenBy": "식탁"
+          },
+          "hipL": {
+            "xy": [
+              0.67,
+              0.63
+            ],
+            "distanceM": 3.56,
+            "visible": false,
+            "hiddenBy": "식탁"
+          },
+          "hipR": {
+            "xy": [
+              0.63,
+              0.62
+            ],
+            "distanceM": 3.75,
+            "visible": false,
+            "hiddenBy": "식탁"
+          },
+          "kneeL": {
+            "xy": [
+              0.6,
+              0.66
+            ],
+            "distanceM": 3.34,
+            "visible": false,
+            "hiddenBy": "식탁"
+          },
+          "kneeR": {
+            "xy": [
+              0.57,
+              0.64
+            ],
+            "distanceM": 3.53,
+            "visible": false,
+            "hiddenBy": "식탁"
+          },
+          "ankleL": {
+            "xy": [
+              0.6,
+              0.82
+            ],
+            "distanceM": 3.4,
+            "visible": true
+          },
+          "ankleR": {
+            "xy": [
+              0.57,
+              0.8
+            ],
+            "distanceM": 3.59,
+            "visible": true
+          }
+        }
+      },
+      "lightCondition": {
+        "facingLight": 1,
+        "cameraSeesLitSide": 0.7,
+        "castShadowFrom": {
+          "식탁": [
+            "kneeL",
+            "kneeR"
+          ]
+        },
+        "distanceToLightM": 1.89,
+        "brightnessVsTarget": 0.76,
+        "inCone": "edge",
+        "text": "빛을 정면으로 받음(얼굴·가슴 쪽이 밝고 등은 어두움) · 카메라는 빛을 받는 면을 봄 · 광원에서 1.9m · 비추는 곳 대비 밝기 76% · 스포트 빛 원 가장자리(약하게 받음) · 왼무릎·오른무릎은 식탁의 그림자 안"
+      }
+    },
+    {
+      "index": 2,
+      "color": "#3cb44b",
+      "kind": "person",
+      "id": "d2",
+      "name": "바깥 · 녹색 니트 남자",
+      "notes": {
+        "role": "",
+        "intent": "",
+        "description": "녹색 니트, 짧은 머리 30대 남성. 오른팔을 식탁 위로 뻗음"
+      },
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.259,
+          0.317,
+          0.515,
+          0.941
+        ],
+        "pixelShare": 0.052
+      },
+      "distanceM": {
+        "min": 2.58,
+        "median": 2.73,
+        "max": 3.28
+      },
+      "directLight": {
+        "mean": 0.1,
+        "litShare": 0.16,
+        "darkShare": 0.77
+      },
+      "pose": {
+        "text": "화면 가운데(가로 38%), 화면 높이의 58%. 화면 오른쪽을 향한 옆모습(프로필). 앉은 자세(엉덩이 아래 받침 없음). 오른팔: 앞으로 어깨 높이까지 듦, 팔을 폄, 손은 허리 높이(화면 오른쪽). 왼팔: 내림, 팔꿈치를 약간 굽힘, 손은 허리 아래(화면 오른쪽). 두 발 모두 바닥에 닿음",
+        "stance": "앉은 자세(엉덩이 아래 받침 없음)",
+        "yawToCameraDeg": 108.1,
+        "joints": {
+          "headTop": {
+            "xy": [
+              0.33,
+              0.32
+            ],
+            "distanceM": 2.7,
+            "visible": true
+          },
+          "pelvis": {
+            "xy": [
+              0.3,
+              0.7
+            ],
+            "distanceM": 2.73,
+            "visible": true
+          },
+          "chest": {
+            "xy": [
+              0.3,
+              0.6
+            ],
+            "distanceM": 2.7,
+            "visible": true
+          },
+          "neck": {
+            "xy": [
+              0.31,
+              0.45
+            ],
+            "distanceM": 2.7,
+            "visible": true
+          },
+          "head": {
+            "xy": [
+              0.32,
+              0.43
+            ],
+            "distanceM": 2.7,
+            "visible": true
+          },
+          "shoulderL": {
+            "xy": [
+              0.3,
+              0.47
+            ],
+            "distanceM": 2.83,
+            "visible": true
+          },
+          "shoulderR": {
+            "xy": [
+              0.33,
+              0.49
+            ],
+            "distanceM": 2.57,
+            "visible": true
+          },
+          "elbowL": {
+            "xy": [
+              0.3,
+              0.59
+            ],
+            "distanceM": 2.94,
+            "visible": true
+          },
+          "elbowR": {
+            "xy": [
+              0.41,
+              0.52
+            ],
+            "distanceM": 2.65,
+            "visible": true
+          },
+          "wristL": {
+            "xy": [
+              0.35,
+              0.61
+            ],
+            "distanceM": 3.07,
+            "visible": true
+          },
+          "wristR": {
+            "xy": [
+              0.47,
+              0.52
+            ],
+            "distanceM": 2.72,
+            "visible": true
+          },
+          "hipL": {
+            "xy": [
+              0.29,
+              0.7
+            ],
+            "distanceM": 2.83,
+            "visible": true
+          },
+          "hipR": {
+            "xy": [
+              0.31,
+              0.73
+            ],
+            "distanceM": 2.63,
+            "visible": true
+          },
+          "kneeL": {
+            "xy": [
+              0.4,
+              0.67
+            ],
+            "distanceM": 3.07,
+            "visible": true
+          },
+          "kneeR": {
+            "xy": [
+              0.43,
+              0.7
+            ],
+            "distanceM": 2.87,
+            "visible": true
+          },
+          "ankleL": {
+            "xy": [
+              0.4,
+              0.87
+            ],
+            "distanceM": 3.14,
+            "visible": true
+          },
+          "ankleR": {
+            "xy": [
+              0.43,
+              0.9
+            ],
+            "distanceM": 2.94,
+            "visible": true
+          }
+        }
+      },
+      "lightCondition": {
+        "facingLight": 1,
+        "cameraSeesLitSide": -0.31,
+        "castShadowFrom": {
+          "식탁": [
+            "kneeL",
+            "kneeR"
+          ]
+        },
+        "distanceToLightM": 1.84,
+        "brightnessVsTarget": 0.81,
+        "inCone": "edge",
+        "text": "빛을 정면으로 받음(얼굴·가슴 쪽이 밝고 등은 어두움) · 카메라는 그늘진 면을 봄(역광, 윤곽만 밝음) · 광원에서 1.8m · 비추는 곳 대비 밝기 81% · 스포트 빛 원 가장자리(약하게 받음) · 왼무릎·오른무릎은 식탁의 그림자 안"
+      }
+    },
+    {
+      "index": 3,
+      "color": "#4363d8",
+      "kind": "prop",
+      "id": "table",
+      "name": "식탁",
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.344,
+          0.521,
+          0.698,
+          1
+        ],
+        "pixelShare": 0.05
+      },
+      "distanceM": {
+        "min": 2.38,
+        "median": 2.87,
+        "max": 4.07
+      },
+      "directLight": {
+        "mean": 0.36,
+        "litShare": 0.41,
+        "darkShare": 0.59
+      },
+      "placement": "화면 아래 가운데, 카메라에서 3.2m, 안쪽 · 흰 셔츠 여자에게서 0.5m, 일부가 화면 밖"
+    },
+    {
+      "index": 4,
+      "color": "#f58231",
+      "kind": "prop",
+      "id": "chair-in",
+      "name": "안쪽 의자",
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.606,
+          0.441,
+          0.739,
+          0.838
+        ],
+        "pixelShare": 0.017
+      },
+      "distanceM": {
+        "min": 3.51,
+        "median": 3.81,
+        "max": 4.01
+      },
+      "directLight": {
+        "mean": 0,
+        "litShare": 0,
+        "darkShare": 0.98
+      },
+      "placement": "화면 오른쪽, 카메라에서 3.7m, 안쪽 · 흰 셔츠 여자에게서 0m, 식탁에 일부 가려짐"
+    },
+    {
+      "index": 5,
+      "color": "#911eb4",
+      "kind": "prop",
+      "id": "chair-out",
+      "name": "바깥 의자",
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.181,
+          0.506,
+          0.358,
+          1
+        ],
+        "pixelShare": 0.038
+      },
+      "distanceM": {
+        "min": 2.47,
+        "median": 2.72,
+        "max": 3.22
+      },
+      "directLight": {
+        "mean": 0,
+        "litShare": 0,
+        "darkShare": 1
+      },
+      "placement": "화면 왼쪽 아래, 카메라에서 2.7m, 바깥 · 녹색 니트 남자에게서 0m, 일부가 화면 밖"
+    },
+    {
+      "index": 6,
+      "color": "#42d4f4",
+      "kind": "prop",
+      "id": "cup",
+      "name": "머그컵",
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.501,
+          0.527,
+          0.534,
+          0.588
+        ],
+        "pixelShare": 0.002
+      },
+      "distanceM": {
+        "min": 2.89,
+        "median": 2.93,
+        "max": 3.01
+      },
+      "directLight": {
+        "mean": 0.09,
+        "litShare": 0.09,
+        "darkShare": 0.91
+      },
+      "placement": "화면 중앙, 카메라에서 3m, 식탁 위에 놓임, 바깥 · 녹색 니트 남자에게서 0.8m"
+    },
+    {
+      "index": 7,
+      "color": "#505050",
+      "kind": "floor",
+      "id": "floor",
+      "name": "바닥",
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0,
+          0.601,
+          1,
+          1
+        ],
+        "pixelShare": 0.249
+      },
+      "distanceM": {
+        "min": 2.85,
+        "median": 3.75,
+        "max": 6.1
+      },
+      "directLight": {
+        "mean": 0.05,
+        "litShare": 0.09,
+        "darkShare": 0.81
+      }
+    },
+    {
+      "index": 8,
+      "color": "#8c8c8c",
+      "kind": "wall",
+      "id": "wall",
+      "name": "벽",
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0,
+          0,
+          1,
+          0.731
+        ],
+        "pixelShare": 0.572
+      },
+      "distanceM": {
+        "min": 5.11,
+        "median": 5.78,
+        "max": 7.34
+      },
+      "directLight": {
+        "mean": 0,
+        "litShare": 0,
+        "darkShare": 1
+      }
+    }
+  ],
+  "shotDescription": "촬영 설명 (편집기 3D 장면의 촬영 카메라에서 계산한 값입니다. 첨부 color PNG와 같은 카메라입니다.)\n- 컷: S3 식탁 — 앉은 자세·식탁 가림·스포트 원 확인\n- 카메라: 풀샷(전신) · 약간 내려다보는 앵글(카메라 높이 1.4m, 바깥 · 녹색 니트 남자의 눈높이보다 0.2m 위, 아래로 8°), 광각 · 35mm 환산 약 29mm · 화면비 1.78:1\n- 안쪽 · 흰 셔츠 여자: 화면 가운데(가로 63%), 화면 높이의 48%. 몸이 화면 왼쪽을 향한 3/4 정면. 앉은 자세(엉덩이 아래 받침 없음). 오른팔: 앞옆으로 약간 듦, 팔꿈치를 직각 정도로 굽힘, 손은 허리 아래(화면 왼쪽). 왼팔: 앞옆으로 약간 듦, 팔꿈치를 직각 정도로 굽힘, 손은 허리 아래(화면 왼쪽). 두 발 모두 바닥에 닿음. 식탁에 가려짐: 골반·왼손·오른손·왼쪽 엉덩이·오른쪽 엉덩이·왼쪽 무릎·오른쪽 무릎.\n- 바깥 · 녹색 니트 남자: 화면 가운데(가로 38%), 화면 높이의 58%. 화면 오른쪽을 향한 옆모습(프로필). 앉은 자세(엉덩이 아래 받침 없음). 오른팔: 앞으로 어깨 높이까지 듦, 팔을 폄, 손은 허리 높이(화면 오른쪽). 왼팔: 내림, 팔꿈치를 약간 굽힘, 손은 허리 아래(화면 오른쪽). 두 발 모두 바닥에 닿음.\n- 앞뒤 관계: 카메라에서 가까운 순서로 바깥 · 녹색 니트 남자(2.7m) → 안쪽 · 흰 셔츠 여자(3.7m).\n- 소품 식탁: 화면 아래 가운데, 카메라에서 3.2m, 안쪽 · 흰 셔츠 여자에게서 0.5m, 일부가 화면 밖.\n- 소품 안쪽 의자: 화면 오른쪽, 카메라에서 3.7m, 안쪽 · 흰 셔츠 여자에게서 0m, 식탁에 일부 가려짐.\n- 소품 바깥 의자: 화면 왼쪽 아래, 카메라에서 2.7m, 바깥 · 녹색 니트 남자에게서 0m, 일부가 화면 밖.\n- 소품 머그컵: 화면 중앙, 카메라에서 3m, 식탁 위에 놓임, 바깥 · 녹색 니트 남자에게서 0.8m.\n- 빛: 스포트 조명은 화면 정면 쪽 위, 카메라 쪽(앞)에서 비춤 → 그림자는 인물 뒤쪽으로 퍼지며 떨어짐.\n좌우 표기: \"화면 왼쪽/오른쪽\"은 이미지 기준, \"왼팔/오른팔·왼발/오른발\"은 인물 자신 기준입니다. 시선·표정·손가락 모양은 계산하지 않았으니 원문과 캐릭터 설명을 따르세요."
+}

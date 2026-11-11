@@ -1,0 +1,235 @@
+{
+  "modes": {
+    "balanced": [
+      {
+        "name": "thorax",
+        "vertices": 2102,
+        "triangles": 4200,
+        "bytes": 75648,
+        "volume": 0.21679548881170907,
+        "boundary": 0,
+        "nonManifold": 0,
+        "inconsistent": 0,
+        "metadata": {
+          "part": "thorax",
+          "resolution": 80,
+          "socketRounding": 4,
+          "smoothingCycles": 16,
+          "reduction": {
+            "sourceTriangles": 25160,
+            "targetTriangles": 4200,
+            "triangles": 4200,
+            "collapsed": 10480,
+            "rejected": 13,
+            "maxAccumulatedQuadricCost": 0.000013350076674867889
+          },
+          "displayQuality": "balanced",
+          "sourceTriangles": 25160
+        },
+        "volumeChangePercent": -0.034203441077440555
+      },
+      {
+        "name": "abdomen",
+        "vertices": 1202,
+        "triangles": 2400,
+        "bytes": 43248,
+        "volume": 0.09254890261383494,
+        "boundary": 0,
+        "nonManifold": 0,
+        "inconsistent": 0,
+        "metadata": {
+          "part": "abdomen",
+          "resolution": 80,
+          "socketRounding": 4,
+          "smoothingCycles": 16,
+          "reduction": {
+            "sourceTriangles": 16096,
+            "targetTriangles": 2400,
+            "triangles": 2400,
+            "collapsed": 6848,
+            "rejected": 13,
+            "maxAccumulatedQuadricCost": 0.000008873588777346108
+          },
+          "displayQuality": "balanced",
+          "sourceTriangles": 16096
+        },
+        "volumeChangePercent": -0.08725797139574887
+      },
+      {
+        "name": "pelvis",
+        "vertices": 2502,
+        "triangles": 5000,
+        "bytes": 90048,
+        "volume": 0.1416682353026822,
+        "boundary": 0,
+        "nonManifold": 0,
+        "inconsistent": 0,
+        "metadata": {
+          "part": "pelvis",
+          "resolution": 80,
+          "socketRounding": 4,
+          "smoothingCycles": 16,
+          "reduction": {
+            "sourceTriangles": 32152,
+            "targetTriangles": 5000,
+            "triangles": 5000,
+            "collapsed": 13576,
+            "rejected": 37,
+            "maxAccumulatedQuadricCost": 0.00001354247352422038
+          },
+          "displayQuality": "balanced",
+          "sourceTriangles": 32152
+        },
+        "volumeChangePercent": 0.0017932615640203764
+      }
+    ],
+    "source": [
+      {
+        "name": "thorax",
+        "vertices": 12582,
+        "triangles": 25160,
+        "bytes": 452928,
+        "volume": 0.21686966570003163,
+        "boundary": 0,
+        "nonManifold": 0,
+        "inconsistent": 0,
+        "metadata": {
+          "part": "thorax",
+          "resolution": 80,
+          "socketRounding": 4,
+          "smoothingCycles": 16,
+          "displayQuality": "source",
+          "sourceTriangles": 25160
+        }
+      },
+      {
+        "name": "abdomen",
+        "vertices": 8050,
+        "triangles": 16096,
+        "bytes": 289776,
+        "volume": 0.09262972943665074,
+        "boundary": 0,
+        "nonManifold": 0,
+        "inconsistent": 0,
+        "metadata": {
+          "part": "abdomen",
+          "resolution": 80,
+          "socketRounding": 4,
+          "smoothingCycles": 16,
+          "displayQuality": "source",
+          "sourceTriangles": 16096
+        }
+      },
+      {
+        "name": "pelvis",
+        "vertices": 16078,
+        "triangles": 32152,
+        "bytes": 578784,
+        "volume": 0.14166569486622674,
+        "boundary": 0,
+        "nonManifold": 0,
+        "inconsistent": 0,
+        "metadata": {
+          "part": "pelvis",
+          "resolution": 80,
+          "socketRounding": 4,
+          "smoothingCycles": 16,
+          "displayQuality": "source",
+          "sourceTriangles": 32152
+        }
+      }
+    ],
+    "light": [
+      {
+        "name": "thorax",
+        "vertices": 1102,
+        "triangles": 2200,
+        "bytes": 39648,
+        "volume": 0.21668334469427028,
+        "boundary": 0,
+        "nonManifold": 0,
+        "inconsistent": 0,
+        "metadata": {
+          "part": "thorax",
+          "resolution": 80,
+          "socketRounding": 4,
+          "smoothingCycles": 16,
+          "displayQuality": "light",
+          "sourceTriangles": 25160,
+          "reduction": {
+            "sourceTriangles": 25160,
+            "targetTriangles": 2200,
+            "triangles": 2200,
+            "collapsed": 11480,
+            "rejected": 14,
+            "maxAccumulatedQuadricCost": 0.00007369436043508249
+          }
+        },
+        "volumeChangePercent": -0.08591381609776017
+      },
+      {
+        "name": "abdomen",
+        "vertices": 602,
+        "triangles": 1200,
+        "bytes": 21648,
+        "volume": 0.09242328518217914,
+        "boundary": 0,
+        "nonManifold": 0,
+        "inconsistent": 0,
+        "metadata": {
+          "part": "abdomen",
+          "resolution": 80,
+          "socketRounding": 4,
+          "smoothingCycles": 16,
+          "displayQuality": "light",
+          "sourceTriangles": 16096,
+          "reduction": {
+            "sourceTriangles": 16096,
+            "targetTriangles": 1200,
+            "triangles": 1200,
+            "collapsed": 7448,
+            "rejected": 13,
+            "maxAccumulatedQuadricCost": 0.00006166107620434216
+          }
+        },
+        "volumeChangePercent": -0.22287040643120815
+      },
+      {
+        "name": "pelvis",
+        "vertices": 1402,
+        "triangles": 2800,
+        "bytes": 50448,
+        "volume": 0.14165859572100567,
+        "boundary": 0,
+        "nonManifold": 0,
+        "inconsistent": 0,
+        "metadata": {
+          "part": "pelvis",
+          "resolution": 80,
+          "socketRounding": 4,
+          "smoothingCycles": 16,
+          "displayQuality": "light",
+          "sourceTriangles": 32152,
+          "reduction": {
+            "sourceTriangles": 32152,
+            "targetTriangles": 2800,
+            "triangles": 2800,
+            "collapsed": 14676,
+            "rejected": 37,
+            "maxAccumulatedQuadricCost": 0.00006807423072363628
+          }
+        },
+        "volumeChangePercent": -0.005011195708159999
+      }
+    ]
+  },
+  "responsiveness": [
+    {
+      "quality": "source",
+      "frames": 42,
+      "maxFrameGapMs": 33.30000001192093
+    }
+  ],
+  "pageErrors": [],
+  "scope": "Reduction fidelity relative to the revised sculpture, not reference-art resemblance."
+}

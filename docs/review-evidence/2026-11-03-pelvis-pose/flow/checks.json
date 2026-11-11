@@ -1,0 +1,126 @@
+{
+  "pageErrors": [],
+  "parts": [
+    {
+      "name": "thorax",
+      "vertices": 5002,
+      "triangles": 10000,
+      "nonFinite": false
+    },
+    {
+      "name": "neck",
+      "vertices": 142,
+      "triangles": 280,
+      "nonFinite": false
+    },
+    {
+      "name": "head",
+      "vertices": 665,
+      "triangles": 1240,
+      "nonFinite": false
+    },
+    {
+      "name": "upperL",
+      "vertices": 409,
+      "triangles": 728,
+      "nonFinite": false
+    },
+    {
+      "name": "foreL",
+      "vertices": 370,
+      "triangles": 536,
+      "nonFinite": false
+    },
+    {
+      "name": "handL",
+      "vertices": 1712,
+      "triangles": 2480,
+      "nonFinite": false
+    },
+    {
+      "name": "thighL",
+      "vertices": 693,
+      "triangles": 1296,
+      "nonFinite": false
+    },
+    {
+      "name": "shinL",
+      "vertices": 501,
+      "triangles": 912,
+      "nonFinite": false
+    },
+    {
+      "name": "footL",
+      "vertices": 1724,
+      "triangles": 2648,
+      "nonFinite": false
+    },
+    {
+      "name": "upperR",
+      "vertices": 409,
+      "triangles": 728,
+      "nonFinite": false
+    },
+    {
+      "name": "foreR",
+      "vertices": 370,
+      "triangles": 536,
+      "nonFinite": false
+    },
+    {
+      "name": "handR",
+      "vertices": 1712,
+      "triangles": 2480,
+      "nonFinite": false
+    },
+    {
+      "name": "thighR",
+      "vertices": 693,
+      "triangles": 1296,
+      "nonFinite": false
+    },
+    {
+      "name": "shinR",
+      "vertices": 501,
+      "triangles": 912,
+      "nonFinite": false
+    },
+    {
+      "name": "footR",
+      "vertices": 1724,
+      "triangles": 2648,
+      "nonFinite": false
+    }
+  ],
+  "triangles": 28720,
+  "draws": 15,
+  "jointNodes": 85,
+  "poses": [
+    {
+      "pose": "neutral",
+      "maxLengthDrift": 5.551115123125783e-16
+    },
+    {
+      "pose": "raised",
+      "maxLengthDrift": 5.551115123125783e-16
+    },
+    {
+      "pose": "step",
+      "maxLengthDrift": 7.771561172376096e-16
+    },
+    {
+      "pose": "squat",
+      "maxLengthDrift": 5.551115123125783e-16
+    },
+    {
+      "pose": "reference",
+      "maxLengthDrift": 0
+    }
+  ],
+  "poseRoundTrip": true,
+  "undoRedo": true,
+  "hingeControlAndClamp": true,
+  "invalidHingePoseRejectedAtomically": true,
+  "panZoomXyzWebGLRenders": 0,
+  "scope": "Actual full articulated prototype; anatomy resemblance and collision-free contact are not certified."
+}

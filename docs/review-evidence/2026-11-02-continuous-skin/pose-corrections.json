@@ -1,0 +1,15 @@
+{
+  "reviewed": 205,
+  "unresolved": 261,
+  "checks": [
+    "default list excludes unresolved; separate reviewed/unresolved counts; unresolved card pins source without applying joints",
+    "explicit draft apply works only on selected actor",
+    "reviewed card applies immediately and retains source image",
+    "466 poses apply across 5/8/9.5-head rigs (1398 applications); locked lengths, stature, profile and root preserved"
+  ],
+  "rig": {
+    "count": 1398,
+    "maxDrift": 3.3306690738754696e-16
+  },
+  "pageErrors": []
+}

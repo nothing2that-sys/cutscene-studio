@@ -1,0 +1,121 @@
+{
+  "note": "Diagnostic samples of visible shell vertices inside another authored solid. Field values are not exact clearance distances. Not a collision solver or visual acceptance test.",
+  "poses": [
+    {
+      "pose": "neutral",
+      "pairs": [
+        {
+          "from": "thorax",
+          "into": "abdomen",
+          "sampled": 797,
+          "inside": 9
+        },
+        {
+          "from": "abdomen",
+          "into": "thorax",
+          "sampled": 514,
+          "inside": 2
+        },
+        {
+          "from": "abdomen",
+          "into": "pelvis",
+          "sampled": 514,
+          "inside": 0
+        },
+        {
+          "from": "pelvis",
+          "into": "abdomen",
+          "sampled": 1026,
+          "inside": 0
+        }
+      ]
+    },
+    {
+      "pose": "bend",
+      "pairs": [
+        {
+          "from": "thorax",
+          "into": "abdomen",
+          "sampled": 797,
+          "inside": 14
+        },
+        {
+          "from": "abdomen",
+          "into": "thorax",
+          "sampled": 514,
+          "inside": 20
+        },
+        {
+          "from": "abdomen",
+          "into": "pelvis",
+          "sampled": 514,
+          "inside": 0
+        },
+        {
+          "from": "pelvis",
+          "into": "abdomen",
+          "sampled": 1026,
+          "inside": 0
+        }
+      ]
+    },
+    {
+      "pose": "twist",
+      "pairs": [
+        {
+          "from": "thorax",
+          "into": "abdomen",
+          "sampled": 797,
+          "inside": 27
+        },
+        {
+          "from": "abdomen",
+          "into": "thorax",
+          "sampled": 514,
+          "inside": 15
+        },
+        {
+          "from": "abdomen",
+          "into": "pelvis",
+          "sampled": 514,
+          "inside": 0
+        },
+        {
+          "from": "pelvis",
+          "into": "abdomen",
+          "sampled": 1026,
+          "inside": 0
+        }
+      ]
+    },
+    {
+      "pose": "reference",
+      "pairs": [
+        {
+          "from": "thorax",
+          "into": "abdomen",
+          "sampled": 797,
+          "inside": 32
+        },
+        {
+          "from": "abdomen",
+          "into": "thorax",
+          "sampled": 514,
+          "inside": 42
+        },
+        {
+          "from": "abdomen",
+          "into": "pelvis",
+          "sampled": 514,
+          "inside": 63
+        },
+        {
+          "from": "pelvis",
+          "into": "abdomen",
+          "sampled": 1026,
+          "inside": 42
+        }
+      ]
+    }
+  ]
+}

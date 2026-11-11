@@ -1,0 +1,182 @@
+{
+  "version": 1,
+  "units": "meters",
+  "title": "홀리데이 — 빗속 우산 아래 내려다봄",
+  "sourceText": "사용자 요청 요약: 영화 홀리데이(2006)에서 최민수가 연기한 인물이 비 오는 야외에서 오른손에 우산을 쓰고 서서, 앞에 무릎 꿇은 상대를 내려다보는 순간. 주변에 다른 인물들이 있다. 낮은 앵글로 위압감을 준다.",
+  "assumptions": "영화 원본 프레임을 대조하지 못한 3D 블로킹 초안이다. 사용자 확인 사항: 우산 쓰고 내려다보는 순간, 최민수 + 여러 명, 본인 오른손에 우산, 상대는 무릎 꿇음, 낮은 앵글 위압감. 이하는 추정이다. 최민수의 배역명(김안석)과 무릎 꿇은 상대가 누구인지(지강혁·이성재일 수 있음)는 확정하지 않았다. 주변 인물은 최민수 뒤 좌우에 선 교도관 2명으로 가정했고, 이들은 우산 없이 비를 맞는다고 가정했다. 장소는 평평한 야외 바닥(교도소 마당 등)으로 가정하고 뒤쪽 검은 블록은 건물·담장 복원이 아닌 배경 깊이 기준이다. 시간대·광원은 흐린 비 오는 날의 높은 뒤쪽 차가운 확산광으로 가정했다. 기립 키 1.82m(최민수)·1.75m(나머지), 7.5등신은 실측이 아닌 배치용 가정이다. 두 사람 거리 약 1m, 서로 정면으로 마주 본다고 가정했다. 앱에 무릎꿇기 포즈가 없어 양 허벅지 수직·무릎 90도 굽힘으로 근사했으며 정강이·발등 접지는 편집기에서 확인한다. 무릎 꿇은 인물의 고개는 약간 숙인 것으로 가정했다(올려다보는지는 미확정). 우산은 지원 소품이 없어 얇은 상자(대)와 납작한 구(우산 천)로 만든 대리 도형이며 대는 수직으로만 둘 수 있다. 손잡이가 오른손에 닿는지는 편집기에서 맞춘다. 빗줄기·젖은 의상·얼굴·복식은 최종 작화에서 보완한다. 바닥의 낮은 회색 구체는 물웅덩이 위치 대리 도형이다.",
+  "room": {
+    "size": [10, 6, 10],
+    "color": "#262d33",
+    "walls": false
+  },
+  "actors": [
+    {
+      "id": "choi-umbrella",
+      "name": "최민수 · 우산 든 인물 · 서 있음",
+      "position": [0, 0, -0.45],
+      "yaw": 0,
+      "height": 1.82,
+      "headUnits": 8,
+      "pose": "standing",
+      "joints": {
+        "torso": { "bend": -3, "tilt": 0, "turn": 0 },
+        "neck": { "nod": 10, "turn": 0 },
+        "head": { "nod": 12, "tilt": -3 },
+        "r_arm": { "raise": 25, "straddle": 4, "turn": 0 },
+        "r_elbow": { "bend": 100 },
+        "r_wrist": { "bend": 0, "turn": 0 },
+        "l_arm": { "raise": 4, "straddle": 6, "turn": 0 },
+        "l_elbow": { "bend": 12 },
+        "l_leg": { "raise": 0, "straddle": 6 },
+        "l_knee": { "bend": 0 },
+        "r_leg": { "raise": 0, "straddle": 6 },
+        "r_knee": { "bend": 0 }
+      },
+      "intent": "본인 오른손으로 우산 대를 가슴 앞에서 수직으로 잡고, 상체를 살짝 젖혀 선 채 고개를 숙여 1m 앞 무릎 꿇은 상대의 머리를 내려다본다. 왼팔은 옆으로 늘어뜨린다. 우산 천이 머리 위를 덮는다."
+    },
+    {
+      "id": "kneeling-target",
+      "name": "무릎 꿇은 상대 · 인물 미확정",
+      "position": [0, 0, 0.55],
+      "yaw": 180,
+      "height": 1.75,
+      "headUnits": 8,
+      "pose": "standing",
+      "joints": {
+        "torso": { "bend": 10, "tilt": 0, "turn": 0 },
+        "neck": { "nod": 10 },
+        "head": { "nod": 12 },
+        "r_arm": { "raise": 8, "straddle": 8 },
+        "r_elbow": { "bend": 15 },
+        "l_arm": { "raise": 8, "straddle": 8 },
+        "l_elbow": { "bend": 15 },
+        "l_leg": { "raise": 0, "straddle": 5 },
+        "l_knee": { "bend": 90 },
+        "l_ankle": { "bend": 0 },
+        "r_leg": { "raise": 0, "straddle": 5 },
+        "r_knee": { "bend": 90 },
+        "r_ankle": { "bend": 0 }
+      },
+      "intent": "빗속 바닥에 두 무릎을 꿇고 상체를 조금 숙인 채 최민수 쪽을 향한다. 우산 밖이라 비를 그대로 맞는다. 고개 각도와 손 위치는 미확정."
+    },
+    {
+      "id": "guard-left",
+      "name": "주변 인물 A · 교도관 추정 · 화면 왼쪽 뒤",
+      "position": [-1.15, 0, -1.35],
+      "yaw": 20,
+      "height": 1.75,
+      "headUnits": 8,
+      "pose": "standing",
+      "joints": {
+        "neck": { "nod": 8 },
+        "r_arm": { "raise": 3, "straddle": 6 },
+        "r_elbow": { "bend": 10 },
+        "l_arm": { "raise": 3, "straddle": 6 },
+        "l_elbow": { "bend": 10 },
+        "l_leg": { "straddle": 5 },
+        "r_leg": { "straddle": 5 }
+      },
+      "intent": "최민수 뒤에서 무릎 꿇은 인물을 지켜본다. 우산 없이 비를 맞는다고 가정."
+    },
+    {
+      "id": "guard-right",
+      "name": "주변 인물 B · 교도관 추정 · 화면 오른쪽 뒤",
+      "position": [1.1, 0, -1.5],
+      "yaw": -18,
+      "height": 1.75,
+      "headUnits": 8,
+      "pose": "standing",
+      "joints": {
+        "neck": { "nod": 8 },
+        "r_arm": { "raise": 3, "straddle": 6 },
+        "r_elbow": { "bend": 10 },
+        "l_arm": { "raise": 3, "straddle": 6 },
+        "l_elbow": { "bend": 10 },
+        "l_leg": { "straddle": 5 },
+        "r_leg": { "straddle": 5 }
+      },
+      "intent": "최민수 뒤에서 무릎 꿇은 인물을 지켜본다. 우산 없이 비를 맞는다고 가정."
+    }
+  ],
+  "props": [
+    {
+      "id": "umbrella-shaft",
+      "name": "우산 대 · 최민수 오른손",
+      "type": "box",
+      "position": [-0.17, 1.24, -0.12],
+      "size": [0.025, 0.86, 0.025],
+      "yaw": 0,
+      "color": "#1b1b1b"
+    },
+    {
+      "id": "umbrella-canopy",
+      "name": "우산 천 · 대리 도형",
+      "type": "sphere",
+      "position": [-0.17, 2.0, -0.12],
+      "size": [1.05, 0.3, 1.05],
+      "yaw": 0,
+      "color": "#121417"
+    },
+    {
+      "id": "background-mass",
+      "name": "어두운 배경 깊이 기준",
+      "type": "box",
+      "position": [0, 0, -4.4],
+      "size": [9, 3.6, 0.3],
+      "yaw": 0,
+      "color": "#11171d"
+    },
+    {
+      "id": "puddle-front",
+      "name": "물웅덩이 위치 대리",
+      "type": "sphere",
+      "position": [0.75, 0.003, 1.1],
+      "size": [1.3, 0.02, 0.5],
+      "yaw": 12,
+      "color": "#51616d"
+    },
+    {
+      "id": "puddle-back",
+      "name": "물웅덩이 위치 대리",
+      "type": "sphere",
+      "position": [-1.0, 0.003, -0.6],
+      "size": [1.0, 0.02, 0.4],
+      "yaw": -10,
+      "color": "#51616d"
+    }
+  ],
+  "camera": {
+    "position": [0.55, 0.75, 1.95],
+    "target": [-0.1, 1.45, -0.45],
+    "fov": 40
+  },
+  "lighting": {
+    "position": [-1.5, 5, -3.5],
+    "target": [0, 1, 0],
+    "color": "#c3d3e3",
+    "intensity": 2.2,
+    "ambient": 0.6
+  },
+  "shots": [
+    {
+      "id": "low-angle-umbrella",
+      "name": "01 · 낮은 앵글 · 우산 아래 내려다봄",
+      "purpose": "무릎 꿇은 인물의 등·어깨를 화면 오른쪽 앞에 걸고, 낮은 시점에서 우산 쓴 최민수를 올려다본다. 뒤의 두 인물과 우산 천이 위압감을 더한다.",
+      "camera": {
+        "position": [0.55, 0.75, 1.95],
+        "target": [-0.1, 1.45, -0.45],
+        "fov": 40
+      }
+    },
+    {
+      "id": "side-relation-check",
+      "name": "02 · 같은 순간 · 측면 관계 확인",
+      "purpose": "포즈를 유지하고 옆에서 두 사람의 거리, 서 있는 키와 무릎 꿇은 높이 차, 우산 대와 오른손 위치, 시선 방향을 확인한다.",
+      "camera": {
+        "position": [3.8, 1.25, 0.15],
+        "target": [0, 1.0, -0.1],
+        "fov": 32
+      }
+    }
+  ]
+}

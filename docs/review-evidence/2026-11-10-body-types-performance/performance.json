@@ -1,0 +1,19 @@
+{
+ "appReadyMs": 1931,
+ "typesReadyMs": 12,
+ "rows": {
+  "8 default, standing": {
+   "loadMs": 3990,
+   "drawCalls": 125,
+   "triangles": 238988,
+   "renderMsMedian": 158.5
+  },
+  "8 mixed types and poses": {
+   "loadMs": 4287,
+   "drawCalls": 125,
+   "triangles": 238988,
+   "renderMsMedian": 163.7
+  }
+ },
+ "errors": []
+}

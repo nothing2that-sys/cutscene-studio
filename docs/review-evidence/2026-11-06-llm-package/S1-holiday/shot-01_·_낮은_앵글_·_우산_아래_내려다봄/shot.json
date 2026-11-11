@@ -1,0 +1,961 @@
+{
+  "format": "cutscene-shot-package",
+  "version": 1,
+  "scene": {
+    "title": "홀리데이 — 빗속 우산 아래 내려다봄",
+    "sourceText": "사용자 요청 요약: 영화 홀리데이(2006)에서 최민수가 연기한 인물이 비 오는 야외에서 오른손에 우산을 쓰고 서서, 앞에 무릎 꿇은 상대를 내려다보는 순간. 주변에 다른 인물들이 있다. 낮은 앵글로 위압감을 준다.",
+    "assumptions": "영화 원본 프레임을 대조하지 못한 3D 블로킹 초안이다. 사용자 확인 사항: 우산 쓰고 내려다보는 순간, 최민수 + 여러 명, 본인 오른손에 우산, 상대는 무릎 꿇음, 낮은 앵글 위압감. 이하는 추정이다. 최민수의 배역명(김안석)과 무릎 꿇은 상대가 누구인지(지강혁·이성재일 수 있음)는 확정하지 않았다. 주변 인물은 최민수 뒤 좌우에 선 교도관 2명으로 가정했고, 이들은 우산 없이 비를 맞는다고 가정했다. 장소는 평평한 야외 바닥(교도소 마당 등)으로 가정하고 뒤쪽 검은 블록은 건물·담장 복원이 아닌 배경 깊이 기준이다. 시간대·광원은 흐린 비 오는 날의 높은 뒤쪽 차가운 확산광으로 가정했다. 기립 키 1.82m(최민수)·1.75m(나머지), 7.5등신은 실측이 아닌 배치용 가정이다. 두 사람 거리 약 1m, 서로 정면으로 마주 본다고 가정했다. 앱에 무릎꿇기 포즈가 없어 양 허벅지 수직·무릎 90도 굽힘으로 근사했으며 정강이·발등 접지는 편집기에서 확인한다. 무릎 꿇은 인물의 고개는 약간 숙인 것으로 가정했다(올려다보는지는 미확정). 우산은 지원 소품이 없어 얇은 상자(대)와 납작한 구(우산 천)로 만든 대리 도형이며 대는 수직으로만 둘 수 있다. 손잡이가 오른손에 닿는지는 편집기에서 맞춘다. 빗줄기·젖은 의상·얼굴·복식은 최종 작화에서 보완한다. 바닥의 낮은 회색 구체는 물웅덩이 위치 대리 도형이다."
+  },
+  "shot": {
+    "name": "01 · 낮은 앵글 · 우산 아래 내려다봄",
+    "purpose": "무릎 꿇은 인물의 등·어깨를 화면 오른쪽 앞에 걸고, 낮은 시점에서 우산 쓴 최민수를 올려다본다. 뒤의 두 인물과 우산 천이 위압감을 더한다."
+  },
+  "image": {
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.778,
+    "origin": "top-left, x right, y down, coordinates normalized 0..1"
+  },
+  "files": {
+    "color": "color.png",
+    "label": "label.png",
+    "depth": "depth.png",
+    "depth16": "depth16.png",
+    "light": "light.png",
+    "pose": "pose.png"
+  },
+  "camera": {
+    "position": [
+      0.55,
+      0.75,
+      1.95
+    ],
+    "heightM": 0.75,
+    "pitchDeg": 15.7,
+    "verticalFovDeg": 40,
+    "focal35mm": 29,
+    "aspect": 1.78,
+    "lookAt": [
+      -0.1,
+      1.45,
+      -0.45
+    ]
+  },
+  "depth": {
+    "metric": "euclidean distance from the camera centre to the surface, metres",
+    "depthPng": {
+      "nearM": 1.38,
+      "farM": 8.39,
+      "mapping": "linear: nearM=255 (white), farM and beyond=40, background=0"
+    },
+    "depth16Png": {
+      "unit": "millimetres",
+      "background": 0
+    }
+  },
+  "lighting": {
+    "type": "sun",
+    "typeText": "태양광(평행광): 장면 전체에 같은 방향·같은 세기로 비추고 그림자가 서로 평행하게 떨어짐",
+    "positionWorld": [
+      -1.5,
+      5,
+      -3.5
+    ],
+    "targetWorld": [
+      0,
+      1,
+      0
+    ],
+    "directionToLightCamera": [
+      -0.1,
+      0.51,
+      -0.85
+    ],
+    "cameraFrame": "+x screen right, +y screen up, +z toward the viewer; direction measured from the lit target point",
+    "text": "빛은 화면 가운데 위, 피사체 뒤쪽(역광)에서 들어옴",
+    "color": "#c3d3e3",
+    "intensity": 2.2,
+    "intensityMeaning": "brightness reached at targetWorld",
+    "ambient": 0.6,
+    "lightPng": "direct light only: surface facing the light with nothing in between = white; turned away or in a cast shadow = black. Ambient light is excluded. Background is also black; use label.png to tell them apart."
+  },
+  "labels": [
+    {
+      "index": 1,
+      "color": "#e6194b",
+      "kind": "person",
+      "id": "choi-umbrella",
+      "name": "최민수 · 우산 든 인물 · 서 있음",
+      "notes": {
+        "role": "",
+        "intent": "본인 오른손으로 우산 대를 가슴 앞에서 수직으로 잡고, 상체를 살짝 젖혀 선 채 고개를 숙여 1m 앞 무릎 꿇은 상대의 머리를 내려다본다. 왼팔은 옆으로 늘어뜨린다. 우산 천이 머리 위를 덮는다.",
+        "description": ""
+      },
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.428,
+          0.306,
+          0.612,
+          1
+        ],
+        "pixelShare": 0.051
+      },
+      "distanceM": {
+        "min": 2.07,
+        "median": 2.42,
+        "max": 2.61
+      },
+      "directLight": {
+        "mean": 0,
+        "litShare": 0,
+        "darkShare": 0.99
+      },
+      "pose": {
+        "text": "화면 가운데(가로 52%), 화면 높이의 43%, 화면 밖: 왼쪽 무릎·오른쪽 무릎·왼발·오른발. 몸이 카메라 정면을 향함. 서 있음. 오른팔: 앞으로 약간 듦, 팔꿈치를 직각 정도로 굽힘, 손은 가슴 높이(화면 왼쪽). 왼팔: 앞옆으로 약간 듦, 팔을 폄, 손은 허리 높이(화면 오른쪽). 오른손이 우산 대 · 최민수 오른손에 닿음. 무릎 꿇은 상대 · 인물 미확정에 가려짐: 골반·오른쪽 팔꿈치·오른손",
+        "stance": "서 있음",
+        "yawToCameraDeg": 12.9,
+        "joints": {
+          "headTop": {
+            "xy": [
+              0.53,
+              0.31
+            ],
+            "distanceM": 2.64,
+            "visible": true
+          },
+          "pelvis": {
+            "xy": [
+              0.53,
+              0.72
+            ],
+            "distanceM": 2.44,
+            "visible": false,
+            "hiddenBy": "무릎 꿇은 상대 · 인물 미확정"
+          },
+          "chest": {
+            "xy": [
+              0.53,
+              0.61
+            ],
+            "distanceM": 2.5,
+            "visible": true
+          },
+          "neck": {
+            "xy": [
+              0.53,
+              0.45
+            ],
+            "distanceM": 2.6,
+            "visible": true
+          },
+          "head": {
+            "xy": [
+              0.53,
+              0.42
+            ],
+            "distanceM": 2.61,
+            "visible": true
+          },
+          "shoulderL": {
+            "xy": [
+              0.58,
+              0.47
+            ],
+            "distanceM": 2.54,
+            "visible": true
+          },
+          "shoulderR": {
+            "xy": [
+              0.48,
+              0.48
+            ],
+            "distanceM": 2.62,
+            "visible": true
+          },
+          "elbowL": {
+            "xy": [
+              0.59,
+              0.59
+            ],
+            "distanceM": 2.35,
+            "visible": true
+          },
+          "elbowR": {
+            "xy": [
+              0.44,
+              0.56
+            ],
+            "distanceM": 2.4,
+            "visible": false,
+            "hiddenBy": "무릎 꿇은 상대 · 인물 미확정"
+          },
+          "wristL": {
+            "xy": [
+              0.6,
+              0.68
+            ],
+            "distanceM": 2.17,
+            "visible": true
+          },
+          "wristR": {
+            "xy": [
+              0.44,
+              0.44
+            ],
+            "distanceM": 2.33,
+            "visible": false,
+            "hiddenBy": "무릎 꿇은 상대 · 인물 미확정"
+          },
+          "hipL": {
+            "xy": [
+              0.57,
+              0.74
+            ],
+            "distanceM": 2.4,
+            "visible": true
+          },
+          "hipR": {
+            "xy": [
+              0.49,
+              0.74
+            ],
+            "distanceM": 2.47,
+            "visible": true
+          },
+          "kneeL": {
+            "xy": [
+              0.56,
+              1.01
+            ],
+            "distanceM": 2.29,
+            "visible": false,
+            "outOfFrame": true
+          },
+          "kneeR": {
+            "xy": [
+              0.51,
+              1.01
+            ],
+            "distanceM": 2.33,
+            "visible": false,
+            "outOfFrame": true
+          },
+          "ankleL": {
+            "xy": [
+              0.54,
+              1.32
+            ],
+            "distanceM": 2.18,
+            "visible": false,
+            "outOfFrame": true
+          },
+          "ankleR": {
+            "xy": [
+              0.52,
+              1.32
+            ],
+            "distanceM": 2.19,
+            "visible": false,
+            "outOfFrame": true
+          }
+        }
+      },
+      "lightCondition": {
+        "facingLight": -0.92,
+        "cameraSeesLitSide": -0.98,
+        "castShadowFrom": {},
+        "text": "빛을 등지고 있음(등·뒤통수가 밝고 얼굴 쪽은 그늘) · 카메라는 그늘진 면을 봄(역광, 윤곽만 밝음)"
+      }
+    },
+    {
+      "index": 2,
+      "color": "#3cb44b",
+      "kind": "person",
+      "id": "kneeling-target",
+      "name": "무릎 꿇은 상대 · 인물 미확정",
+      "notes": {
+        "role": "",
+        "intent": "빗속 바닥에 두 무릎을 꿇고 상체를 조금 숙인 채 최민수 쪽을 향한다. 우산 밖이라 비를 그대로 맞는다. 고개 각도와 손 위치는 미확정.",
+        "description": ""
+      },
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.307,
+          0.372,
+          0.569,
+          1
+        ],
+        "pixelShare": 0.099
+      },
+      "distanceM": {
+        "min": 1.38,
+        "median": 1.49,
+        "max": 1.72
+      },
+      "directLight": {
+        "mean": 0,
+        "litShare": 0,
+        "darkShare": 0.99
+      },
+      "pose": {
+        "text": "화면 가운데(가로 45%), 화면 높이의 62%, 화면 밖: 골반·왼쪽 엉덩이·오른쪽 엉덩이·왼쪽 무릎·오른쪽 무릎·왼발·오른발. 카메라에 등을 보임(뒷모습). 무릎을 굽혀 몸을 낮춤. 오른팔: 내림, 팔을 폄, 손은 허리 아래(화면 오른쪽). 왼팔: 내림, 팔을 폄, 손은 허리 아래(화면 왼쪽)",
+        "stance": "무릎을 굽혀 몸을 낮춤",
+        "yawToCameraDeg": 158.6,
+        "joints": {
+          "headTop": {
+            "xy": [
+              0.44,
+              0.38
+            ],
+            "distanceM": 1.74,
+            "visible": true
+          },
+          "pelvis": {
+            "xy": [
+              0.41,
+              1.01
+            ],
+            "distanceM": 1.41,
+            "visible": false,
+            "outOfFrame": true
+          },
+          "chest": {
+            "xy": [
+              0.41,
+              0.81
+            ],
+            "distanceM": 1.46,
+            "visible": true
+          },
+          "neck": {
+            "xy": [
+              0.43,
+              0.55
+            ],
+            "distanceM": 1.59,
+            "visible": true
+          },
+          "head": {
+            "xy": [
+              0.43,
+              0.52
+            ],
+            "distanceM": 1.61,
+            "visible": true
+          },
+          "shoulderL": {
+            "xy": [
+              0.35,
+              0.6
+            ],
+            "distanceM": 1.6,
+            "visible": true
+          },
+          "shoulderR": {
+            "xy": [
+              0.5,
+              0.59
+            ],
+            "distanceM": 1.53,
+            "visible": true
+          },
+          "elbowL": {
+            "xy": [
+              0.34,
+              0.84
+            ],
+            "distanceM": 1.61,
+            "visible": true
+          },
+          "elbowR": {
+            "xy": [
+              0.53,
+              0.83
+            ],
+            "distanceM": 1.51,
+            "visible": true
+          },
+          "wristL": {
+            "xy": [
+              0.35,
+              0.99
+            ],
+            "distanceM": 1.67,
+            "visible": true
+          },
+          "wristR": {
+            "xy": [
+              0.56,
+              1
+            ],
+            "distanceM": 1.56,
+            "visible": true
+          },
+          "hipL": {
+            "xy": [
+              0.35,
+              1.03
+            ],
+            "distanceM": 1.43,
+            "visible": false,
+            "outOfFrame": true
+          },
+          "hipR": {
+            "xy": [
+              0.47,
+              1.04
+            ],
+            "distanceM": 1.37,
+            "visible": false,
+            "outOfFrame": true
+          },
+          "kneeL": {
+            "xy": [
+              0.36,
+              1.53
+            ],
+            "distanceM": 1.3,
+            "visible": false,
+            "outOfFrame": true
+          },
+          "kneeR": {
+            "xy": [
+              0.45,
+              1.55
+            ],
+            "distanceM": 1.26,
+            "visible": false,
+            "outOfFrame": true
+          },
+          "ankleL": {
+            "xy": [
+              0.18,
+              1.83
+            ],
+            "distanceM": 0.88,
+            "visible": false,
+            "outOfFrame": true
+          },
+          "ankleR": {
+            "xy": [
+              0.31,
+              1.88
+            ],
+            "distanceM": 0.84,
+            "visible": false,
+            "outOfFrame": true
+          }
+        }
+      },
+      "lightCondition": {
+        "facingLight": 0.92,
+        "cameraSeesLitSide": -1,
+        "castShadowFrom": {
+          "우산 천 · 대리 도형": [
+            "head"
+          ],
+          "최민수 · 우산 든 인물 · 서 있음": [
+            "wristR"
+          ]
+        },
+        "text": "빛을 정면으로 받음(얼굴·가슴 쪽이 밝고 등은 어두움) · 카메라는 그늘진 면을 봄(역광, 윤곽만 밝음) · 머리는 우산 천 · 대리 도형의 그림자 안, 오른손은 최민수 · 우산 든 인물 · 서 있음의 그림자 안"
+      }
+    },
+    {
+      "index": 3,
+      "color": "#4363d8",
+      "kind": "person",
+      "id": "guard-left",
+      "name": "주변 인물 A · 교도관 추정 · 화면 왼쪽 뒤",
+      "notes": {
+        "role": "",
+        "intent": "최민수 뒤에서 무릎 꿇은 인물을 지켜본다. 우산 없이 비를 맞는다고 가정.",
+        "description": ""
+      },
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.252,
+          0.504,
+          0.366,
+          1
+        ],
+        "pixelShare": 0.017
+      },
+      "distanceM": {
+        "min": 3.46,
+        "median": 3.67,
+        "max": 3.79
+      },
+      "directLight": {
+        "mean": 0,
+        "litShare": 0,
+        "darkShare": 0.98
+      },
+      "pose": {
+        "text": "화면 왼쪽(가로 33%), 화면 높이의 48%, 화면 밖: 왼발·오른발. 몸이 카메라 정면을 향함. 서 있음. 오른팔: 내림, 팔을 폄, 손은 허리 높이(화면 왼쪽). 왼팔: 내림, 팔을 폄, 손은 허리 높이(화면 오른쪽). 무릎 꿇은 상대 · 인물 미확정에 가려짐: 골반·가슴·목·머리·왼쪽 어깨·왼쪽 팔꿈치·왼손·왼쪽 엉덩이·왼쪽 무릎",
+        "stance": "서 있음",
+        "yawToCameraDeg": 7.3,
+        "joints": {
+          "headTop": {
+            "xy": [
+              0.34,
+              0.5
+            ],
+            "distanceM": 3.73,
+            "visible": true
+          },
+          "pelvis": {
+            "xy": [
+              0.33,
+              0.79
+            ],
+            "distanceM": 3.56,
+            "visible": false,
+            "hiddenBy": "무릎 꿇은 상대 · 인물 미확정"
+          },
+          "chest": {
+            "xy": [
+              0.33,
+              0.71
+            ],
+            "distanceM": 3.61,
+            "visible": false,
+            "hiddenBy": "무릎 꿇은 상대 · 인물 미확정"
+          },
+          "neck": {
+            "xy": [
+              0.34,
+              0.6
+            ],
+            "distanceM": 3.69,
+            "visible": false,
+            "hiddenBy": "무릎 꿇은 상대 · 인물 미확정"
+          },
+          "head": {
+            "xy": [
+              0.34,
+              0.58
+            ],
+            "distanceM": 3.7,
+            "visible": false,
+            "hiddenBy": "무릎 꿇은 상대 · 인물 미확정"
+          },
+          "shoulderL": {
+            "xy": [
+              0.37,
+              0.62
+            ],
+            "distanceM": 3.69,
+            "visible": false,
+            "hiddenBy": "무릎 꿇은 상대 · 인물 미확정"
+          },
+          "shoulderR": {
+            "xy": [
+              0.3,
+              0.62
+            ],
+            "distanceM": 3.67,
+            "visible": true
+          },
+          "elbowL": {
+            "xy": [
+              0.38,
+              0.71
+            ],
+            "distanceM": 3.53,
+            "visible": false,
+            "hiddenBy": "무릎 꿇은 상대 · 인물 미확정"
+          },
+          "elbowR": {
+            "xy": [
+              0.28,
+              0.71
+            ],
+            "distanceM": 3.5,
+            "visible": true
+          },
+          "wristL": {
+            "xy": [
+              0.38,
+              0.78
+            ],
+            "distanceM": 3.38,
+            "visible": false,
+            "hiddenBy": "무릎 꿇은 상대 · 인물 미확정"
+          },
+          "wristR": {
+            "xy": [
+              0.27,
+              0.78
+            ],
+            "distanceM": 3.34,
+            "visible": true
+          },
+          "hipL": {
+            "xy": [
+              0.36,
+              0.8
+            ],
+            "distanceM": 3.56,
+            "visible": false,
+            "hiddenBy": "무릎 꿇은 상대 · 인물 미확정"
+          },
+          "hipR": {
+            "xy": [
+              0.3,
+              0.8
+            ],
+            "distanceM": 3.54,
+            "visible": true
+          },
+          "kneeL": {
+            "xy": [
+              0.34,
+              0.98
+            ],
+            "distanceM": 3.44,
+            "visible": false,
+            "hiddenBy": "무릎 꿇은 상대 · 인물 미확정"
+          },
+          "kneeR": {
+            "xy": [
+              0.31,
+              0.98
+            ],
+            "distanceM": 3.43,
+            "visible": true
+          },
+          "ankleL": {
+            "xy": [
+              0.33,
+              1.18
+            ],
+            "distanceM": 3.31,
+            "visible": false,
+            "outOfFrame": true
+          },
+          "ankleR": {
+            "xy": [
+              0.31,
+              1.18
+            ],
+            "distanceM": 3.31,
+            "visible": false,
+            "outOfFrame": true
+          }
+        }
+      },
+      "lightCondition": {
+        "facingLight": -1,
+        "cameraSeesLitSide": -1,
+        "castShadowFrom": {},
+        "text": "빛을 등지고 있음(등·뒤통수가 밝고 얼굴 쪽은 그늘) · 카메라는 그늘진 면을 봄(역광, 윤곽만 밝음)"
+      }
+    },
+    {
+      "index": 4,
+      "color": "#f58231",
+      "kind": "person",
+      "id": "guard-right",
+      "name": "주변 인물 B · 교도관 추정 · 화면 오른쪽 뒤",
+      "notes": {
+        "role": "",
+        "intent": "최민수 뒤에서 무릎 꿇은 인물을 지켜본다. 우산 없이 비를 맞는다고 가정.",
+        "description": ""
+      },
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.766,
+          0.456,
+          0.93,
+          1
+        ],
+        "pixelShare": 0.048
+      },
+      "distanceM": {
+        "min": 3.16,
+        "median": 3.44,
+        "max": 3.58
+      },
+      "directLight": {
+        "mean": 0.01,
+        "litShare": 0.02,
+        "darkShare": 0.95
+      },
+      "pose": {
+        "text": "화면 오른쪽(가로 85%), 화면 높이의 54%, 화면 밖: 왼발·오른발. 몸이 카메라 정면을 향함. 서 있음. 오른팔: 내림, 팔을 폄, 손은 허리 높이(화면 왼쪽). 왼팔: 내림, 팔을 폄, 손은 허리 높이(화면 오른쪽)",
+        "stance": "서 있음",
+        "yawToCameraDeg": 8.9,
+        "joints": {
+          "headTop": {
+            "xy": [
+              0.83,
+              0.45
+            ],
+            "distanceM": 3.31,
+            "visible": true
+          },
+          "pelvis": {
+            "xy": [
+              0.85,
+              0.78
+            ],
+            "distanceM": 3.13,
+            "visible": true
+          },
+          "chest": {
+            "xy": [
+              0.85,
+              0.69
+            ],
+            "distanceM": 3.19,
+            "visible": true
+          },
+          "neck": {
+            "xy": [
+              0.84,
+              0.56
+            ],
+            "distanceM": 3.27,
+            "visible": true
+          },
+          "head": {
+            "xy": [
+              0.84,
+              0.54
+            ],
+            "distanceM": 3.27,
+            "visible": true
+          },
+          "shoulderL": {
+            "xy": [
+              0.88,
+              0.58
+            ],
+            "distanceM": 3.17,
+            "visible": true
+          },
+          "shoulderR": {
+            "xy": [
+              0.8,
+              0.59
+            ],
+            "distanceM": 3.33,
+            "visible": true
+          },
+          "elbowL": {
+            "xy": [
+              0.9,
+              0.68
+            ],
+            "distanceM": 3,
+            "visible": true
+          },
+          "elbowR": {
+            "xy": [
+              0.79,
+              0.69
+            ],
+            "distanceM": 3.21,
+            "visible": true
+          },
+          "wristL": {
+            "xy": [
+              0.92,
+              0.76
+            ],
+            "distanceM": 2.84,
+            "visible": true
+          },
+          "wristR": {
+            "xy": [
+              0.78,
+              0.77
+            ],
+            "distanceM": 3.1,
+            "visible": true
+          },
+          "hipL": {
+            "xy": [
+              0.89,
+              0.79
+            ],
+            "distanceM": 3.06,
+            "visible": true
+          },
+          "hipR": {
+            "xy": [
+              0.82,
+              0.79
+            ],
+            "distanceM": 3.19,
+            "visible": true
+          },
+          "kneeL": {
+            "xy": [
+              0.89,
+              0.99
+            ],
+            "distanceM": 2.96,
+            "visible": true
+          },
+          "kneeR": {
+            "xy": [
+              0.85,
+              0.99
+            ],
+            "distanceM": 3.05,
+            "visible": true
+          },
+          "ankleL": {
+            "xy": [
+              0.9,
+              1.22
+            ],
+            "distanceM": 2.86,
+            "visible": false,
+            "outOfFrame": true
+          },
+          "ankleR": {
+            "xy": [
+              0.87,
+              1.22
+            ],
+            "distanceM": 2.91,
+            "visible": false,
+            "outOfFrame": true
+          }
+        }
+      },
+      "lightCondition": {
+        "facingLight": -0.75,
+        "cameraSeesLitSide": -0.85,
+        "castShadowFrom": {},
+        "text": "빛을 등지고 있음(등·뒤통수가 밝고 얼굴 쪽은 그늘) · 카메라는 그늘진 면을 봄(역광, 윤곽만 밝음)"
+      }
+    },
+    {
+      "index": 5,
+      "color": "#911eb4",
+      "kind": "prop",
+      "id": "umbrella-shaft",
+      "name": "우산 대 · 최민수 오른손",
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.444,
+          0.152,
+          0.456,
+          0.551
+        ],
+        "pixelShare": 0.002
+      },
+      "distanceM": {
+        "min": 2.24,
+        "median": 2.41,
+        "max": 2.52
+      },
+      "directLight": {
+        "mean": 0,
+        "litShare": 0,
+        "darkShare": 1
+      },
+      "placement": "화면 위 가운데, 카메라에서 2.4m, 최민수 · 우산 든 인물 · 서 있음에게서 0.4m"
+    },
+    {
+      "index": 6,
+      "color": "#42d4f4",
+      "kind": "prop",
+      "id": "umbrella-canopy",
+      "name": "우산 천 · 대리 도형",
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.283,
+          0,
+          0.616,
+          0.234
+        ],
+        "pixelShare": 0.063
+      },
+      "distanceM": {
+        "min": 2.23,
+        "median": 2.44,
+        "max": 2.92
+      },
+      "directLight": {
+        "mean": 0,
+        "litShare": 0,
+        "darkShare": 1
+      },
+      "placement": "화면 위 가운데, 카메라에서 2.5m, 최민수 · 우산 든 인물 · 서 있음에게서 1m, 일부가 화면 밖"
+    },
+    {
+      "index": 7,
+      "color": "#f032e6",
+      "kind": "prop",
+      "id": "background-mass",
+      "name": "어두운 배경 깊이 기준",
+      "references": [],
+      "visible": true,
+      "screen": {
+        "bbox": [
+          0.135,
+          0.203,
+          1,
+          1
+        ],
+        "pixelShare": 0.387
+      },
+      "distanceM": {
+        "min": 6.2,
+        "median": 6.64,
+        "max": 8.39
+      },
+      "directLight": {
+        "mean": 0,
+        "litShare": 0,
+        "darkShare": 1
+      },
+      "placement": "화면 중앙, 카메라에서 6.3m, 일부가 화면 밖"
+    },
+    {
+      "index": 8,
+      "color": "#bfef45",
+      "kind": "prop",
+      "id": "puddle-front",
+      "name": "물웅덩이 위치 대리",
+      "references": [],
+      "visible": false
+    },
+    {
+      "index": 9,
+      "color": "#ffe119",
+      "kind": "prop",
+      "id": "puddle-back",
+      "name": "물웅덩이 위치 대리",
+      "references": [],
+      "visible": false
+    },
+    {
+      "index": 10,
+      "color": "#505050",
+      "kind": "floor",
+      "id": "floor",
+      "name": "바닥",
+      "references": [],
+      "visible": false
+    }
+  ],
+  "shotDescription": "촬영 설명 (편집기 3D 장면의 촬영 카메라에서 계산한 값입니다. 첨부 color PNG와 같은 카메라입니다.)\n- 컷: 01 · 낮은 앵글 · 우산 아래 내려다봄 — 무릎 꿇은 인물의 등·어깨를 화면 오른쪽 앞에 걸고, 낮은 시점에서 우산 쓴 최민수를 올려다본다. 뒤의 두 인물과 우산 천이 위압감을 더한다.\n- 카메라: 바스트샷(가슴 위) · 약간 올려다보는 로우 앵글(카메라 높이 0.8m, 무릎 꿇은 상대 · 인물 미확정의 눈높이보다 0.5m 아래, 위로 16°), 광각 · 35mm 환산 약 29mm · 화면비 1.78:1\n- 최민수 · 우산 든 인물 · 서 있음: 화면 가운데(가로 52%), 화면 높이의 43%, 화면 밖: 왼쪽 무릎·오른쪽 무릎·왼발·오른발. 몸이 카메라 정면을 향함. 서 있음. 오른팔: 앞으로 약간 듦, 팔꿈치를 직각 정도로 굽힘, 손은 가슴 높이(화면 왼쪽). 왼팔: 앞옆으로 약간 듦, 팔을 폄, 손은 허리 높이(화면 오른쪽). 오른손이 우산 대 · 최민수 오른손에 닿음. 무릎 꿇은 상대 · 인물 미확정에 가려짐: 골반·오른쪽 팔꿈치·오른손.\n- 무릎 꿇은 상대 · 인물 미확정: 화면 가운데(가로 45%), 화면 높이의 62%, 화면 밖: 골반·왼쪽 엉덩이·오른쪽 엉덩이·왼쪽 무릎·오른쪽 무릎·왼발·오른발. 카메라에 등을 보임(뒷모습). 무릎을 굽혀 몸을 낮춤. 오른팔: 내림, 팔을 폄, 손은 허리 아래(화면 오른쪽). 왼팔: 내림, 팔을 폄, 손은 허리 아래(화면 왼쪽).\n- 주변 인물 A · 교도관 추정 · 화면 왼쪽 뒤: 화면 왼쪽(가로 33%), 화면 높이의 48%, 화면 밖: 왼발·오른발. 몸이 카메라 정면을 향함. 서 있음. 오른팔: 내림, 팔을 폄, 손은 허리 높이(화면 왼쪽). 왼팔: 내림, 팔을 폄, 손은 허리 높이(화면 오른쪽). 무릎 꿇은 상대 · 인물 미확정에 가려짐: 골반·가슴·목·머리·왼쪽 어깨·왼쪽 팔꿈치·왼손·왼쪽 엉덩이·왼쪽 무릎.\n- 주변 인물 B · 교도관 추정 · 화면 오른쪽 뒤: 화면 오른쪽(가로 85%), 화면 높이의 54%, 화면 밖: 왼발·오른발. 몸이 카메라 정면을 향함. 서 있음. 오른팔: 내림, 팔을 폄, 손은 허리 높이(화면 왼쪽). 왼팔: 내림, 팔을 폄, 손은 허리 높이(화면 오른쪽).\n- 앞뒤 관계: 카메라에서 가까운 순서로 무릎 꿇은 상대 · 인물 미확정(1.4m) → 최민수 · 우산 든 인물 · 서 있음(2.4m) → 주변 인물 B · 교도관 추정 · 화면 오른쪽 뒤(3.1m) → 주변 인물 A · 교도관 추정 · 화면 왼쪽 뒤(3.6m).\n- 소품 우산 대 · 최민수 오른손: 화면 위 가운데, 카메라에서 2.4m, 최민수 · 우산 든 인물 · 서 있음에게서 0.4m.\n- 소품 우산 천 · 대리 도형: 화면 위 가운데, 카메라에서 2.5m, 최민수 · 우산 든 인물 · 서 있음에게서 1m, 일부가 화면 밖.\n- 소품 어두운 배경 깊이 기준: 화면 중앙, 카메라에서 6.3m, 일부가 화면 밖.\n- 빛: 주광은 화면 정면 쪽 위, 인물 뒤쪽(역광)에서 비춤 → 그림자는 카메라 쪽으로 떨어짐.\n좌우 표기: \"화면 왼쪽/오른쪽\"은 이미지 기준, \"왼팔/오른팔·왼발/오른발\"은 인물 자신 기준입니다. 시선·표정·손가락 모양은 계산하지 않았으니 원문과 캐릭터 설명을 따르세요."
+}

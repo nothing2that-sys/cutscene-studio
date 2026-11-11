@@ -1,0 +1,17 @@
+{
+  "startup": {
+    "navigationToReadyMs": 388.40959999999995,
+    "workerCount": 0,
+    "stats": "11,600 shell triangles · 3 draws · mesh 23 ms"
+  },
+  "responsive": {
+    "pendingAtStart": true,
+    "exportBlocked": true,
+    "cameraMoves": true,
+    "frames": 62,
+    "maxGapMs": 33.30000001192093
+  },
+  "rapidEditsPreserved": true,
+  "legacyJsonValuesPreserved": true,
+  "pageErrors": []
+}

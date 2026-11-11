@@ -1,0 +1,130 @@
+{
+  "sourceCommit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+  "license": "CC0-1.0",
+  "sourceRepository": "https://github.com/makehumancommunity/makehuman",
+  "files": [
+    {
+      "file": "female-universal.target",
+      "url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/macrodetails/universal-female-young-averagemuscle-averageweight.target",
+      "sha256": "4ba5396ddabda448ece15650a566fbebfbb10239256ccb201e8f883429e12249"
+    },
+    {
+      "file": "female-caucasian.target",
+      "url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/macrodetails/caucasian-female-young.target",
+      "sha256": "118379f6e8ba9266247fdb8788a20e1df40a239f97ced0b9905bcbcc74f6e820"
+    },
+    {
+      "file": "female-asian.target",
+      "url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/macrodetails/asian-female-young.target",
+      "sha256": "095fe79694fa19e1fe98d93009ec116199bd524e081c640351a10eccf2cca1eb"
+    },
+    {
+      "file": "female-african.target",
+      "url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/macrodetails/african-female-young.target",
+      "sha256": "92d61eeb3c164b421fd5a7c3537ee45e7e1a51de4d49bf312e19c3df2be1d8fc"
+    },
+    {
+      "file": "female-breast.target",
+      "url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/breast/female-young-averagemuscle-averageweight-maxcup-averagefirmness.target",
+      "sha256": "b5aaa1595cf4efcee69022fc60034d93ab6f6fc473e6f8e162e5526803b074bf"
+    },
+    {
+      "file": "female-proportions.target",
+      "url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/macrodetails/proportions/female-young-averagemuscle-averageweight-idealproportions.target",
+      "sha256": "0a3bd099b7a88150d56d68b69c07d3d3538cb57279e0e775d13f19d3dc3e339d"
+    },
+    {
+      "file": "breast-trans-up.target",
+      "url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/breast/breast-trans-up.target",
+      "sha256": "e8f4205ffd756416f9607afa6864291d151d6419dbb8149522c544d931ec3aca"
+    },
+    {
+      "file": "breast-trans-down.target",
+      "url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/breast/breast-trans-down.target",
+      "sha256": "8174c965a1c9cd8628a5a9cca9f695ced09688a8f6a53664765778c5d95c002e"
+    },
+    {
+      "file": "breast-dist-decr.target",
+      "url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/breast/breast-dist-decr.target",
+      "sha256": "a052af5c0b7bac35b0ce429ebbf240da036d93941370d8b576e19ec837d110a3"
+    },
+    {
+      "file": "breast-dist-incr.target",
+      "url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/breast/breast-dist-incr.target",
+      "sha256": "52f631c09ff5ebaa7d350cc966d2cc531017d9d554bd42a98bc3b0aee98af55f"
+    },
+    {
+      "file": "breast-point-decr.target",
+      "url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/breast/breast-point-decr.target",
+      "sha256": "aaf081541b8fc812f433b01d94ec27aa9c27e59280b0c291eb8b0962201d5ed6"
+    },
+    {
+      "file": "nipple-point-decr.target",
+      "url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/breast/nipple-point-decr.target",
+      "sha256": "0f4fe64476e45dfc77a302bf373dffc33dc6b5f1b256589e3f74e23ce1fba120"
+    },
+    {
+      "file": "nipple-size-decr.target",
+      "url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/breast/nipple-size-decr.target",
+      "sha256": "af1a11c39faaef789dc0c9e9a88f9dc2f703df460a07a0c17a7d849dbd268d5c"
+    },
+    {
+      "file": "female-flat.target",
+      "url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/breast/female-young-averagemuscle-averageweight-mincup-averagefirmness.target",
+      "sha256": "65e4ca16353f6c0e23b420cf5d9b31d8993943b76e6cd3a6961943371dd6bc2f"
+    }
+  ],
+  "morphs": [
+    [
+      "female-caucasian.target",
+      0.3333333333333333
+    ],
+    [
+      "female-asian.target",
+      0.3333333333333333
+    ],
+    [
+      "female-african.target",
+      0.3333333333333333
+    ],
+    [
+      "female-universal.target",
+      1
+    ],
+    [
+      "female-proportions.target",
+      0.65
+    ],
+    [
+      "female-breast.target",
+      0.25
+    ],
+    [
+      "breast-trans-up.target",
+      0.8
+    ],
+    [
+      "breast-dist-decr.target",
+      0.3
+    ],
+    [
+      "breast-point-decr.target",
+      0.25
+    ],
+    [
+      "nipple-point-decr.target",
+      1
+    ],
+    [
+      "nipple-size-decr.target",
+      1
+    ]
+  ],
+  "vertices": 10000,
+  "triangles": 19996,
+  "bones": 46,
+  "baseAsset": "reference-human.source.json",
+  "neckBoundary": 96,
+  "head": "Featureless remesh connected to authored neck boundary",
+  "waist": "13% lateral and 7% depth reduction with smooth trunk-weighted falloff"
+}

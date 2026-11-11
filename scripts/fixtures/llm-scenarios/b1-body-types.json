@@ -1,0 +1,12 @@
+{"version":1,"units":"meters","title":"비교 B1 · 벽 앞의 세 사람",
+ "sourceText":"저녁, 창고 벽 앞. 오른쪽 앞 바닥에 둔 작업등 하나가 세 사람을 비추고, 뒤 벽에 세 사람의 그림자가 크게 드리운다.",
+ "assumptions":"비교 실험용 장면. 체형 종류만 바꿔 같은 구도로 두 번 만든다. 세 사람은 카메라를 향해 서 있어 벽 그림자가 정면 윤곽이 된다.",
+ "room":{"size":[6,3,5],"color":"#8a8780","walls":true},
+ "actors":[
+  {"id":"b1man","name":"왼쪽 · 회색 티셔츠 남자","position":[-1.0,0,-1.5],"yaw":10,"height":1.78,"bodyType":"male","pose":"standing","description":"회색 티셔츠와 청바지, 마른 30대 남성"},
+  {"id":"b1heavy","name":"가운데 · 남색 작업복 남자","position":[0.1,0,-1.6],"yaw":0,"height":1.75,"bodyType":"male-heavy","pose":"standing","description":"남색 작업복, 배가 나온 큰 체격의 50대 남성"},
+  {"id":"b1child","name":"오른쪽 · 노란 티셔츠 아이","position":[1.05,0,-1.3],"yaw":-10,"height":1.15,"bodyType":"child","pose":"standing","description":"노란 티셔츠와 반바지, 7살 남자아이"}],
+ "props":[],
+ "camera":{"position":[0,1.3,4.0],"target":[0,1.0,-1.2],"fov":42},
+ "lighting":{"type":"lamp","position":[2.0,0.6,1.4],"target":[0,1.1,-1.5],"color":"#ffe2b0","intensity":2.4,"ambient":0.22},
+ "shots":[{"id":"b1","name":"B1 체형","purpose":"체형과 벽 그림자 윤곽","camera":{"position":[0,1.3,4.0],"target":[0,1.0,-1.2],"fov":42}}]}

@@ -1,0 +1,16 @@
+{
+  "loadedMs": 970.3997,
+  "rigidDelta": 0,
+  "curlDelta": 6,
+  "previewFetches": [
+    {
+      "name": "http://127.0.0.1:3001/doll-full-core/preview.json",
+      "transferSize": 4268
+    },
+    {
+      "name": "http://127.0.0.1:3001/doll-full-core/preview.bin",
+      "transferSize": 209244
+    }
+  ],
+  "triangles": 30512
+}

@@ -1,0 +1,59 @@
+{
+  "scores": {
+    "before": {
+      "body": {
+        "iou": 0.6875852799738347,
+        "sourceArea": 171651,
+        "renderArea": 158574
+      },
+      "waistHip": {
+        "iou": 0.7995987812032779,
+        "sourceArea": 49166,
+        "renderArea": 45923
+      },
+      "legs": {
+        "iou": 0.653013917325853,
+        "sourceArea": 97262,
+        "renderArea": 86006
+      }
+    },
+    "after": {
+      "body": {
+        "iou": 0.8494058348354363,
+        "sourceArea": 171651,
+        "renderArea": 160776
+      },
+      "waistHip": {
+        "iou": 0.9023813310010337,
+        "sourceArea": 49166,
+        "renderArea": 46539
+      },
+      "legs": {
+        "iou": 0.836196462733768,
+        "sourceArea": 97262,
+        "renderArea": 90860
+      }
+    }
+  },
+  "regions": {
+    "body": {
+      "x0": 220,
+      "y0": 235,
+      "x1": 730,
+      "y1": 1080
+    },
+    "waistHip": {
+      "x0": 300,
+      "y0": 390,
+      "x1": 580,
+      "y1": 620
+    },
+    "legs": {
+      "x0": 295,
+      "y0": 550,
+      "x1": 735,
+      "y1": 1080
+    }
+  },
+  "method": "Approximate raster silhouette IoU at 960x1280. Source ink threshold 205, 3x3 close, exterior flood plus manually selected two arm-hole seeds. Render threshold 245. Boxes exclude most hand/foot detail. Inspect source-mask.png; score is a comparison aid, not anatomy certification."
+}
