@@ -96,3 +96,8 @@ body.left-collapsed #studio-panel,body.right-collapsed #right-panels{display:non
 /* Restore offer for unsaved work kept by autosave.js */
 #autosave-banner {position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;gap:8px;align-items:center;max-width:calc(100vw - 32px);padding:8px 12px;border-radius:10px;background:#1f2937;border:1px solid #6366f1;color:#e5e7eb;font-size:13px;box-shadow:0 6px 24px #0008;}
 #autosave-banner[hidden] {display:none;}
+/* Size inputs for primitive props (scene-object-info.js) */
+.object-size {flex-wrap:wrap;gap:6px;align-items:center;}
+.object-size .studio-label {width:100%;margin:0;}
+.object-size input {width:72px;}
+.studio-prop-buttons {flex-wrap:wrap;}

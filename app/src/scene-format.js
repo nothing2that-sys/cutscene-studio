@@ -28,7 +28,11 @@ export const POSES = {
   crouching: { l_leg: { raise: 90 }, r_leg: { raise: 90 }, l_knee: { bend: 140 }, r_knee: { bend: 140 }, l_ankle: { bend: -30 }, r_ankle: { bend: -30 }, torso: { bend: 45 }, l_arm: { raise: 30 }, r_arm: { raise: 30 }, l_elbow: { bend: 20 }, r_elbow: { bend: 20 } },
   lying: { body: { bend: -90 }, l_arm: { raise: -10 }, r_arm: { raise: -10 } },
 };
-export const PROP_TYPES = ['box', 'table', 'chair', 'sphere'];
+export const PROP_TYPES = ['box', 'table', 'chair', 'sphere', 'cylinder', 'door', 'window', 'bed', 'sofa', 'stairs'];
+// Editor names and the size [width, height, depth] used when a prop is added by hand.
+// door/window are free-standing panels (place them against a wall); stairs rise toward -z.
+export const PROP_NAMES = {box:'상자',table:'탁자',chair:'의자',sphere:'구체',cylinder:'원기둥',door:'문',window:'창문',bed:'침대',sofa:'소파',stairs:'계단'};
+export const PROP_DEFAULT_SIZES = {box:[0.4,0.4,0.4],table:[1.4,0.75,0.8],chair:[0.5,0.95,0.5],sphere:[0.4,0.4,0.4],cylinder:[0.3,0.9,0.3],door:[0.9,2.05,0.08],window:[1.2,1.1,0.08],bed:[1.5,0.95,2.05],sofa:[1.9,0.85,0.9],stairs:[1.0,1.08,1.5]};
 // Body types of the common v1 body (app/src/doll-profiles.js BODY_TYPES).
 export const BODY_TYPE_NAMES = ['female', 'male', 'neutral', 'child', 'male-heavy'];
 // sun: parallel rays from position toward target. lamp: point light at position.

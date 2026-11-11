@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {getBodyV1,displayedObjectBounds} from './body-v1-adapter.js';
 import {OBB} from 'three/addons/math/OBB.js';
 import {aimHead,lookTarget} from './look-at.js';
+import {PROP_NAMES} from './scene-format.js';
 
 const objectId=o=>o.torso?o.userData.studioId||null:o.userData.primitive?.id||o.userData.studioId||null;
 // Gaze targets in the live scene: people by their head, props by their centre.
@@ -52,7 +53,7 @@ export function inspectObjectOverlaps(objects,selected=null){
 export function renderObjectInfo(container,object,scene,api){
  const section=document.createElement('section');section.className='object-info';section.id='selected-object-info';
  const heading=document.createElement('h3');heading.textContent='선택한 대상 · '+(object.name||'이름 없음');section.appendChild(heading);
- const kind=document.createElement('p');kind.className='body-hint';kind.textContent=(object.torso?'인물':{box:'상자',table:'탁자',chair:'의자',sphere:'구체'}[object.userData.primitive?.type]||'가져온 모델')+' · ID '+(object.userData.studioId||object.userData.primitive?.id||'직접 추가');section.appendChild(kind);
+ const kind=document.createElement('p');kind.className='body-hint';kind.textContent=(object.torso?'인물':PROP_NAMES[object.userData.primitive?.type]||'가져온 모델')+' · ID '+(object.userData.studioId||object.userData.primitive?.id||'직접 추가');section.appendChild(kind);
  const values={name:object.name||'',...objectNotes(object,scene)},fields={};
  for(const [key,label]of [['name','이름'],['role','역할 / 무엇인가'],['intent','이 위치·자세에 둔 의도'],['description','최종 외형 설명 · 재질 / 색 / 디자인']]){
   const row=document.createElement('label');row.className='studio-label';row.textContent=label;
@@ -78,6 +79,13 @@ export function renderObjectInfo(container,object,scene,api){
   aim.onclick=()=>{const v=look.value;if(!v){status.textContent='시선 대상을 먼저 고르세요.';return;}
    const target=lookTarget(v==='@point'?gaze.point:v,liveLookScene(api.objects()));if(!target){status.textContent='시선 대상을 찾지 못했습니다.';return;}
    const r=aimHead(object,target,{constrain:api.constrain});save();status.textContent=r?.clamped?'목·머리 회전 한계까지 돌렸습니다. 몸 방향도 돌려 보세요.':'시선을 맞췄습니다.';};
+ }
+ // Primitive props: width / height / depth in metres, rebuilt in place.
+ if(object.userData.primitive&&api.resizeProp){
+  const row=document.createElement('div');row.className='studio-row object-size';const label=document.createElement('span');label.className='studio-label';label.textContent='크기 m (가로·높이·깊이)';row.appendChild(label);
+  const inputs=object.userData.primitive.size.map((v,i)=>{const n=document.createElement('input');n.type='number';n.step='0.05';n.min='0.02';n.max='20';n.value=String(v);n.id='object-size-'+'whd'[i];n.setAttribute('aria-label',['가로','높이','깊이'][i]+' (m)');row.appendChild(n);return n;});
+  const apply=()=>{try{api.resizeProp(object,inputs.map(n=>Number(n.value)));inputs.forEach((n,i)=>n.value=String(object.userData.primitive.size[i]));api.commit();status.textContent='크기를 바꿨습니다.';}catch(e){status.textContent=e.message;}};
+  inputs.forEach(n=>n.onchange=apply);section.appendChild(row);
  }
  const save=()=>{object.name=fields.name.value;object.userData.sceneNotes=Object.fromEntries(['role','intent','description'].map(key=>[key,fields[key].value]));
   if(gaze){const v=gaze.look.value,lookAt=v==='@point'?gaze.point:v||undefined;if(lookAt!==undefined)object.userData.sceneNotes.lookAt=lookAt;if(gaze.exp.value.trim())object.userData.sceneNotes.expression=gaze.exp.value.trim();}if(object.userData.primitive)Object.assign(object.userData.primitive,{name:object.name,...object.userData.sceneNotes});heading.textContent='선택한 대상 · '+(object.name||'이름 없음');api.commit();status.textContent='설명 저장됨 · 최종 전달 묶음과 작화 지시문에 포함됩니다.';};

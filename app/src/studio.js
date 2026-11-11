@@ -1,6 +1,6 @@
 import {displayedObjectBounds} from './body-surface.js';
 // Cutscene Studio extension to fanverseio/pose-toolkit. GPL-3.0.
-import { validateScene, EXAMPLE_SCENE, POSES } from './scene-format.js';
+import { validateScene, EXAMPLE_SCENE, POSES, PROP_TYPES, PROP_NAMES, PROP_DEFAULT_SIZES } from './scene-format.js';
 import './studio.css';
 import { constrainBody, captureBoneLayout, snapshotBodyJoints, chestLandmarks } from './body-rig.js';
 import { analyzeInputText } from './scene-feedback.js';
@@ -80,7 +80,7 @@ export function initCutsceneStudio(api) {
         <label class="studio-label">주광 방향 <select id="studio-light-direction"><option value="custom" disabled>사용자 지정</option><option value="left">왼쪽 앞</option><option value="right">오른쪽 앞</option><option value="back">뒤쪽 역광</option><option value="top">위에서</option></select></label>
         <div class="studio-row"><label>빛 색 <input id="studio-light-color" type="color"></label><label>주변광 <input id="studio-ambient" type="number" min="0" max="3" step="0.1"></label></div>
       </details>
-      <details><summary>소품 추가</summary><div class="studio-row"><button class="btn" data-prop="box">상자</button><button class="btn" data-prop="table">탁자</button><button class="btn" data-prop="chair">의자</button><button class="btn" data-prop="sphere">구체</button></div><p class="studio-help">오른쪽 목록에서 선택한 뒤 Move / Rotate로 옮깁니다. 크기는 장면 JSON의 size로 지정합니다.</p></details>
+      <details><summary>소품 추가</summary><div class="studio-row studio-prop-buttons">${PROP_TYPES.map(t=>`<button class="btn" data-prop="${t}">${PROP_NAMES[t]}</button>`).join('')}</div><p class="studio-help">오른쪽 목록에서 선택한 뒤 Move / Rotate로 옮깁니다. 크기는 선택한 소품의 속성 패널(가로·높이·깊이)이나 장면 JSON의 size로 바꿉니다. 문·창문은 벽 앞에 세우는 판입니다.</p></details>
       <div class="studio-section"><h3>카메라 컷</h3><p class="studio-help">작업 화면을 돌려 구도를 찾고 저장하세요. 인물·포즈는 모든 카메라 컷이 공유합니다.</p>
         <div class="studio-row"><input id="studio-shot-name" aria-label="새 컷 이름" placeholder="컷 이름"><button id="studio-shot-add" class="btn">구도 저장</button></div>
         <div class="studio-row"><label>화각 <input id="studio-fov" type="number" min="10" max="100" value="40"></label><select id="studio-aspect" aria-label="촬영 화면비"><option value="1.7777777777777777">16:9</option><option value="1.3333333333333333">4:3</option><option value="1">1:1</option><option value="0.75">3:4</option><option value="0.5625">9:16</option></select></div>
@@ -247,19 +247,46 @@ export function initCutsceneStudio(api) {
     stage.light.shadow.camera.top=Math.max(w,d);stage.light.shadow.camera.bottom=-Math.max(w,d);stage.light.shadow.camera.updateProjectionMatrix();
     if(ambient)ambient.intensity=light.ambient;
   }
-  function createProp(def) {
-    const group=new THREE.Group();group.name=def.name;group.userData.primitive=structuredClone(def);
+  // Geometry of a primitive prop from its type and size; rebuilt in place when the size changes.
+  function buildPropMeshes(group,def){
+    for(const child of [...group.children]){group.remove(child);child.geometry?.dispose();}
     const [w,h,d]=def.size;
     const material=new THREE.MeshStandardMaterial({color:def.color,roughness:0.8});
-    const box=(size,p)=> {const mesh=new THREE.Mesh(new THREE.BoxGeometry(...size),material);mesh.position.set(...p);mesh.castShadow=true;mesh.receiveShadow=true;group.add(mesh);};
-    if(def.type==='sphere') {const mesh=new THREE.Mesh(new THREE.SphereGeometry(0.5,24,16),material);mesh.scale.set(w,h,d);mesh.position.y=h/2;mesh.castShadow=true;mesh.receiveShadow=true;group.add(mesh);}
+    const add=(geometry,p,m=material)=>{const mesh=new THREE.Mesh(geometry,m);mesh.position.set(...p);mesh.castShadow=true;mesh.receiveShadow=true;group.add(mesh);return mesh;};
+    const box=(size,p,m)=>add(new THREE.BoxGeometry(...size.map(v=>Math.max(v,0.005))),p,m);
+    const frame=Math.min(0.06,w/6,h/6);
+    if(def.type==='sphere'){add(new THREE.SphereGeometry(0.5,24,16),[0,h/2,0]).scale.set(w,h,d);}
+    else if(def.type==='cylinder'){add(new THREE.CylinderGeometry(0.5,0.5,1,24),[0,h/2,0]).scale.set(w,h,d);}
     else if(def.type==='table'||def.type==='chair') {
       const seat=def.type==='chair'?h*0.48:h;
       box([w,0.06,d],[0,seat-0.03,0]);
       for(const x of [-1,1])for(const z of [-1,1])box([0.06,Math.max(0.02,seat-0.06),0.06],[x*(w/2-0.04),(seat-0.06)/2,z*(d/2-0.04)]);
       if(def.type==='chair')box([w,h-seat,0.06],[0,seat+(h-seat)/2,-d/2+0.03]);
+    } else if(def.type==='door'){
+      for(const x of [-1,1])box([frame,h,d],[x*(w/2-frame/2),h/2,0]);box([w,frame,d],[0,h-frame/2,0]);
+      box([w-frame*2,h-frame,d*0.6],[0,(h-frame)/2,0]);add(new THREE.SphereGeometry(0.03,12,8),[w/2-frame-0.08,h*0.47,d*0.3+0.03]);
+    } else if(def.type==='window'){
+      for(const x of [-1,0,1])box([frame*(x?1:0.6),h,d],[x*(w/2-frame/2),h/2,0]);for(const y of [0,0.5,1])box([w,frame*(y===0.5?0.6:1),d],[0,frame/2+y*(h-frame),0]);
+      box([w-frame*2,h-frame*2,0.01],[0,h/2,0],new THREE.MeshStandardMaterial({color:'#bcd7e8',roughness:0.1,transparent:true,opacity:0.35}));
+    } else if(def.type==='bed'){
+      box([w,h*0.3,d],[0,h*0.15,0]);box([w*0.96,h*0.18,d*0.94],[0,h*0.39,d*0.02]);box([w,h,0.06],[0,h/2,-d/2+0.03]);box([w*0.45,h*0.08,d*0.18],[0,h*0.52,-d/2+0.06+d*0.09]);
+    } else if(def.type==='sofa'){
+      const seat=h*0.48,arm=Math.min(0.18,w*0.1);
+      box([w,seat,d],[0,seat/2,0]);box([w,h,d*0.22],[0,h/2,-d/2+d*0.11]);for(const x of [-1,1])box([arm,h*0.68,d],[x*(w/2-arm/2),h*0.34,0]);
+    } else if(def.type==='stairs'){
+      const n=Math.max(2,Math.round(h/0.18)),run=d/n;
+      for(let i=0;i<n;i++){const top=h*(i+1)/n;box([w,top,run],[0,top/2,d/2-run*(i+0.5)]);}
     } else box([w,h,d],[0,h/2,0]);
+  }
+  function createProp(def) {
+    const group=new THREE.Group();group.name=def.name;group.userData.primitive=structuredClone(def);
+    buildPropMeshes(group,def);
     group.position.fromArray(def.position);group.rotation.y=THREE.MathUtils.degToRad(def.yaw);return group;
+  }
+  // Size edits from the properties panel: rebuild the same group, position and turn stay.
+  function resizeProp(group,size){
+    const def=group.userData.primitive;if(!def)throw new Error('단순 소품만 크기를 바꿀 수 있습니다.');
+    def.size=size.map(v=>Math.min(20,Math.max(0.02,Number(v)||0.02)));buildPropMeshes(group,def);group.updateMatrixWorld(true);
   }
   function loadScene(raw) {
     const next=validateScene(raw); // Validate the entire proposal before changing the scene.
@@ -405,7 +432,7 @@ export function initCutsceneStudio(api) {
   $('studio-light-direction').onchange=()=>{const position=lightPresets[$('studio-light-direction').value];if(!position)return;document.lighting.position=[...position];rebuildRoom();api.commit();};
   panel.querySelectorAll('[data-prop]').forEach(btn=>btn.onclick=()=>run(()=>{
     const type=btn.dataset.prop;
-    const def={id:`prop-${crypto.randomUUID()}`,name:{box:'상자',table:'탁자',chair:'의자',sphere:'구체'}[type],type,position:[0,0,0],size:{box:[0.4,0.4,0.4],table:[1.4,0.75,0.8],chair:[0.5,0.95,0.5],sphere:[0.4,0.4,0.4]}[type],yaw:0,color:'#8c7965'};
+    const def={id:`prop-${crypto.randomUUID()}`,name:PROP_NAMES[type],type,position:[0,0,0],size:[...PROP_DEFAULT_SIZES[type]],yaw:0,color:'#8c7965'};
     const prop=createProp(def);api.importedModels.push(prop);stage.scene.add(prop);api.select(prop);api.commit();
   }));
   $('studio-fov').onchange=()=>run(()=>{const v=Number($('studio-fov').value);if(v<10||v>100||!Number.isFinite(v))throw new Error('화각은 10~100도입니다.');if(api.setWorkingFov)api.setWorkingFov(v);else {stage.camera.fov=v;stage.camera.updateProjectionMatrix();}api.commit();status('작업 카메라 화각을 바꿨습니다. 컷의 갱신을 누르면 촬영에 반영합니다.');});
@@ -525,7 +552,7 @@ export function initCutsceneStudio(api) {
     restoreReferences(value){if(!value||typeof value!=='object')return;const next={};for(const [id,list]of Object.entries(value)){if(!Array.isArray(list))continue;const ok=list.filter(r=>r&&typeof r.dataUrl==='string'&&/^data:image\/(png|jpeg|webp);base64,/.test(r.dataUrl)).map(r=>({id:String(r.id||crypto.randomUUID()),name:String(r.name||'reference'),label:REF_LABELS.includes(r.label)?r.label:'기타',note:String(r.note||'').slice(0,500),mime:r.dataUrl.slice(5,r.dataUrl.indexOf(';')),dataUrl:r.dataUrl}));if(ok.length)next[id]=ok;}references=next;renderReferences();},
     snapshot:()=>structuredClone({document,initialProposal,proposalOrigin,shots,activeShot,aspect,shotProjection}),
     restore(state) {if(!state)return;document=validateScene(state.document);initialProposal=validateScene(state.initialProposal||state.document);proposalOrigin=state.initialProposal?(state.proposalOrigin||'scene-import'):'legacy-current-state';shots=structuredClone(state.shots||[]);activeShot=state.activeShot ?? -1;aspect=state.aspect||16/9;shotProjection=state.shotProjection?structuredClone(state.shotProjection):null;rebuildRoom();syncUI();updateShotCamera();},
-    createProp,loadScene,importText,showImportError,poseThumbnail,
+    createProp,resizeProp,loadScene,importText,showImportError,poseThumbnail,
     saveProject(state) {state.characterReferences=structuredClone(references);download('cutscene-project.json',JSON.stringify(state,null,2));status('정밀 프로젝트를 저장했습니다. Load로 다시 열 수 있습니다.');},
     invalidatePreview(){previewDirty=true;},updateEditingWalls,tick:tickPreview,
   };
