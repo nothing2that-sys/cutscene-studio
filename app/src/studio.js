@@ -48,6 +48,8 @@ export function initCutsceneStudio(api) {
   const lamps={lamp:new THREE.PointLight(0xffffff,1,0,2),spot:new THREE.SpotLight(0xffffff,1,0,Math.PI/6,.3,2)};
   for(const l of Object.values(lamps)){l.visible=false;l.castShadow=true;l.shadow.mapSize.set(1024,1024);l.shadow.camera.near=.05;l.shadow.camera.far=60;l.shadow.normalBias=.005;stage.scene.add(l);}
   stage.scene.add(lamps.spot.target);
+  // Extra lights from lighting.extras; rebuilt with the room. No shadows (the key light casts them).
+  const extraGroup=new THREE.Group();extraGroup.name='Extra lights';stage.scene.add(extraGroup);
   // Editing-only marker: light source and a line to the point it lights. Hidden in captures.
   const lightMarker=new THREE.Group();lightMarker.name='Light marker';
   const markerBulb=new THREE.Mesh(new THREE.SphereGeometry(.09,16,10),new THREE.MeshBasicMaterial({color:0xffd54a}));
@@ -76,6 +78,7 @@ export function initCutsceneStudio(api) {
         <label class="studio-label">빛 세기 (비추는 곳 기준) <input id="studio-light" type="range" min="0" max="6" step="0.1"></label>
         <div class="studio-row"><span>광원 위치 m</span><input id="studio-light-x" type="number" step="0.1" aria-label="광원 X"><input id="studio-light-y" type="number" step="0.1" aria-label="광원 높이"><input id="studio-light-z" type="number" step="0.1" aria-label="광원 Z"></div>
         <div class="studio-row"><span>비추는 곳 m</span><input id="studio-light-tx" type="number" step="0.1" aria-label="비추는 곳 X"><input id="studio-light-ty" type="number" step="0.1" aria-label="비추는 곳 높이"><input id="studio-light-tz" type="number" step="0.1" aria-label="비추는 곳 Z"></div>
+        <div id="studio-extra-lights"></div>
         <label class="studio-label" id="studio-light-cone-row">스포트 퍼짐 각도 ° <input id="studio-light-cone" type="number" min="5" max="170" step="1"></label>
         <label class="studio-label">주광 방향 <select id="studio-light-direction"><option value="custom" disabled>사용자 지정</option><option value="left">왼쪽 앞</option><option value="right">오른쪽 앞</option><option value="back">뒤쪽 역광</option><option value="top">위에서</option></select></label>
         <div class="studio-row"><label>빛 색 <input id="studio-light-color" type="color"></label><label>주변광 <input id="studio-ambient" type="number" min="0" max="3" step="0.1"></label></div>
@@ -155,7 +158,8 @@ export function initCutsceneStudio(api) {
       const facts=!only||['pose','range','plan'].includes(only)?extractShotFacts({camera:shotCamera,aspect,actors,props,environmentMeshes,lighting:document.lighting}):null;
       if(only==='pose'||only==='plan')return {width,height,facts,labels};
       const description=facts?describeShot(facts,{shotName:currentShot().name,purpose:currentShot().purpose}):null;
-      const passes=renderPasses({renderer:preview,scene:stage.scene,camera:shotCamera,width,height,labels,light:keyLight(),lightTarget:document.lighting.target,ambient});
+      // light.png is the key light alone: extra lights are switched off for the passes.
+      extraGroup.visible=false;let passes;try{passes=renderPasses({renderer:preview,scene:stage.scene,camera:shotCamera,width,height,labels,light:keyLight(),lightTarget:document.lighting.target,ambient});}finally{extraGroup.visible=true;}
       const stats=analyzePasses(passes,labels),range=depthRange(passes,labels,stats),labelWarnings=assignLabelColors(labels,stats);
       return {width,height,facts,description,labels,passes,stats,range,labelWarnings,images:passImages(passes,labels,range),lightNotes:facts?lightingNotes({facts,lighting:document.lighting,labels}):null,actors,props};
     });
@@ -229,6 +233,14 @@ export function initCutsceneStudio(api) {
     stage.light.visible=key===stage.light;for(const x of Object.values(lamps))x.visible=x===key;
     key.position.copy(pos);key.color.set(l.color);key.intensity=key.isDirectionalLight?l.intensity:l.intensity*d*d;
     if(key.isSpotLight){key.angle=THREE.MathUtils.degToRad(l.coneDeg/2);key.penumbra=l.softness;key.target.position.copy(target);key.target.updateMatrixWorld();}
+    for(const child of [...extraGroup.children]){extraGroup.remove(child);child.dispose?.();child.traverse?.(n=>{n.geometry?.dispose();n.material?.dispose?.();});}
+    for(const x of l.extras||[]){
+      const at=new THREE.Vector3(...x.position),aim=new THREE.Vector3(...x.target),dist=at.distanceTo(aim)||1;
+      const light=x.type==='sun'?new THREE.DirectionalLight(x.color,x.intensity):x.type==='spot'?new THREE.SpotLight(x.color,x.intensity*dist*dist,0,THREE.MathUtils.degToRad(x.coneDeg/2),x.softness,2):new THREE.PointLight(x.color,x.intensity*dist*dist,0,2);
+      light.position.copy(at);light.userData.extraLight=true;extraGroup.add(light);
+      if(light.target){light.target.position.copy(aim);extraGroup.add(light.target);light.target.updateMatrixWorld();}
+      const bulb=new THREE.Mesh(new THREE.SphereGeometry(.06,12,8),new THREE.MeshBasicMaterial({color:0x7dd3fc}));bulb.position.copy(at);bulb.userData.exportHideWhenGizmoDisabled=true;bulb.raycast=()=>{};extraGroup.add(bulb);
+    }
     lightMarker.position.copy(pos);markerBulb.material.color.set(l.type==='sun'?0xffd54a:0xfff3c4);markerLine.geometry.setFromPoints([new THREE.Vector3(),target.clone().sub(pos)]);markerLine.computeLineDistances();
   }
   function rebuildRoom() {
@@ -380,6 +392,7 @@ export function initCutsceneStudio(api) {
     $('studio-walls').checked=document.room.walls;$('studio-light').value=document.lighting.intensity;
     $('studio-light-color').value=document.lighting.color;$('studio-ambient').value=document.lighting.ambient;
     $('studio-light-type').value=document.lighting.type;['x','y','z'].forEach((a,i)=>{$('studio-light-'+a).value=document.lighting.position[i];$('studio-light-t'+a).value=document.lighting.target[i];});
+    renderExtraLights();
     $('studio-light-cone-row').hidden=document.lighting.type!=='spot';$('studio-light-cone').value=document.lighting.coneDeg??50;
     $('studio-light-direction').value=Object.keys(lightPresets).find(key=>lightPresets[key].every((v,i)=>Math.abs(v-document.lighting.position[i])<1e-8))||'custom';
     $('studio-fov').value=readCamera().fov;$('studio-aspect').value=String(aspect);renderShots();if($('studio-refs-section').open)renderReferences();
@@ -422,6 +435,16 @@ export function initCutsceneStudio(api) {
   });
   $('studio-walls').onchange=()=>{document.room.walls=$('studio-walls').checked;rebuildRoom();api.commit();};
   $('studio-light').oninput=()=>{document.lighting.intensity=Number($('studio-light').value);applyLight();};
+  // Extra lights: one row each (type, position, target, colour, brightness, remove) plus add.
+  function renderExtraLights(){
+    const host=$('studio-extra-lights');if(!host)return;const extras=document.lighting.extras||[];
+    host.innerHTML='<p class="studio-help">보조광(최대 2개) · color.png에 반영되고 지시문에 글로 들어갑니다. light.png는 주광만 보여 줍니다.</p>'+extras.map((x,i)=>`<div class="studio-extra-light" data-extra="${i}"><div class="studio-row"><select data-k="type" aria-label="보조광 ${i+1} 종류">${['lamp','spot','sun'].map(t=>`<option value="${t}" ${t===x.type?'selected':''}>${{lamp:'전등',spot:'스포트',sun:'평행광'}[t]}</option>`).join('')}</select><input data-k="color" type="color" value="${x.color}" aria-label="보조광 ${i+1} 색"><input data-k="intensity" type="number" min="0" max="10" step="0.1" value="${x.intensity}" aria-label="보조광 ${i+1} 세기"><button class="btn" data-remove="${i}">삭제</button></div><div class="studio-row"><span>위치</span>${x.position.map((v,k)=>`<input data-k="p${k}" type="number" step="0.1" value="${v}" aria-label="보조광 ${i+1} 위치 ${'XYZ'[k]}">`).join('')}</div><div class="studio-row"><span>비추는 곳</span>${x.target.map((v,k)=>`<input data-k="t${k}" type="number" step="0.1" value="${v}" aria-label="보조광 ${i+1} 목표 ${'XYZ'[k]}">`).join('')}</div></div>`).join('')+(extras.length<2?'<button class="btn" id="studio-extra-add">+ 보조광 추가</button>':'');
+    host.querySelectorAll('.studio-extra-light').forEach(row=>{const i=Number(row.dataset.extra);row.querySelectorAll('[data-k]').forEach(input=>input.onchange=()=>{const next=structuredClone(document.lighting.extras);const x=next[i],k=input.dataset.k;
+      if(k==='type'||k==='color')x[k]=input.value;else if(k==='intensity')x.intensity=Number(input.value);else (k[0]==='p'?x.position:x.target)[Number(k[1])]=Number(input.value);
+      if(x.type!=='spot'){delete x.coneDeg;delete x.softness;}setLighting({extras:next});});});
+    host.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{const next=structuredClone(document.lighting.extras);next.splice(Number(b.dataset.remove),1);setLighting({extras:next});});
+    const add=$('studio-extra-add');if(add)add.onclick=()=>{const t=document.lighting.target;setLighting({extras:[...(document.lighting.extras||[]),{type:'lamp',position:[t[0]+1.5,t[1]+0.8,t[2]+1.5],target:[...t],color:'#ffd9a0',intensity:0.8}]});};
+  }
   function setLighting(change){run(()=>{const next=validateScene({...document,lighting:{...document.lighting,...change}});document=next;rebuildRoom();syncUI();api.commit();});}
   $('studio-light-type').onchange=()=>setLighting({type:$('studio-light-type').value});
   for(const a of ['x','y','z']){$('studio-light-'+a).onchange=()=>setLighting({position:['x','y','z'].map(k=>Number($('studio-light-'+k).value))});$('studio-light-t'+a).onchange=()=>setLighting({target:['x','y','z'].map(k=>Number($('studio-light-t'+k).value))});}
