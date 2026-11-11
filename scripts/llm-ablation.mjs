@@ -17,6 +17,9 @@
 //   --set=gaze (2026-11-11): the real package (prompt.txt + its images), gaze fields off/on
 //   g1-off   : lookAt and expression removed (heads straight, no 시선/표정 lines)
 //   g2-on    : lookAt and expression kept (heads turned, 시선/표정 lines)
+//   --set=features (2026-11-11): the real package, each new feature off/on
+//   H1 held props (off: hands named only in the description), L1 extra light, W1 wall
+//   shadows, C1 dutch angle + prone/side lying (on only)
 // Usage: node scripts/llm-ablation.mjs [baseUrl] [outDir] [--set=depth|--set=body]
 import {loadPlaywright} from './playwright-runtime.mjs';
 import {readFile,writeFile,mkdir,rm} from 'node:fs/promises';
@@ -24,8 +27,8 @@ import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 const {chromium}=loadPlaywright();
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const argv=process.argv.slice(2),SET=argv.includes('--set=depth')?'depth':argv.includes('--set=body')?'body':argv.includes('--set=gaze')?'gaze':'base',pos=argv.filter(a=>!a.startsWith('--'));
-const base=pos[0]||'http://127.0.0.1:3001',out=path.resolve(pos[1]||path.join(root,SET==='depth'?'docs/review-evidence/2026-11-10-depth-ablation':SET==='body'?'docs/review-evidence/2026-11-10-body-ablation':SET==='gaze'?'docs/review-evidence/2026-11-11-gaze-ablation':'docs/review-evidence/2026-11-06-llm-ablation'));
+const argv=process.argv.slice(2),SET=argv.includes('--set=depth')?'depth':argv.includes('--set=body')?'body':argv.includes('--set=gaze')?'gaze':argv.includes('--set=features')?'features':'base',pos=argv.filter(a=>!a.startsWith('--'));
+const base=pos[0]||'http://127.0.0.1:3001',out=path.resolve(pos[1]||path.join(root,SET==='depth'?'docs/review-evidence/2026-11-10-depth-ablation':SET==='body'?'docs/review-evidence/2026-11-10-body-ablation':SET==='gaze'?'docs/review-evidence/2026-11-11-gaze-ablation':SET==='features'?'docs/review-evidence/2026-11-11-feature-ablation':'docs/review-evidence/2026-11-06-llm-ablation'));
 const fixture=f=>path.join(root,'scripts/fixtures/llm-scenarios',f);
 // questions: one correct answer each (all "예" when the image follows the scene).
 const SCENES=[
@@ -81,6 +84,20 @@ const GAZE_SCENES=[
   questions:['두 사람이 모두 그려졌는가','남자(왼쪽)의 얼굴·눈이 여자를 향하는가(카메라를 보면 아니오)','여자(오른쪽)의 얼굴·눈이 남자를 향하는가(카메라를 보면 아니오)','남자의 표정이 걱정스러운가(참고: 지시문에 표정이 있는 조건만 해당)','여자의 표정이 옅은 미소인가(참고: 지시문에 표정이 있는 조건만 해당)','좌우 배치가 맞는가(남자 왼쪽, 여자 오른쪽)'],
   verify:j=>{const L=id=>j.labels.find(l=>l.id===id),m=L('g1man'),w=L('g1woman');return [['두 명 모두 화면 안',m?.visible&&w?.visible,''],['남자가 화면 왼쪽',m.screen.bbox[0]<w.screen.bbox[0],'']];}},
 ];
+const PKG6=['color.png','label.png','depth.png','range.png','light.png','pose.png'];
+const FEATURE_SCENES=[
+ {id:'H1-held',file:fixture('f-held.json'),aspect:16/9,tests:'gaze',conditions:['h-off','h-on'],
+  variant:(cond,scene)=>cond==='h-off'?{...scene,actors:scene.actors.map(a=>({...a,description:a.description+'. 오른손에 접은 장우산, 왼손에 종이 쇼핑백을 들고 있음'})),props:scene.props.map(({attachTo,...p})=>p)}:scene,
+  questions:['장우산이 남자의 오른손(인물 기준, 화면에서는 왼쪽)에 있는가','쇼핑백이 왼손(화면 오른쪽)에 있는가','소품을 손에 쥐고 있는가(바닥·공중에 떠 있지 않음)'],verify:()=>[]},
+ {id:'L1-light',file:fixture('f-light.json'),aspect:16/9,tests:'gaze',conditions:['l-off','l-on'],
+  variant:(cond,scene)=>cond==='l-off'?{...scene,lighting:(({extras,...l})=>l)(scene.lighting)}:scene,
+  questions:['스탠드 쪽(화면 오른쪽)에서 따뜻한 주황빛이 여자를 비추는가','창 쪽(화면 왼쪽)에서 푸른 달빛이 비추는가','두 빛의 색이 섞여 한쪽은 따뜻하고 한쪽은 차가운가'],verify:()=>[]},
+ {id:'W1-wall',file:fixture('f-wall.json'),aspect:16/9,tests:'gaze',conditions:['w-off','w-on'],
+  variant:(cond,scene)=>cond==='w-off'?{...scene,room:(({wallShadows,...r})=>r)(scene.room)}:scene,
+  questions:['남자가 담장 그늘 안에 있는가(얼굴·몸이 그늘)','담장 위쪽이나 하늘은 노을빛으로 밝은가'],verify:()=>[]},
+ {id:'C1-dutch-lying',file:fixture('f-dutch-lying.json'),aspect:16/9,tests:'gaze',conditions:['c-on'],
+  questions:['화면(지평선·잔디 경계)이 시계 방향으로 약 15° 기울어져 있는가','왼쪽 남자가 엎드려 있는가','오른쪽 여자가 옆으로 누워 있는가'],verify:()=>[]},
+];
 // The package prompt's mannequin section (app/src/llm-package.js), used by b3 only.
 const MANNEQUIN_LINES=['','## 마네킹을 따라 그리지 말 것','- color.png의 인물은 위치·자세용 무채색 마네킹입니다. 마네킹의 체형(가슴·엉덩이 곡선), 관절 구슬, 민머리를 그리지 마세요.','- 마네킹에는 얼굴이 없습니다. 얼굴이 보이는 인물은 아이를 포함해 모두 눈·코·입이 있는 얼굴로 그리세요.','- 벽·바닥의 그림자도 마네킹 윤곽이 아니라 최종으로 그린 인물(옷·머리·소지품)의 실루엣으로 그리세요.'];
 function prompt(j,scene,cond){
@@ -104,14 +121,14 @@ function depthPrompt(j,scene,cond){
  lines.push(`- 카메라에서 가까운 순서: ${order.map(l=>`${l.name}(${l.distanceM.median}m)`).join(' → ')}`,'- 인물들의 화면 속 크기 비율은 color.png 그대로 두고, 멀리 있는 인물을 키우거나 가깝게 당기지 마세요.','','글자·라벨·도표·말풍선은 그림에 넣지 마세요.');
  return lines.join('\n');
 }
-const FILES={'g1-off':['color.png','label.png','depth.png','range.png','light.png','pose.png'],'g2-on':['color.png','label.png','depth.png','range.png','light.png','pose.png'],'b1-female':['color.png','depth.png'],'b2-typed':['color.png','depth.png'],'b3-typed-face':['color.png','depth.png'],'d1-gray':['color.png','depth.png'],'d2-range':['color.png','depth.png','range.png'],'d3-plan':['color.png','depth.png','range.png','plan.png'],'c1-color':['color.png'],'c2-text':['color.png'],'c3-light':['color.png','light.png'],'c4-depth':['color.png','depth.png']};
+const FILES={...Object.fromEntries(['h-off','h-on','l-off','l-on','w-off','w-on','c-on'].map(c=>[c,PKG6])),'g1-off':['color.png','label.png','depth.png','range.png','light.png','pose.png'],'g2-on':['color.png','label.png','depth.png','range.png','light.png','pose.png'],'b1-female':['color.png','depth.png'],'b2-typed':['color.png','depth.png'],'b3-typed-face':['color.png','depth.png'],'d1-gray':['color.png','depth.png'],'d2-range':['color.png','depth.png','range.png'],'d3-plan':['color.png','depth.png','range.png','plan.png'],'c1-color':['color.png'],'c2-text':['color.png'],'c3-light':['color.png','light.png'],'c4-depth':['color.png','depth.png']};
 const browser=await chromium.launch({channel:'chrome',headless:true,args:['--enable-webgl','--use-gl=angle','--use-angle=swiftshader']});
 const page=await browser.newPage({viewport:{width:1600,height:1000}});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
 const report={generatedAt:new Date().toISOString(),scenes:[]};
 try{
  await page.goto(base);await page.waitForFunction(()=>window.__bodyV1?.studio&&document.getElementById('studio-example'));
- for(const sc of SET==='depth'?DEPTH_SCENES:SET==='body'?BODY_SCENES:SET==='gaze'?GAZE_SCENES:SCENES){
+ for(const sc of SET==='depth'?DEPTH_SCENES:SET==='body'?BODY_SCENES:SET==='gaze'?GAZE_SCENES:SET==='features'?FEATURE_SCENES:SCENES){
   const text=await readFile(sc.file,'utf8'),scene=JSON.parse(text);
   const build=text=>page.evaluate(async({text,aspect})=>{
    const S=window.__bodyV1.studio,$=id=>document.getElementById(id);

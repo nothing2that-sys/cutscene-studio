@@ -1,0 +1,9 @@
+{"version":1,"units":"meters","title":"기능 L1 · 달빛과 스탠드",
+ "sourceText":"밤, 불 꺼진 작은 방. 창으로 푸른 달빛이 들고, 책상 위 스탠드 하나가 켜져 있다. 여자가 책상 옆에 서 있다.",
+ "room":{"size":[6,3,5],"color":"#7c7f86","walls":true},
+ "actors":[{"id":"l1woman","name":"여자","position":[0,0,0],"yaw":0,"height":1.65,"pose":"standing","description":"흰 니트, 긴 머리 20대 여성"}],
+ "props":[{"id":"l1desk","name":"책상","type":"table","position":[1.05,0,0.1],"size":[0.9,0.74,0.55],"color":"#6b4f3a"},{"id":"l1lamp","name":"스탠드","type":"cylinder","position":[1.15,0.74,0.1],"size":[0.12,0.4,0.12],"color":"#dddddd"}],
+ "camera":{"position":[0,1.35,3.4],"target":[0.2,1.1,0],"fov":42},
+ "lighting":{"type":"sun","position":[-4,4,2],"target":[0,1,0],"color":"#9fb8ff","intensity":0.9,"ambient":0.12,
+  "extras":[{"type":"lamp","position":[1.15,1.2,0.15],"target":[0.15,1.3,0.1],"color":"#ffb36b","intensity":2.2}]},
+ "shots":[{"id":"l1","name":"L1","purpose":"달빛과 따뜻한 보조광","camera":{"position":[0,1.35,3.4],"target":[0.2,1.1,0],"fov":42}}]}
