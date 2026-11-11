@@ -3,7 +3,7 @@ import {getBodyV1,displayedObjectBounds} from './body-v1-adapter.js';
 import {OBB} from 'three/addons/math/OBB.js';
 import {aimHead,lookTarget} from './look-at.js';
 
-const objectId=o=>o.userData.studioId||o.userData.primitive?.id||null;
+const objectId=o=>o.torso?o.userData.studioId||null:o.userData.primitive?.id||o.userData.studioId||null;
 // Gaze targets in the live scene: people by their head, props by their centre.
 export function liveLookScene(objects){
  return {actors:objects.filter(o=>o.torso&&objectId(o)).map(o=>({id:objectId(o),root:o})),props:objects.filter(o=>!o.torso&&objectId(o)).map(o=>({id:objectId(o),center:displayedObjectBounds(o).getCenter(new THREE.Vector3())}))};
@@ -19,7 +19,7 @@ export function objectNotes(object,scene){
 export function describeObjects(objects,scene){
  let actorIndex=0,propIndex=0;const used=new Set();
  return objects.map(object=>{const actor=!!object.torso,index=actor?actorIndex++:propIndex++,box=displayedObjectBounds(object);
-  const sourceId=object.userData.studioId||object.userData.primitive?.id||null,baseId=sourceId||`${actor?'actor':'prop'}-${index+1}`;let id=baseId;for(let suffix=2;used.has(id);suffix++)id=baseId+'-'+suffix;used.add(id);
+  const sourceId=objectId(object),baseId=sourceId||`${actor?'actor':'prop'}-${index+1}`;let id=baseId;for(let suffix=2;used.has(id);suffix++)id=baseId+'-'+suffix;used.add(id);
   const state=actor?getBodyV1(object)?.snapshot():null;
   return {id,sourceId,...(state?{bodyAsset:{...object.userData.bodyAsset},bodyRestRevision:state.basePose.restRevision,sourceRequestOrigin:state.sourceRequestRevision?{revision:state.sourceRequestRevision,interpretation:state.basePose.sourceRequestInterpretation,editedPoseStoredExplicitly:true}:null}:{}),kind:actor?'actor':object.userData.primitive?.type||'imported-model',editorStateArray:actor?'mannequins':'importedModels',editorStateIndex:index,name:object.name||'이름 없음',...objectNotes(object,scene),position:object.position.toArray(),rotation:object.rotation.toArray(),scale:object.scale.toArray(),positionSpace:'editor world root, meters',bounds:box.isEmpty()?null:{min:box.min.toArray(),max:box.max.toArray()}};
  });

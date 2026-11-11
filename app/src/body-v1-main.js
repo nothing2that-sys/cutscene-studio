@@ -18,7 +18,7 @@ export function installBodyV1Main(api){
   onAppliedState(listener){if(typeof listener!=='function')throw Error('적용 관측자는 함수여야 합니다.');appliedListeners.add(listener);return()=>appliedListeners.delete(listener);},get lastAppliedState(){return lastAppliedState;},recordJointInput,commitJointInput,
   get actors(){return api.mannequins.map((m,i)=>{const id=m.userData.studioId||'legacy-'+i;if(getBodyV1(m)){const actor=getBodyV1(m).actor(id);let visible=true;for(let p=actor.root;p;p=p.parent)if(!p.visible)visible=false;if(!visible)return {id,root:actor.root,driver:actor.driver,bodyMeshes:[],joints:actor.joints,pelvis:actor.pelvis,chest:actor.chest};return actor;}return {id,root:m,driver:m,bodyMeshes:meshes(m),joints:Object.fromEntries(['body','torso','neck','head','l_arm','r_arm','l_elbow','r_elbow','l_wrist','r_wrist','l_leg','r_leg','l_knee','r_knee','l_ankle','r_ankle'].map(k=>[k,m[k]])),pelvis:m.body,chest:m.torso};});},
   get environmentMeshes(){return api.studio.environmentMeshes?.(fixed?.enabled?fixed.state.role:'working')||[];},
-  get props(){return api.importedModels.map((p,i)=>({id:p.userData.primitive?.id||p.userData.studioId||'prop-'+i,root:p,meshes:meshes(p)}));},
+  get props(){return api.importedModels.map((p,i)=>({id:p.userData.primitive?.id||p.userData.studioId||'prop-'+(i+1),root:p,meshes:meshes(p)}));},
   get renderers(){return [api.stage.renderer,api.studio.previewRenderer];},
   get cameras(){return {working:api.stage.camera,shot:api.studio.shotCamera};},
   get displayCamera(){return fixed?fixed.displayCamera:api.stage.camera;},

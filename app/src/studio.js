@@ -140,7 +140,7 @@ export function initCutsceneStudio(api) {
   function exportSize(){const width=aspect>=1?1600:Math.round(1600*aspect);return {width,height:Math.round(width/aspect)};}
   function sceneItems(){
     const actors=api.mannequins.map((m,i)=>({id:m.userData.studioId||'actor-'+(i+1),name:m.name||'인물 '+(i+1),root:m,height:m.userData.bodyProfile?.height,headUnits:m.userData.bodyProfile?.bodyType?BODY_TYPES[bodyTypeOf(m.userData.bodyProfile)].headUnits:m.userData.bodyProfile?.headUnits}));
-    const props=api.importedModels.map((p,i)=>({id:p.userData.primitive?.id||'prop-'+(i+1),name:p.name||'소품 '+(i+1),root:p}));
+    const props=api.importedModels.map((p,i)=>({id:p.userData.primitive?.id||p.userData.studioId||'prop-'+(i+1),name:p.name||'소품 '+(i+1),root:p}));
     return {actors,props};
   }
   // Label, camera distance, direct light and pose all come from one shot-camera evaluation.
@@ -363,7 +363,7 @@ export function initCutsceneStudio(api) {
     try {
       beforeCapture?.();updateShotCamera();
       const actors=api.mannequins.map((m,i)=>({id:m.userData.studioId||'actor-'+(i+1),name:m.name||'인물 '+(i+1),root:m,height:m.userData.bodyProfile?.height,headUnits:m.userData.bodyProfile?.bodyType?BODY_TYPES[bodyTypeOf(m.userData.bodyProfile)].headUnits:m.userData.bodyProfile?.headUnits}));
-      const props=api.importedModels.map((p,i)=>({id:p.userData.primitive?.id||'prop-'+(i+1),name:p.name||'소품 '+(i+1),root:p}));
+      const props=api.importedModels.map((p,i)=>({id:p.userData.primitive?.id||p.userData.studioId||'prop-'+(i+1),name:p.name||'소품 '+(i+1),root:p}));
       return cleanRender(()=>{
         const environmentMeshes=[];environment.traverse(n=>{if(!n.isMesh)return;for(let q=n;q;q=q.parent)if(!q.visible)return;environmentMeshes.push(n);});
         return describeShot(extractShotFacts({camera:shotCamera,aspect,actors,props,environmentMeshes,lighting:document.lighting}),{shotName:shot.name,purpose:shot.purpose});

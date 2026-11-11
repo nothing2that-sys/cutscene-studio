@@ -96,6 +96,8 @@ export function analyzeScene(input) {
     // lookAt: another actor's or a prop's id, or a point [x, y, z] in metres. The head and
     // neck are turned toward it when the scene loads (checked against ids below).
     const lookAt=a.lookAt===undefined?undefined:typeof a.lookAt==='string'?a.lookAt:vec(a.lookAt,p+'.lookAt');
+    // A child body keeps 5.4-head proportions at any height; a tall one is almost always a slip.
+    if(a.bodyType==='child'&&typeof a.height==='number'&&a.height>1.6)warn(p+'.height','BODY_TYPE_HEIGHT','아이 체형인데 키가 '+a.height+'m입니다. 아이는 보통 1.0~1.5m로 적습니다.');
     if(a.expression!==undefined&&(typeof a.expression!=='string'||a.expression.length>200))error(p+'.expression','STRING_REQUIRED','표정은 200자 이하 문자열로 적으세요.','string, maxLength 200',a.expression);
     if(a.bodyType!==undefined){if(!BODY_TYPE_NAMES.includes(a.bodyType))error(p+'.bodyType','UNSUPPORTED_BODY_TYPE','지원하지 않는 체형 종류입니다.',BODY_TYPE_NAMES,a.bodyType);else if(a.bodyType!=='female'&&(a.chest!==undefined||(a.headUnits!==undefined&&a.headUnits!==8)))error(p+'.bodyType','BODY_TYPE_CONFLICT','체형 종류를 쓰면 headUnits·chest는 넣지 않습니다(아이 체형은 비례가 내장됨).','bodyType only',a.bodyType);}
     const chest=a.chest===undefined?undefined:normalizeChest(a.chest);
@@ -108,7 +110,7 @@ export function analyzeScene(input) {
       const props=obj(values,p+'.joints.'+joint);keys(props,Object.keys(JOINTS[joint]),p+'.joints.'+joint);joints[joint]={};
       for(const [key,value]of Object.entries(props))if(Object.hasOwn(JOINTS[joint],key))joints[joint][key]=num(value,p+'.joints.'+joint+'.'+key,...JOINTS[joint][key]);
     }
-    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),position:vec(a.position,p+'.position'),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),height:num(a.height===undefined?1.75:a.height,p+'.height',0.5,3),headUnits:num(a.headUnits===undefined?8:a.headUnits,p+'.headUnits',3,12),...(a.bodyType!==undefined&&a.bodyType!=='female'?{bodyType:a.bodyType}:{}),...(chest?{chest}:{}),pose,joints,intent:str(a.intent,p+'.intent'),role:str(a.role,p+'.role'),description:str(a.description,p+'.description'),...(lookAt!==undefined?{lookAt}:{}),...(typeof a.expression==='string'&&a.expression&&a.expression.length<=200?{expression:a.expression}:{})};
+    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),position:vec(a.position,p+'.position'),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),height:num(a.height===undefined?(a.bodyType==='child'?1.2:1.75):a.height,p+'.height',0.5,3),headUnits:num(a.headUnits===undefined?8:a.headUnits,p+'.headUnits',3,12),...(a.bodyType!==undefined&&a.bodyType!=='female'?{bodyType:a.bodyType}:{}),...(chest?{chest}:{}),pose,joints,intent:str(a.intent,p+'.intent'),role:str(a.role,p+'.role'),description:str(a.description,p+'.description'),...(lookAt!==undefined?{lookAt}:{}),...(typeof a.expression==='string'&&a.expression&&a.expression.length<=200?{expression:a.expression}:{})};
   });
   const props=list(raw.props===undefined?[]:raw.props,'props',80).map((a,i)=>{
     const p='props['+i+']';keys(a,['id','name','type','position','size','yaw','color','role','intent','description'],p);

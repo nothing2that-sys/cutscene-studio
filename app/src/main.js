@@ -72,6 +72,12 @@ const ikDragPlane = new THREE.Plane();
 const ikDragPlaneNormal = new THREE.Vector3();
 let selectedBodyPart = 'Root';
 const historyStack = [];
+// History entries keep imported GLB bytes once, outside the 30 entries: each entry
+// stores a short key instead of the base64 (a 10 MB model would otherwise be copied
+// into every entry). Keys are per string; V8 caches string hashes, so lookups are cheap.
+const glbKeys=new Map(),glbData=new Map();
+function packGlb(state){for(const m of state.importedModels||[])if(m.glbBase64&&!m.glbBase64.startsWith('glb#')){let key=glbKeys.get(m.glbBase64);if(!key){key='glb#'+(glbKeys.size+1);glbKeys.set(m.glbBase64,key);glbData.set(key,m.glbBase64);}m.glbBase64=key;}return state;}
+function unpackGlb(json){if(!json.includes('"glb#'))return json;const state=JSON.parse(json);for(const m of state.importedModels||[])if(m.glbBase64?.startsWith('glb#'))m.glbBase64=glbData.get(m.glbBase64)||null;return JSON.stringify(state);}
 let historyIndex = -1;
 let studio = null;
 let autosave = null;
@@ -125,6 +131,7 @@ function snapshotState() {
       sceneNotes: m.userData.sceneNotes,
       glbBase64: m.userData._glbBase64 || null,
       primitive: m.userData.primitive || null,
+      ...(m.userData.studioId?{studioId:m.userData.studioId}:{}),
       visible:m.visible,
     })),
     activeIndex: mannequins.indexOf(activeMannequin),
@@ -141,11 +148,11 @@ function captureState() {
   viewPerformance?.invalidate();
   if (restoringState || pendingRestore) return;
   mannequins.forEach(constrainBody);
-  const state = snapshotState();
+  const state = packGlb(snapshotState());
   const previous=historyIndex>=0?JSON.parse(historyStack[historyIndex]):null;
   const json = JSON.stringify(state);
   const comparable = value => JSON.stringify(value, (_key, v) => typeof v === 'number' ? Math.round(v * 1e8) / 1e8 : v);
-  if (historyIndex >= 0 && comparable(JSON.parse(historyStack[historyIndex])) === comparable(state)) return;
+  if (previous && comparable(previous) === comparable(state)) return;
   if (historyIndex < historyStack.length - 1) historyStack.splice(historyIndex + 1);
   historyStack.push(json);
   if (historyStack.length > 30) historyStack.shift();
@@ -163,7 +170,7 @@ function applyState(json) {
   const bodyTypes=(state.mannequins||[]).filter(d=>d.bodyAsset).map(d=>bodyTypeOf(d.bodyProfile));if(!bodyTypes.every(bodyTypeReady))return ensureBodyTypes(bodyTypes).then(()=>applyState(json));
   let generation;const preparedActors=[],preparedProps=new Array((state.importedModels||[]).length),tasks=[];
   const discard=()=>{for(const m of preparedActors){getBodyV1(m)?.full.dispose();m.removeFromParent();}for(const m of preparedProps)if(m){m.removeFromParent();m.traverse(n=>{n.geometry?.dispose();});}};
-  const prepareProp=(model,d,index)=>{model.removeFromParent();model.name=d.name||d.primitive?.name||'restored-glb';model.userData.sceneNotes=d.sceneNotes;model.position.fromArray(d.position);model.rotation.fromArray(d.rotation);model.scale.fromArray(d.scale);model.visible=d.visible!==false;if(d.glbBase64){model.userData._glbBase64=d.glbBase64;model.userData._glbFileName=d.name;}preparedProps[index]=model;};
+  const prepareProp=(model,d,index)=>{model.removeFromParent();model.name=d.name||d.primitive?.name||'restored-glb';model.userData.sceneNotes=d.sceneNotes;if(d.studioId)model.userData.studioId=d.studioId;model.position.fromArray(d.position);model.rotation.fromArray(d.rotation);model.scale.fromArray(d.scale);model.visible=d.visible!==false;if(d.glbBase64){model.userData._glbBase64=d.glbBase64;model.userData._glbFileName=d.name;}preparedProps[index]=model;};
   try {
     for(const d of state.mannequins){const m=createFullMannequin(d.bodyProfile||null,{legacy:!d.bodyAsset,driverNativeScale:d.bodyV1Pose?.driverNativeScale});m.removeFromParent();preparedActors.push(m);m.name=d.name||'';m.userData.studioId=d.studioId;m.userData.sceneNotes=d.sceneNotes;m.visible=d.visible!==false;m.position.fromArray(d.position);m.rotation.fromArray(d.rotation);m.scale.fromArray(d.scale);if(d.posture)m.posture=d.posture;if(d.joints)for(const[part,data]of Object.entries(d.joints))if(m[part]){if(data.position)m[part].position.fromArray(data.position);if(data.rotation)m[part].rotation.fromArray(data.rotation);if(data.scale)m[part].scale.fromArray(data.scale);}getBodyV1(m)?.restore(d.bodyV1Pose);lockBoneLayout(m);constrainBody(m);}
     const loader=new GLTFLoader();for(const[index,d]of(state.importedModels||[]).entries()){if(d.primitive&&studio){prepareProp(studio.createProp(d.primitive),d,index);continue;}if(!d.glbBase64)throw Error('복원할 GLB 원문이 없습니다: '+(d.name||index));const bytes=base64ToArrayBuffer(d.glbBase64);tasks.push(new Promise((resolve,reject)=>loader.parse(bytes,'',gltf=>{prepareProp(gltf.scene,d,index);resolve();},reject)));}
@@ -217,7 +224,7 @@ function applyState(json) {
   const operation=Promise.all(tasks).then(commit,error=>{discard();throw error;});pendingRestore=operation;operation.then(()=>{if(pendingRestore===operation){pendingRestore=null;status.textContent='';status.hidden=true;captureState();}},error=>{if(pendingRestore===operation){pendingRestore=null;status.textContent='장면 복원 실패 · 기존 장면을 유지했습니다. '+error.message;}});return operation;
 }
 
-function restoreHistory(index){const previous=historyIndex;let result;try{result=applyState(historyStack[index]);historyIndex=index;updateHistoryButtons();}catch(error){historyIndex=previous;updateHistoryButtons();throw error;}const generation=restoreGeneration;if(result?.then)result.catch(()=>{if(generation===restoreGeneration){historyIndex=previous;updateHistoryButtons();}});return result;}
+function restoreHistory(index){const previous=historyIndex;let result;try{result=applyState(unpackGlb(historyStack[index]));historyIndex=index;updateHistoryButtons();}catch(error){historyIndex=previous;updateHistoryButtons();throw error;}const generation=restoreGeneration;if(result?.then)result.catch(()=>{if(generation===restoreGeneration){historyIndex=previous;updateHistoryButtons();}});return result;}
 function undo(){if(historyIndex>0)return restoreHistory(historyIndex-1);}
 function redo(){if(historyIndex<historyStack.length-1)return restoreHistory(historyIndex+1);}
 function updateHistoryButtons() {
@@ -565,6 +572,8 @@ function importGLB(file) {
       model.position.set(0, size.y * scale / 2 + GROUND_Y, 0);
       model.userData._glbBase64 = base64;
       model.userData._glbFileName = file.name || 'unknown.glb';
+      // A stable id: sheets and labels stay with this model when other props are removed.
+      model.userData.studioId = 'prop-' + crypto.randomUUID();
       stage.scene.add(model);
       importedModels.push(model);
       activeMannequin = model;
@@ -649,7 +658,8 @@ function addImportedModelFromData(data) {
   if (!data.glbBase64) return;
   const loader = new GLTFLoader();
   const arrayBuffer = base64ToArrayBuffer(data.glbBase64);
-  loader.parse(arrayBuffer, '', (gltf) => {
+  const fail=error=>new Error('GLB 모델을 복원하지 못했습니다: '+(data.name||'이름 없음')+' · '+(error?.message||error));
+  try{loader.parse(arrayBuffer, '', (gltf) => {
     const model = gltf.scene;
     model.name = data.name || 'restored-glb';
     model.userData.sceneNotes=data.sceneNotes;
@@ -658,6 +668,8 @@ function addImportedModelFromData(data) {
     model.scale.fromArray(data.scale);
     model.userData._glbBase64 = data.glbBase64;
     model.userData._glbFileName = data.name;
+    model.userData.studioId = data.studioId || 'prop-' + crypto.randomUUID();
+    model.visible = data.visible !== false;
     stage.scene.add(model);
     importedModels.push(model);
     activeMannequin = model;
@@ -667,7 +679,8 @@ function addImportedModelFromData(data) {
     updateLayerWindow();
   }, (error) => {
     console.error('Failed to restore individual GLB:', data.name, error);
-  });
+    studio?.showImportError(fail(error));
+  });}catch(error){throw fail(error);}
 }
 
 function addMannequinFromPickedFile() {

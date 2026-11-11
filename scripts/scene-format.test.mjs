@@ -69,3 +69,13 @@ test('gaze and expression: targets must exist, not be the person, and expression
   const code=a=>{try{validateScene({...base,actors:[{...base.actors[0],...a},base.actors[1]]});return null;}catch(e){return e.issues.map(i=>i.code).join(',');}};
   assert.equal(code({lookAt:'nobody'}),'UNKNOWN_LOOK_TARGET');assert.equal(code({lookAt:'a'}),'SELF_LOOK_TARGET');assert.equal(code({expression:'x'.repeat(201)}),'STRING_REQUIRED');
 });
+test('the skill copy of the validator is the app validator (R8)',()=>{
+  const norm=f=>readFileSync(new URL(f,import.meta.url),'utf8').replace(/\r\n/g,'\n');
+  assert.equal(norm('../skills/cutscene-studio/scripts/scene-format.mjs'),norm('../app/src/scene-format.js'),'copy app/src/scene-format.js to skills/cutscene-studio/scripts/scene-format.mjs');
+});
+test('a child body defaults to a child height and warns when tall (R7)',()=>{
+  const scene=a=>({version:1,units:'meters',actors:[{id:'c',position:[0,0,0],bodyType:'child',...a}],camera:{position:[0,1,4],target:[0,1,0]}});
+  assert.equal(validateScene(scene({})).actors[0].height,1.2);
+  assert.equal(validateScene({...scene({}),actors:[{id:'m',position:[0,0,0],bodyType:'male'}]}).actors[0].height,1.75);
+  const r=analyzeInputText(JSON.stringify(scene({height:1.75})),'t',true);assert.ok(r.warnings.some(w=>w.code==='BODY_TYPE_HEIGHT'));
+});
