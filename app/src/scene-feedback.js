@@ -51,11 +51,11 @@ export function analyzeEditorState(data) {
   }
   function imported(m,p){
     transform(m,p);if(!plain(m))return;
-    if(m.attachTo!==undefined&&!(plain(m.attachTo)&&typeof m.attachTo.actor==='string'&&['right','left'].includes(m.attachTo.hand)))add(p+'.attachTo','INVALID_ATTACH','손에 든 소품은 {actor, hand: right|left}로 적습니다.');
+    if(m.attachTo!==undefined&&!(plain(m.attachTo)&&typeof m.attachTo.actor==='string'&&['right','left'].includes(m.attachTo.hand)&&(m.attachTo.grip===undefined||['top','bottom'].includes(m.attachTo.grip))))add(p+'.attachTo','INVALID_ATTACH','손에 든 소품은 {actor, hand: right|left, grip?: top|bottom}로 적습니다.');
     if(m.studioId!==undefined&&(typeof m.studioId!=='string'||!/^[A-Za-z0-9_-]{1,64}$/.test(m.studioId)))add(p+'.studioId','INVALID_ID','소품 ID는 1~64자의 영문·숫자·밑줄·하이픈이어야 합니다.');
     if(m.primitive){
       // Checked alone, so the holder of a hand-held prop is checked by shape only.
-      const {attachTo,...alone}=m.primitive;if(attachTo!==undefined&&!(plain(attachTo)&&typeof attachTo.actor==='string'&&['right','left'].includes(attachTo.hand)))add(p+'.primitive.attachTo','INVALID_ATTACH','손에 든 소품은 {actor, hand: right|left}로 적습니다.');
+      const {attachTo,...alone}=m.primitive;if(attachTo!==undefined&&!(plain(attachTo)&&typeof attachTo.actor==='string'&&['right','left'].includes(attachTo.hand)&&(attachTo.grip===undefined||['top','bottom'].includes(attachTo.grip))))add(p+'.primitive.attachTo','INVALID_ATTACH','손에 든 소품은 {actor, hand: right|left, grip?: top|bottom}로 적습니다.');
       const r=analyzeScene({version:1,units:'meters',actors:[],props:[alone],camera:{position:[0,1,5],target:[0,1,0]}});
       errors.push(...r.errors.map(x=>({...x,path:x.path.replace('props[0]',p+'.primitive')})));
     }else if(typeof m.glbBase64!=='string'||!m.glbBase64.length||m.glbBase64.length%4!==0||!/^[A-Za-z0-9+/]*={0,2}$/.test(m.glbBase64))add(p+'.glbBase64','MISSING_MODEL','복원할 GLB 데이터 또는 단순 소품 정의가 없습니다.','embedded GLB base64 or primitive');

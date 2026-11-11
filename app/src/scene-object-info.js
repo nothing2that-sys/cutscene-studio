@@ -95,7 +95,14 @@ export function renderObjectInfo(container,object,scene,api){
   const options=[['','들지 않음'],...api.objects().filter(o=>o.torso&&o.userData.studioId).flatMap(o=>[[o.userData.studioId+'|right',(o.name||o.userData.studioId)+' · 오른손'],[o.userData.studioId+'|left',(o.name||o.userData.studioId)+' · 왼손']])];
   for(const [v,t]of options){const o=document.createElement('option');o.value=v;o.textContent=t;hold.appendChild(o);}
   hold.value=now?now.actor+'|'+now.hand:'';row.appendChild(hold);section.appendChild(row);
-  hold.onchange=()=>{const [actor,hand]=hold.value.split('|'),next=hold.value?{actor,hand}:null;
+  // Which end is in the hand (auto: 25 cm or taller hangs below the hand).
+  const gripRow=document.createElement('label');gripRow.className='studio-label';gripRow.textContent='쥐는 쪽';
+  const grip=document.createElement('select');grip.id='object-info-grip';
+  for(const [v,t]of [['','자동'],['top','위쪽을 쥠(아래로 늘어뜨림)'],['bottom','아래쪽을 쥠(위로 세움)']]){const o=document.createElement('option');o.value=v;o.textContent=t;grip.appendChild(o);}
+  grip.value=now?.grip||'';grip.disabled=!now;gripRow.appendChild(grip);section.appendChild(gripRow);
+  const holdNext=()=>{const [actor,hand]=hold.value.split('|');return hold.value?{actor,hand,...(grip.value?{grip:grip.value}:{})}:null;};
+  grip.onchange=()=>hold.onchange();
+  hold.onchange=()=>{const next=holdNext();grip.disabled=!next;
    if(object.userData.primitive){if(next)object.userData.primitive.attachTo=next;else delete object.userData.primitive.attachTo;}
    if(next)object.userData.attachTo=next;else delete object.userData.attachTo;
    api.placeHeld();api.commit();status.textContent=next?'손에 들었습니다. 포즈를 바꾸면 손을 따라 움직입니다.':'손에서 내려놓았습니다.';};
