@@ -167,10 +167,17 @@ function captureState() {
   if(actor&&poseOnly(actor)!==poseOnly(prior))poseLibrary?.recordCurrent();
 }
 
+function restoreStatus(){const status=document.getElementById('scene-restore-status')||Object.assign(document.body.appendChild(document.createElement('output')),{id:'scene-restore-status'});status.setAttribute('role','status');status.setAttribute('aria-live','polite');status.style.cssText='position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:10000;background:#222;color:white;padding:8px 12px;border-radius:6px;max-width:80vw';return status;}
 function applyState(json) {
   if(!json)return;const state=JSON.parse(json);validateBodyV1State(state);const checked=analyzeEditorState(state);if(!checked.valid)throw new SceneValidationError(checked.errors);
   // Body types other than the default need their torso mesh built first.
-  const bodyTypes=(state.mannequins||[]).filter(d=>d.bodyAsset).map(d=>bodyTypeOf(d.bodyProfile));if(!bodyTypes.every(bodyTypeReady))return ensureBodyTypes(bodyTypes).then(()=>applyState(json));
+  const bodyTypes=(state.mannequins||[]).filter(d=>d.bodyAsset).map(d=>bodyTypeOf(d.bodyProfile));if(!bodyTypes.every(bodyTypeReady)){
+    // Waiting for a body-type mesh counts as a pending restore: edits are blocked, and if
+    // another undo/redo/load starts meanwhile this one is dropped (the last request wins).
+    const waitGeneration=++restoreGeneration;const note=restoreStatus();note.textContent='체형 메시를 준비하는 중… 끝나면 장면을 엽니다.';note.hidden=false;
+    const wait=ensureBodyTypes(bodyTypes).then(()=>{if(pendingRestore===wait)pendingRestore=null;if(waitGeneration!==restoreGeneration)return false;note.hidden=true;return applyState(json);},error=>{if(pendingRestore===wait)pendingRestore=null;throw error;});
+    pendingRestore=wait;return wait;
+  }
   let generation;const preparedActors=[],preparedProps=new Array((state.importedModels||[]).length),tasks=[];
   const discard=()=>{for(const m of preparedActors){getBodyV1(m)?.full.dispose();m.removeFromParent();}for(const m of preparedProps)if(m){m.removeFromParent();m.traverse(n=>{n.geometry?.dispose();});}};
   const prepareProp=(model,d,index)=>{model.removeFromParent();model.name=d.name||d.primitive?.name||'restored-glb';model.userData.sceneNotes=d.sceneNotes;if(d.studioId)model.userData.studioId=d.studioId;if(d.attachTo)model.userData.attachTo=d.attachTo;model.position.fromArray(d.position);model.rotation.fromArray(d.rotation);model.scale.fromArray(d.scale);model.visible=d.visible!==false;if(d.glbBase64){model.userData._glbBase64=d.glbBase64;model.userData._glbFileName=d.name;}preparedProps[index]=model;};
@@ -223,7 +230,7 @@ function applyState(json) {
   }catch(error){for(const m of [...mannequins,...importedModels])stage.scene.remove(m);mannequins.splice(0,mannequins.length,...previousActors);importedModels.splice(0,importedModels.length,...previousProps);for(const m of [...mannequins,...importedModels])stage.scene.add(m);activeMannequin=previousActive;selectedBodyPart=previousPart;stage.camera.position.copy(previousCamera.position);stage.camera.quaternion.copy(previousCamera.quaternion);stage.camera.fov=previousCamera.fov;stage.camera.zoom=previousCamera.zoom;stage.camera.view=previousCamera.view;stage.controls.target.copy(previousCamera.target);stage.camera.updateProjectionMatrix();studio?.restore(previousStudio);detachGizmo();if(activeMannequin)attachGizmo(activeMannequin);updatePropertiesPanel();updateLayerWindow();window.__bodyV1?.fixedController?.restore(previousFixed);discard();throw error;
   }finally{restoringState=false;viewPerformance?.afterRestore();}};
   if(!tasks.length){pendingRestore=null;const status=document.getElementById('scene-restore-status');if(status){status.textContent='';status.hidden=true;}return commit();}
-  const status=document.getElementById('scene-restore-status')||Object.assign(document.body.appendChild(document.createElement('output')),{id:'scene-restore-status'});status.setAttribute('role','status');status.setAttribute('aria-live','polite');status.style.cssText='position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:10000;background:#222;color:white;padding:8px 12px;border-radius:6px;max-width:80vw';status.hidden=false;status.textContent='장면 복원 중 · 기존 장면을 유지합니다. 저장은 완료 후 진행됩니다.';
+  const status=restoreStatus();status.hidden=false;status.textContent='장면 복원 중 · 기존 장면을 유지합니다. 저장은 완료 후 진행됩니다.';
   const operation=Promise.all(tasks).then(commit,error=>{discard();throw error;});pendingRestore=operation;operation.then(()=>{if(pendingRestore===operation){pendingRestore=null;status.textContent='';status.hidden=true;captureState();}},error=>{if(pendingRestore===operation){pendingRestore=null;status.textContent='장면 복원 실패 · 기존 장면을 유지했습니다. '+error.message;}});return operation;
 }
 
