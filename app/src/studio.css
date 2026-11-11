@@ -101,3 +101,6 @@ body.left-collapsed #studio-panel,body.right-collapsed #right-panels{display:non
 .object-size .studio-label {width:100%;margin:0;}
 .object-size input {width:72px;}
 .studio-prop-buttons {flex-wrap:wrap;}
+/* Per-shot overrides list (studio.js renderShots) */
+.studio-shot-extra {width:100%;font-size:12px;}
+.studio-shot-hide {display:block;margin:2px 0;}

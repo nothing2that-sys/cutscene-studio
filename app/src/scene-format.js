@@ -143,9 +143,13 @@ export function analyzeScene(input) {
   });
   const shotIds=new Set();
   const shots=list(raw.shots===undefined?[]:raw.shots,'shots',24).map((s,i)=>{
-    const p='shots['+i+']';keys(s,['id','name','purpose','camera'],p);const sid=str(s.id,p+'.id','shot-'+(i+1));
+    const p='shots['+i+']';keys(s,['id','name','purpose','camera','hidden','lighting'],p);const sid=str(s.id,p+'.id','shot-'+(i+1));
     if(!/^[A-Za-z0-9_-]{1,64}$/.test(sid)||shotIds.has(sid))error(p+'.id','DUPLICATE_OR_INVALID_SHOT_ID','고유한 영문·숫자 ID가 필요합니다.','unique shot id',s.id);
-    shotIds.add(sid);return {id:sid,name:str(s.name,p+'.name','컷 '+(i+1)),purpose:str(s.purpose,p+'.purpose'),camera:camera(s.camera,p+'.camera')};
+    shotIds.add(sid);
+    // Per-shot overrides: people/props left out of this cut, and this cut's own lighting.
+    let hidden;if(s.hidden!==undefined){hidden=(Array.isArray(s.hidden)&&s.hidden.length<=92?s.hidden:(error(p+'.hidden','ARRAY_LIMIT','숨길 ID 배열(최대 92개)이 필요합니다.','string[]',s.hidden),[])).filter((h,k)=>{if(typeof h==='string'&&(actors.some(a=>a.id===h)||props.some(x=>x.id===h)))return true;error(p+'.hidden['+k+']','UNKNOWN_SHOT_HIDDEN','이 장면에 없는 인물·소품 ID입니다.','actor or prop id',h);return false;});}
+    let lighting;if(s.lighting!==undefined){try{lighting=validateScene({version:1,units:'meters',camera:{position:[0,1,4],target:[0,1,0]},lighting:s.lighting}).lighting;}catch(e){for(const x of e.issues||[{path:'lighting',code:'INVALID_SHOT_LIGHTING',message:e.message}])error(p+'.'+x.path,x.code,x.message);}}
+    return {id:sid,name:str(s.name,p+'.name','컷 '+(i+1)),purpose:str(s.purpose,p+'.purpose'),camera:camera(s.camera,p+'.camera'),...(hidden?.length?{hidden}:{}),...(lighting?{lighting}:{})};
   });
   const light=raw.lighting===undefined?{}:obj(raw.lighting,'lighting');keys(light,['type','position','target','color','intensity','ambient','coneDeg','softness','extras'],'lighting');
   const lightType=light.type===undefined?'sun':light.type;if(!LIGHT_TYPES.includes(lightType))error('lighting.type','UNSUPPORTED_LIGHT','지원하지 않는 조명 종류입니다. sun(태양·평행광), lamp(전등·점광원), spot(스포트) 중 하나를 쓰세요.',LIGHT_TYPES,light.type);
