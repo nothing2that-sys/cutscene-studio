@@ -10,7 +10,7 @@ import {describeObjects,inspectObjectOverlaps} from './scene-object-info.js';
 import {serializeBodyV1} from './body-v1-main.js';
 import {extractShotFacts,describeShot} from './shot-description.js';
 import {objectNotes} from './scene-object-info.js';
-import {buildLabels,renderPasses,analyzePasses,depthRange,passImages,drawPose,lightingNotes,lightSource,buildShotJson,buildPrompt,packageZip,encodePNG,DEFAULT_STYLE} from './llm-package.js';
+import {buildLabels,renderPasses,analyzePasses,depthRange,passImages,drawPose,lightingNotes,lightSource,buildShotJson,buildPrompt,packageZip,packageAllZip,assignLabelColors,encodePNG,DEFAULT_STYLE} from './llm-package.js';
 import {dataUrlBytes} from './package-files.js';
 import {drawRange,drawPlan} from './depth-views.js';
 import {fitViewToAspect} from './camera-view.js';
@@ -89,7 +89,7 @@ export function initCutsceneStudio(api) {
       <details id="studio-refs-section"><summary>설정화 · 레퍼런스 연결</summary><p class="studio-help">인물·소품마다 설정화(얼굴·전신·의상 등)를 연결하면 LLM 패키지에 함께 들어가고 라벨 색과 짝지어집니다.</p><div id="studio-refs"></div></details>
       <div class="studio-section"><h3>촬영 미리보기</h3><label class="studio-label">미리보기 패스 <select id="studio-pass-view" aria-label="미리보기 패스"><option value="color">컬러</option><option value="label">라벨</option><option value="depth">뎁스(카메라 거리)</option><option value="range">거리 색·링 (라이다)</option><option value="plan">위에서 본 배치</option><option value="light">직사광·그림자</option><option value="pose">포즈 뼈대</option></select></label><div id="studio-preview"><img id="studio-pass-image" alt="패스 미리보기" hidden></div><p id="studio-caption" class="studio-help">컷을 저장하면 이곳에 촬영 구도가 표시됩니다.</p><p id="studio-preview-state" class="studio-help"></p><button id="studio-preview-refresh" class="btn">미리보기 갱신</button>
         <div class="studio-row"><button id="studio-color" class="btn primary">PNG 캡처</button><button id="studio-depth" class="btn">Depth PNG</button></div>
-        <div class="studio-row"><button id="studio-llm-package" class="btn primary">LLM 패키지 (zip)</button></div>
+        <div class="studio-row"><button id="studio-llm-package" class="btn primary">LLM 패키지 (zip)</button><button id="studio-llm-package-all" class="btn">모든 컷 패키지</button></div>
         <div class="studio-row"><button id="studio-packet" class="btn">LLM 전달 묶음</button><button id="studio-prompt" class="btn">작화 지시문</button></div>
       </div>
       <p class="studio-help">프로젝트 Save는 정밀 관절·공간·컷을 함께 저장합니다. LLM 연결 없이 오프라인으로 편집합니다.</p>
@@ -156,8 +156,8 @@ export function initCutsceneStudio(api) {
       if(only==='pose'||only==='plan')return {width,height,facts,labels};
       const description=facts?describeShot(facts,{shotName:currentShot().name,purpose:currentShot().purpose}):null;
       const passes=renderPasses({renderer:preview,scene:stage.scene,camera:shotCamera,width,height,labels,light:keyLight(),lightTarget:document.lighting.target,ambient});
-      const stats=analyzePasses(passes,labels),range=depthRange(passes,labels,stats);
-      return {width,height,facts,description,labels,passes,stats,range,images:passImages(passes,labels,range),lightNotes:facts?lightingNotes({facts,lighting:document.lighting,labels}):null,actors,props};
+      const stats=analyzePasses(passes,labels),range=depthRange(passes,labels,stats),labelWarnings=assignLabelColors(labels,stats);
+      return {width,height,facts,description,labels,passes,stats,range,labelWarnings,images:passImages(passes,labels,range),lightNotes:facts?lightingNotes({facts,lighting:document.lighting,labels}):null,actors,props};
     });
   }
   function canvasFrom(width,height,fill){const c=window.document.createElement('canvas');c.width=width;c.height=height;const ctx=c.getContext('2d'),img=ctx.createImageData(width,height);fill(img.data);ctx.putImageData(img,0,0);return c;}
@@ -447,20 +447,36 @@ export function initCutsceneStudio(api) {
     }
   }
   $('studio-refs-section').ontoggle=()=>{if($('studio-refs-section').open)renderReferences();};
-  async function createShotPackage(){
+  async function createShotPackage(){return buildShot().then(async s=>({zip:await packageZip(s),json:s.json,prompt:s.prompt,folder:s.folder}));}
+  // All cuts in one zip; the active shot is restored afterwards.
+  async function createAllShotsPackage(){
+    if(!shots.length)throw new Error('저장한 카메라 컷이 없습니다. 컷을 추가한 뒤 다시 시도하세요.');
+    const keep=activeShot,built=[];
+    try{for(let i=0;i<shots.length;i++){activeShot=i;built.push(await buildShot(i+1));}}
+    finally{activeShot=keep;updateShotCamera();previewDirty=true;}
+    const folder=safeName(document.title||'scene');
+    return {zip:await packageAllZip(document,built),shots:built,folder};
+  }
+  const safeName=t=>String(t||'cut').replace(/[\\/:*?"<>|\s]+/g,'_').slice(0,40);
+  async function buildShot(order=null){
     const {width,height}=exportSize(),shot=currentShot();
     const color=renderPNG(false),r=computePasses(width,height);lastDepthRange=r.range;
     const notes=new Map([...r.actors,...r.props].map(item=>[item.id,objectNotes(item.root,document)]));
-    const {json,refFiles}=buildShotJson({shot,scene:document,camera:shotCamera,facts:r.facts,description:r.description,labels:r.labels,stats:r.stats,range:r.range,lightNotes:r.lightNotes,references,objectNotes:notes,width,height,lighting:document.lighting});
+    const {json,refFiles}=buildShotJson({shot,scene:document,camera:shotCamera,facts:r.facts,description:r.description,labels:r.labels,stats:r.stats,range:r.range,lightNotes:r.lightNotes,references,objectNotes:notes,width,height,lighting:document.lighting,warnings:r.labelWarnings||[]});
     const images={'color.png':dataUrlBytes(color),'label.png':await encodePNG({width,height,channels:4,data:r.images.rgba}),'depth.png':await encodePNG({width,height,channels:1,data:r.images.depth8}),'depth16.png':await encodePNG({width,height,channels:1,bitDepth:16,data:r.images.depth16}),'light.png':await encodePNG({width,height,channels:1,data:r.images.light8}),'pose.png':dataUrlBytes(passCanvas('pose',r).toDataURL('image/png')),'range.png':dataUrlBytes(passCanvas('range',r).toDataURL('image/png'))};
-    const folder='shot-'+String(shot.name||'cut').replace(/[\\/:*?"<>|\s]+/g,'_').slice(0,40);
+    const folder='shot-'+(order?String(order).padStart(2,'0')+'_':'')+safeName(shot.name);
     const prompt=buildPrompt(json);
-    return {zip:await packageZip({folder,images,json,prompt,refFiles}),json,prompt,folder};
+    return {folder,images,json,prompt,refFiles};
   }
   $('studio-llm-package').onclick=async()=>{
     try{status('LLM 패키지를 만드는 중…');const {zip,folder,json}=await createShotPackage();download(folder+'.zip',zip,'application/zip');
       const missing=json.labels.filter(l=>l.kind==='person'&&!l.references.length).map(l=>l.name);
-      status(`${folder}.zip 저장 · 라벨 ${json.labels.length}개 · 설정화 ${json.labels.reduce((n,l)=>n+l.references.length,0)}장`+(missing.length?` · 설정화 없는 인물: ${missing.join(', ')}`:''));
+      status(`${folder}.zip 저장 · 라벨 ${json.labels.length}개 · 설정화 ${json.labels.reduce((n,l)=>n+l.references.length,0)}장`+(missing.length?` · 설정화 없는 인물: ${missing.join(', ')}`:'')+(json.warnings?.length?' · 경고: '+json.warnings.map(w=>w.message).join(' / '):''),!!json.warnings?.length);
+    }catch(e){status(e.message,true);console.error(e);}
+  };
+  $('studio-llm-package-all').onclick=async()=>{
+    try{status('모든 컷의 LLM 패키지를 만드는 중…');const {zip,shots:built,folder}=await createAllShotsPackage();download(folder+'-all-shots.zip',zip,'application/zip');
+      status(`${folder}-all-shots.zip 저장 · 컷 ${built.length}개`+(built.some(s=>s.json.warnings?.length)?' · 경고가 있는 컷: '+built.filter(s=>s.json.warnings?.length).map(s=>s.json.shot.name).join(', '):''));
     }catch(e){status(e.message,true);console.error(e);}
   };
   function showPassView(){
@@ -502,7 +518,7 @@ export function initCutsceneStudio(api) {
     setBeforeCapture(fn){beforeCapture=fn;},setBeforeReadCamera(fn){beforeReadCamera=fn;},setCaptureObserver(fn){captureObserver=fn;},
     rememberShotProjection(){shotProjection={key:JSON.stringify(currentShot().camera),zoom:shotCamera.zoom,view:shotCamera.view?{...shotCamera.view}:null};},
     environmentMeshes(role='working'){const meshes=[];const visible=(node)=>{for(let p=node;p;p=p.parent){if(role==='shot'&&p===node&&p.userData.editingWall)continue;if(!p.visible)return false;}return true;};environment.traverse(n=>{if(n.isMesh&&visible(n))meshes.push(n);});if(stage.ground?.isMesh&&visible(stage.ground))meshes.push(stage.ground);return [...new Set(meshes)];},
-    shotCamera,previewRenderer:preview,updateShotCamera,cleanRender,renderPNG,createHandoffPacket,createShotPackage,computePasses,shotDescription,
+    shotCamera,previewRenderer:preview,updateShotCamera,cleanRender,renderPNG,createHandoffPacket,createShotPackage,createAllShotsPackage,computePasses,shotDescription,
     // Top-down plan for people and experiments; not part of the LLM package.
     planPNG(){const {width,height}=exportSize();return passCanvas('plan',computePasses(width,height,{only:'plan'})).toDataURL('image/png');},
     references:()=>references,setReferencesObserver(fn){referencesObserver=fn;},

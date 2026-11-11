@@ -17,7 +17,7 @@ export function mannequinBody(root){
 }
 
 // Distinct, saturated colours that stay apart for a vision model. Index 0 is background.
-export const LABEL_PALETTE=['#e6194b','#3cb44b','#4363d8','#f58231','#911eb4','#42d4f4','#f032e6','#bfef45','#ffe119','#469990','#9a6324','#fabed4','#800000','#aaffc3','#000075','#dcbeff','#808000','#ffd8b1'];
+export const LABEL_PALETTE=['#e6194b','#3cb44b','#4363d8','#f58231','#911eb4','#42d4f4','#f032e6','#bfef45','#ffe119','#469990','#9a6324','#fabed4','#b8860b','#aaffc3','#7b68ee','#dcbeff','#808000','#ffd8b1'];
 export const ENV_COLORS={floor:'#505050',wall:'#8c8c8c'};
 // Used when the scene names no style. Image generators otherwise copy the look of the
 // render-like attachments (3D / photo); the style line must come first and be explicit.
@@ -148,7 +148,7 @@ export function drawPose(canvas,facts,labels,source=null){
  const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height,s=Math.max(2,Math.round(H/220));
  ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);ctx.lineCap='round';ctx.font=`bold ${s*7}px sans-serif`;ctx.textBaseline='middle';
  const names=[];
- for(const actor of facts.actors){const label=labels.find(l=>l.kind==='person'&&l.id===actor.id);if(!label)continue;const base=hex(label.color),P=actor.points,xy=p=>[p.screen[0]*W,p.screen[1]*H];
+ for(const actor of facts.actors){const label=labels.find(l=>l.kind==='person'&&l.id===actor.id);if(!label?.color)continue;const base=hex(label.color),P=actor.points,xy=p=>[p.screen[0]*W,p.screen[1]*H];
   const side=k=>k.endsWith('L')?mix(base,[255,255,255],.45):k.endsWith('R')?mix(base,[0,0,0],.45):base;
   for(const [a,b]of BONES){const pa=P[a],pb=P[b];if(!pa||!pb)continue;const c=side(b.endsWith('L')||b.endsWith('R')?b:a);ctx.strokeStyle=`rgb(${c})`;ctx.lineWidth=s*2;ctx.setLineDash(pa.occludedBy||pb.occludedBy?[s*3,s*3]:[]);ctx.beginPath();ctx.moveTo(...xy(pa));ctx.lineTo(...xy(pb));ctx.stroke();}
   ctx.setLineDash([]);
@@ -215,7 +215,16 @@ const REF_SLUG={전신:'fullbody',얼굴:'face',의상:'costume',헤어:'hair',�
 const safe=s=>String(s||'item').replace(/[^\w.-]+/g,'_').slice(0,48);
 const ext=mime=>({'image/png':'png','image/jpeg':'jpg','image/webp':'webp'}[mime]||'bin');
 
-export function buildShotJson({shot,scene,camera,facts,description,labels,stats,range,lightNotes,references,objectNotes,width,height,lighting}){
+// Colours go only to people and props that are visible in this shot (people first), so
+// off-screen objects do not use up the palette. Past the palette size colours would
+// repeat and the image model could not tell those objects apart: that is reported.
+export function assignLabelColors(labels,stats){
+ const shown=labels.filter(l=>(l.kind==='person'||l.kind==='prop')&&stats.get(l.index)).sort((a,b)=>(a.kind==='person'?0:1)-(b.kind==='person'?0:1)||a.index-b.index);
+ shown.forEach((l,i)=>{l.color=LABEL_PALETTE[i%LABEL_PALETTE.length];});
+ for(const l of labels)if((l.kind==='person'||l.kind==='prop')&&!stats.get(l.index))l.color='';
+ return shown.length>LABEL_PALETTE.length?[{code:'LABEL_COLORS_REPEAT',message:`화면에 보이는 인물·소품이 ${shown.length}개로 라벨 색 ${LABEL_PALETTE.length}개를 넘어 색이 겹칩니다: ${shown.slice(LABEL_PALETTE.length).map(l=>l.name).join(', ')}. 작은 소품을 숨기거나 컷을 나누세요.`}]:[];
+}
+export function buildShotJson({shot,scene,camera,facts,description,labels,stats,range,lightNotes,references,objectNotes,width,height,lighting,warnings=[]}){
  const type=lighting.type||'sun',toLight=new THREE.Vector3(...lighting.position).sub(new THREE.Vector3(...(lighting.target||[0,0,0]))).normalize().toArray(),camDir=cameraFrameDirection(camera,toLight);
  const source=lightSource(lighting,camera,facts);
  const refFiles=[];
@@ -241,6 +250,7 @@ export function buildShotJson({shot,scene,camera,facts,description,labels,stats,
    lightPng:'direct light only: surface facing the light with nothing in between = white; turned away or in a cast shadow = black. Ambient light is excluded. Background is also black; use label.png to tell them apart.'+(type==='sun'?'':' A lamp/spot fades with distance: the lit target reads white, nearer surfaces clip to white, farther ones are greyer.')},
   labels:entries,
   shotDescription:description?.text||'',
+  ...(warnings.length?{warnings}:{}),
  };
  return {json,refFiles};
 }
@@ -258,9 +268,10 @@ export function buildPrompt(json){
  const nameOf=id=>Array.isArray(id)?'지정한 지점':(json.labels.find(x=>x.id===id)?.name||id);
  const story=l=>{const n=l.notes||{},lines=[];if(n.role||n.intent)lines.push(`\n  역할·의도: ${[n.role,n.intent].filter(Boolean).join(' — ')}`);if(n.lookAt)lines.push(`\n  시선: ${nameOf(n.lookAt)}을(를) 봄`);if(n.expression)lines.push(`\n  표정: ${n.expression}`);return lines.join('');};
  const refs=l=>l.references.length?`\n  설정화: ${l.references.map(r=>`${r.file}(${r.label}${r.note?': '+r.note:''})`).join(', ')}`:'';
- const person=l=>`- ${l.color} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}${story(l)}${l.body?`
+ const tag=l=>l.color||'(화면 밖)';
+ const person=l=>`- ${tag(l)} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}${story(l)}${l.body?`
   마네킹 체형: ${l.body.label}, 키 ${l.body.heightM}m (${l.body.specified?'생김새·옷은':'성별·체형·생김새·옷은 모두'} 설명과 설정화를 따름)`:''}${refs(l)}${l.visible?`${l.pose?.text?`\n  포즈: ${l.pose.text}`:''}${l.lightCondition?`\n  명암: ${l.lightCondition.text}`:''}`:'\n  (이 컷에서는 화면에 보이지 않음)'}`;
- const prop=l=>`- ${l.color} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}${l.notes?.role?`\n  역할: ${l.notes.role}`:''}${refs(l)}${l.visible?'':' (화면에 보이지 않음)'}`;
+ const prop=l=>`- ${tag(l)} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}${l.notes?.role?`\n  역할: ${l.notes.role}`:''}${refs(l)}${l.visible?'':' (화면에 보이지 않음)'}`;
  const order=people.filter(l=>l.visible).sort((a,b)=>a.distanceM.median-b.distanceM.median),others=json.labels.filter(l=>l.kind!=='person'&&l.visible&&l.distanceM).sort((a,b)=>a.distanceM.median-b.distanceM.median);
  const cameraLine=String(json.shotDescription||'').split('\n').find(t=>t.startsWith('- 카메라:'));
  return [`# 컷 작화 지시 · ${json.scene.title} / ${json.shot.name}`,
@@ -286,11 +297,19 @@ export function buildPrompt(json){
  '','라벨 색·뼈대·노란 광원 표시·글자는 최종 그림에 넣지 마세요. 말풍선·자막을 추가하지 마세요. 숫자 정보는 shot.json에 있습니다.'].join('\n');
 }
 
-export async function packageZip({folder,images,json,prompt,refFiles}){
+// Files of one shot folder; every folder is complete on its own (its sheets included)
+// so a single cut can be handed to the image model without the rest.
+export function shotFiles({folder,images,json,prompt,refFiles}){
  const files=[];const add=(name,data)=>files.push({name:`${folder}/${name}`,data});
  for(const [name,bytes]of Object.entries(images))add(name,bytes);
  add('shot.json',JSON.stringify(json,null,2));add('prompt.txt',prompt);
  for(const ref of refFiles)add(ref.name,dataUrlBytes(ref.dataUrl));
- return createZip(files);
+ return files;
+}
+export async function packageZip(shot){return createZip(shotFiles(shot));}
+// Every cut of the scene in one zip: one folder per shot plus index.json at the root.
+export function packageAllZip(scene,shots){
+ const index={version:1,scene:{title:scene.title||'',style:scene.style||''},shots:shots.map((s,i)=>({order:i+1,folder:s.folder,id:s.json.shot.id||'',name:s.json.shot.name||'',purpose:s.json.shot.purpose||'',people:s.json.labels.filter(l=>l.kind==='person'&&l.visible).map(l=>l.name)}))};
+ return createZip([{name:'index.json',data:JSON.stringify(index,null,2)},...shots.flatMap(shotFiles)]);
 }
 export {encodePNG};
