@@ -117,9 +117,11 @@ export function analyzeScene(input) {
     return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),position:vec(a.position,p+'.position'),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),height:num(a.height===undefined?(a.bodyType==='child'?1.2:1.75):a.height,p+'.height',0.5,3),headUnits:num(a.headUnits===undefined?8:a.headUnits,p+'.headUnits',3,12),...(a.bodyType!==undefined&&a.bodyType!=='female'?{bodyType:a.bodyType}:{}),...(chest?{chest}:{}),pose,joints,intent:str(a.intent,p+'.intent'),role:str(a.role,p+'.role'),description:str(a.description,p+'.description'),...(lookAt!==undefined?{lookAt}:{}),...(typeof a.expression==='string'&&a.expression&&a.expression.length<=200?{expression:a.expression}:{})};
   });
   const props=list(raw.props===undefined?[]:raw.props,'props',80).map((a,i)=>{
-    const p='props['+i+']';keys(a,['id','name','type','position','size','yaw','color','role','intent','description'],p);
+    const p='props['+i+']';keys(a,['id','name','type','position','size','yaw','color','role','intent','description','attachTo'],p);
+    // attachTo: {actor, hand:'right'|'left'} - the prop follows that hand (position is then ignored).
+    let attachTo;if(a.attachTo!==undefined){const t=obj(a.attachTo,p+'.attachTo');keys(t,['actor','hand'],p+'.attachTo');if(!actors.some(x=>x.id===t.actor))error(p+'.attachTo.actor','UNKNOWN_HOLDER','이 장면에 없는 인물 ID입니다.',actors.map(x=>x.id),t.actor);else if(!['right','left'].includes(t.hand))error(p+'.attachTo.hand','INVALID_HAND','hand는 right 또는 left입니다.',['right','left'],t.hand);else attachTo={actor:t.actor,hand:t.hand};}
     if(!PROP_TYPES.includes(a.type))error(p+'.type','UNSUPPORTED_PROP','지원하지 않는 소품 형상입니다.',PROP_TYPES,a.type);
-    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),type:a.type,position:vec(a.position,p+'.position'),size:vec(a.size,p+'.size',0.02,20),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),color:color(a.color,p+'.color','#8c7965'),role:str(a.role,p+'.role'),intent:str(a.intent,p+'.intent'),description:str(a.description,p+'.description')};
+    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),type:a.type,position:vec(a.position,p+'.position'),size:vec(a.size,p+'.size',0.02,20),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),color:color(a.color,p+'.color','#8c7965'),role:str(a.role,p+'.role'),intent:str(a.intent,p+'.intent'),description:str(a.description,p+'.description'),...(attachTo?{attachTo}:{})};
   });
   // Gaze targets must name someone or something in this scene, and not the person itself.
   actors.forEach((a,i)=>{

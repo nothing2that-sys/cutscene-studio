@@ -25,7 +25,7 @@
 | style | 최종 작화 화풍(문자열, 최대 2000자). 생략하면 2D 웹툰 일러스트 기본값 |
 | room | size, color(#RRGGBB), walls(boolean) |
 | actors[] | 고유 id, name, position, yaw, height, headUnits, bodyType, chest, pose, joints, role, intent, description, lookAt, expression |
-| props[] | 인물과도 중복되지 않는 id, name, type, position, size, yaw, color, role, intent, description |
+| props[] | 인물과도 중복되지 않는 id, name, type, position, size, yaw, color, role, intent, description, attachTo |
 | camera | position, target, fov(10~100). 위치와 목표점은 달라야 함. zoom·view는 편집기가 쓰는 값이므로 새 장면에는 넣지 않음 |
 | lighting | type(sun·lamp·spot, 생략 시 sun), position, target, color, intensity(0~10), ambient(0~3), spot일 때 coneDeg(5~170, 기본 50)·softness(0~1, 기본 0.3) |
 | shots[] | 고유 id, name, purpose, camera. 같은 순간의 카메라 후보 |
@@ -33,6 +33,14 @@
 관절은 l/r가 인물 기준 좌우다.
 
 role·description은 최종 작화에 쓰이는 외형·역할 설명이다. 인물이면 옷·머리·나이대처럼 그림에 필요한 것만 쓰고, 소품이면 재질·색·디자인을 쓴다. intent는 왜 그 자리·자세에 두었는지다. 이 문장들은 LLM 패키지의 인물 목록에 라벨 색과 짝지어 그대로 들어간다(인물은 설명·역할·의도, 소품은 설명·역할).
+
+## 손에 든 소품 (props[].attachTo)
+
+`attachTo: {"actor": "인물 id", "hand": "right" | "left"}`를 쓰면 소품이 그 손을 따라간다.
+- 손목보다 조금 앞(손바닥 쪽)에 소품의 아래쪽을 놓는다. 컵은 손에 쥐어지고, 우산·지팡이는 손에서 위로 뻗는다.
+- 위치(position)는 무시되고, 방향(yaw)은 소품 자체 값을 쓴다.
+- 지시문에 「○○이(가) 오른손에 들고 있음」과 인물 쪽 「손에 든 것: …」이 들어간다.
+- 없는 인물 id는 오류다(UNKNOWN_HOLDER).
 
 ## 시선과 표정 (lookAt, expression)
 

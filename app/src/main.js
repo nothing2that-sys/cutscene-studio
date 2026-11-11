@@ -16,6 +16,7 @@ import {installBodyV1Main} from './body-v1-main.js';
 import {installSceneFixedView} from './body-v1-fixed.js';
 import {installLayout} from './layout.js';
 import {installAutosave} from './autosave.js';
+import {placeHeldProps,attachOf} from './held-props.js';
 import { SceneValidationError, JOINTS } from './scene-format.js';
 import { createCharacter, configureBody, captureBoneLayout, lockBoneLayout, enforceBoneLengths, constrainBody, clampJoint, manipulationChain, solveConstrainedIK, snapshotBodyJoints, readLegacyPosture } from './body-rig.js';
 
@@ -132,6 +133,7 @@ function snapshotState() {
       glbBase64: m.userData._glbBase64 || null,
       primitive: m.userData.primitive || null,
       ...(m.userData.studioId?{studioId:m.userData.studioId}:{}),
+      ...(m.userData.attachTo&&!m.userData.primitive?{attachTo:m.userData.attachTo}:{}),
       visible:m.visible,
     })),
     activeIndex: mannequins.indexOf(activeMannequin),
@@ -147,6 +149,7 @@ function snapshotState() {
 function captureState() {
   viewPerformance?.invalidate();
   if (restoringState || pendingRestore) return;
+  placeHeldProps(importedModels,mannequins);
   mannequins.forEach(constrainBody);
   const state = packGlb(snapshotState());
   const previous=historyIndex>=0?JSON.parse(historyStack[historyIndex]):null;
@@ -170,7 +173,7 @@ function applyState(json) {
   const bodyTypes=(state.mannequins||[]).filter(d=>d.bodyAsset).map(d=>bodyTypeOf(d.bodyProfile));if(!bodyTypes.every(bodyTypeReady))return ensureBodyTypes(bodyTypes).then(()=>applyState(json));
   let generation;const preparedActors=[],preparedProps=new Array((state.importedModels||[]).length),tasks=[];
   const discard=()=>{for(const m of preparedActors){getBodyV1(m)?.full.dispose();m.removeFromParent();}for(const m of preparedProps)if(m){m.removeFromParent();m.traverse(n=>{n.geometry?.dispose();});}};
-  const prepareProp=(model,d,index)=>{model.removeFromParent();model.name=d.name||d.primitive?.name||'restored-glb';model.userData.sceneNotes=d.sceneNotes;if(d.studioId)model.userData.studioId=d.studioId;model.position.fromArray(d.position);model.rotation.fromArray(d.rotation);model.scale.fromArray(d.scale);model.visible=d.visible!==false;if(d.glbBase64){model.userData._glbBase64=d.glbBase64;model.userData._glbFileName=d.name;}preparedProps[index]=model;};
+  const prepareProp=(model,d,index)=>{model.removeFromParent();model.name=d.name||d.primitive?.name||'restored-glb';model.userData.sceneNotes=d.sceneNotes;if(d.studioId)model.userData.studioId=d.studioId;if(d.attachTo)model.userData.attachTo=d.attachTo;model.position.fromArray(d.position);model.rotation.fromArray(d.rotation);model.scale.fromArray(d.scale);model.visible=d.visible!==false;if(d.glbBase64){model.userData._glbBase64=d.glbBase64;model.userData._glbFileName=d.name;}preparedProps[index]=model;};
   try {
     for(const d of state.mannequins){const m=createFullMannequin(d.bodyProfile||null,{legacy:!d.bodyAsset,driverNativeScale:d.bodyV1Pose?.driverNativeScale});m.removeFromParent();preparedActors.push(m);m.name=d.name||'';m.userData.studioId=d.studioId;m.userData.sceneNotes=d.sceneNotes;m.visible=d.visible!==false;m.position.fromArray(d.position);m.rotation.fromArray(d.rotation);m.scale.fromArray(d.scale);if(d.posture)m.posture=d.posture;if(d.joints)for(const[part,data]of Object.entries(d.joints))if(m[part]){if(data.position)m[part].position.fromArray(data.position);if(data.rotation)m[part].rotation.fromArray(data.rotation);if(data.scale)m[part].scale.fromArray(data.scale);}getBodyV1(m)?.restore(d.bodyV1Pose);lockBoneLayout(m);constrainBody(m);}
     const loader=new GLTFLoader();for(const[index,d]of(state.importedModels||[]).entries()){if(d.primitive&&studio){prepareProp(studio.createProp(d.primitive),d,index);continue;}if(!d.glbBase64)throw Error('복원할 GLB 원문이 없습니다: '+(d.name||index));const bytes=base64ToArrayBuffer(d.glbBase64);tasks.push(new Promise((resolve,reject)=>loader.parse(bytes,'',gltf=>{prepareProp(gltf.scene,d,index);resolve();},reject)));}
@@ -1032,7 +1035,7 @@ function updatePropertiesPanel() {
     if(cfg.target!=='self'&&activeMannequin[cfg.target])setHighlight(activeMannequin[cfg.target]);else clearHighlight();
     updatePropertiesPanel();
   };
-  renderObjectInfo(content,activeMannequin,studio?.snapshot().document,{objects:()=>[...mannequins,...importedModels],constrain:constrainBody,resizeProp:(m,size)=>studio.resizeProp(m,size),commit:()=>{captureState();updateLayerWindow();}});
+  renderObjectInfo(content,activeMannequin,studio?.snapshot().document,{objects:()=>[...mannequins,...importedModels],constrain:constrainBody,resizeProp:(m,size)=>studio.resizeProp(m,size),placeHeld:()=>placeHeldProps(importedModels,mannequins),commit:()=>{captureState();updateLayerWindow();}});
   setupSliderListeners();bindBodyProfile();attachGizmo(activeMannequin);
 }
 
@@ -1388,7 +1391,7 @@ async function init() {
   });
   poseLibrary=installPoseLibrary(directEditor,{getSelection:()=>activeMannequin,refresh:updatePropertiesPanel,commit:captureState,thumbnail:()=>studio.poseThumbnail(activeMannequin),afterApply:view=>viewPerformance?.refocus(view)});
   viewPerformance=initViewPerformance({stage,getSelection:()=>activeMannequin,getMode:()=>interactionMode,objects:()=>[...mannequins,...importedModels],isDragging:()=>directDragging||isDraggingIK||!!transformControl.dragging,
-    invalidatePreview:()=>studio.invalidatePreview(),tickPreview:paused=>studio.tick({paused}),updateWalls:()=>studio.updateEditingWalls()});
+    invalidatePreview:()=>studio.invalidatePreview(),tickPreview:paused=>studio.tick({paused}),updateWalls:()=>{placeHeldProps(importedModels,mannequins);studio.updateEditingWalls();}});
   const bodyV1=installBodyV1Main({stage,mannequins,importedModels,studio,viewPerformance,snapshot:snapshotState,apply:applyState,whenReady:whenSceneReady,isRestoring:()=>!!pendingRestore,capture:captureState,undo,redo,create:createFullMannequin,selected:()=>activeMannequin,refresh:()=>{updatePropertiesPanel();updateLayerWindow();}});
   installSceneFixedView(bodyV1);
   installLayout();

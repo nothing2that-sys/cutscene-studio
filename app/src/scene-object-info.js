@@ -3,6 +3,7 @@ import {getBodyV1,displayedObjectBounds} from './body-v1-adapter.js';
 import {OBB} from 'three/addons/math/OBB.js';
 import {aimHead,lookTarget} from './look-at.js';
 import {PROP_NAMES} from './scene-format.js';
+import {attachOf} from './held-props.js';
 
 const objectId=o=>o.torso?o.userData.studioId||null:o.userData.primitive?.id||o.userData.studioId||null;
 // Gaze targets in the live scene: people by their head, props by their centre.
@@ -86,6 +87,18 @@ export function renderObjectInfo(container,object,scene,api){
   const inputs=object.userData.primitive.size.map((v,i)=>{const n=document.createElement('input');n.type='number';n.step='0.05';n.min='0.02';n.max='20';n.value=String(v);n.id='object-size-'+'whd'[i];n.setAttribute('aria-label',['가로','높이','깊이'][i]+' (m)');row.appendChild(n);return n;});
   const apply=()=>{try{api.resizeProp(object,inputs.map(n=>Number(n.value)));inputs.forEach((n,i)=>n.value=String(object.userData.primitive.size[i]));api.commit();status.textContent='크기를 바꿨습니다.';}catch(e){status.textContent=e.message;}};
   inputs.forEach(n=>n.onchange=apply);section.appendChild(row);
+ }
+ // Props: hold in a person's hand. The prop then follows that hand.
+ if(!object.torso&&api.placeHeld){
+  const row=document.createElement('label');row.className='studio-label';row.textContent='손에 들기';
+  const hold=document.createElement('select');hold.id='object-info-hold';const now=attachOf(object);
+  const options=[['','들지 않음'],...api.objects().filter(o=>o.torso&&o.userData.studioId).flatMap(o=>[[o.userData.studioId+'|right',(o.name||o.userData.studioId)+' · 오른손'],[o.userData.studioId+'|left',(o.name||o.userData.studioId)+' · 왼손']])];
+  for(const [v,t]of options){const o=document.createElement('option');o.value=v;o.textContent=t;hold.appendChild(o);}
+  hold.value=now?now.actor+'|'+now.hand:'';row.appendChild(hold);section.appendChild(row);
+  hold.onchange=()=>{const [actor,hand]=hold.value.split('|'),next=hold.value?{actor,hand}:null;
+   if(object.userData.primitive){if(next)object.userData.primitive.attachTo=next;else delete object.userData.primitive.attachTo;}
+   if(next)object.userData.attachTo=next;else delete object.userData.attachTo;
+   api.placeHeld();api.commit();status.textContent=next?'손에 들었습니다. 포즈를 바꾸면 손을 따라 움직입니다.':'손에서 내려놓았습니다.';};
  }
  const save=()=>{object.name=fields.name.value;object.userData.sceneNotes=Object.fromEntries(['role','intent','description'].map(key=>[key,fields[key].value]));
   if(gaze){const v=gaze.look.value,lookAt=v==='@point'?gaze.point:v||undefined;if(lookAt!==undefined)object.userData.sceneNotes.lookAt=lookAt;if(gaze.exp.value.trim())object.userData.sceneNotes.expression=gaze.exp.value.trim();}if(object.userData.primitive)Object.assign(object.userData.primitive,{name:object.name,...object.userData.sceneNotes});heading.textContent='선택한 대상 · '+(object.name||'이름 없음');api.commit();status.textContent='설명 저장됨 · 최종 전달 묶음과 작화 지시문에 포함됩니다.';};
