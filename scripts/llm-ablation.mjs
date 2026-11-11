@@ -14,6 +14,9 @@
 //   b2-typed : matching body types (male, male-heavy, child)
 //   b3-typed-face (B1 only): b2 + the package prompt's mannequin section, incl. the faces line
 //   B2 (2026-11-11): backlit sunset silhouettes, b1/b2 as above
+//   --set=gaze (2026-11-11): the real package (prompt.txt + its images), gaze fields off/on
+//   g1-off   : lookAt and expression removed (heads straight, no 시선/표정 lines)
+//   g2-on    : lookAt and expression kept (heads turned, 시선/표정 lines)
 // Usage: node scripts/llm-ablation.mjs [baseUrl] [outDir] [--set=depth|--set=body]
 import {loadPlaywright} from './playwright-runtime.mjs';
 import {readFile,writeFile,mkdir,rm} from 'node:fs/promises';
@@ -21,8 +24,8 @@ import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 const {chromium}=loadPlaywright();
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const argv=process.argv.slice(2),SET=argv.includes('--set=depth')?'depth':argv.includes('--set=body')?'body':'base',pos=argv.filter(a=>!a.startsWith('--'));
-const base=pos[0]||'http://127.0.0.1:3001',out=path.resolve(pos[1]||path.join(root,SET==='depth'?'docs/review-evidence/2026-11-10-depth-ablation':SET==='body'?'docs/review-evidence/2026-11-10-body-ablation':'docs/review-evidence/2026-11-06-llm-ablation'));
+const argv=process.argv.slice(2),SET=argv.includes('--set=depth')?'depth':argv.includes('--set=body')?'body':argv.includes('--set=gaze')?'gaze':'base',pos=argv.filter(a=>!a.startsWith('--'));
+const base=pos[0]||'http://127.0.0.1:3001',out=path.resolve(pos[1]||path.join(root,SET==='depth'?'docs/review-evidence/2026-11-10-depth-ablation':SET==='body'?'docs/review-evidence/2026-11-10-body-ablation':SET==='gaze'?'docs/review-evidence/2026-11-11-gaze-ablation':'docs/review-evidence/2026-11-06-llm-ablation'));
 const fixture=f=>path.join(root,'scripts/fixtures/llm-scenarios',f);
 // questions: one correct answer each (all "예" when the image follows the scene).
 const SCENES=[
@@ -72,6 +75,12 @@ const BODY_SCENES=[
    ['역광(해가 인물 뒤, 화면 안)',j.lighting.source?.relation==='behind'||j.lighting.source?.inFrame,j.lighting.source?.text||''],
    ['정답 비율 기록',true,`아이÷마른 남자 ${(h(c)/h(m)).toFixed(2)}`]];}},
 ];
+const GAZE_SCENES=[
+ {id:'G1-gaze',file:fixture('g1-gaze.json'),aspect:16/9,tests:'gaze',conditions:['g1-off','g2-on'],
+  variant:(cond,scene)=>cond==='g1-off'?{...scene,actors:scene.actors.map(({lookAt,expression,...a})=>a)}:scene,
+  questions:['두 사람이 모두 그려졌는가','남자(왼쪽)의 얼굴·눈이 여자를 향하는가(카메라를 보면 아니오)','여자(오른쪽)의 얼굴·눈이 남자를 향하는가(카메라를 보면 아니오)','남자의 표정이 걱정스러운가(참고: 지시문에 표정이 있는 조건만 해당)','여자의 표정이 옅은 미소인가(참고: 지시문에 표정이 있는 조건만 해당)','좌우 배치가 맞는가(남자 왼쪽, 여자 오른쪽)'],
+  verify:j=>{const L=id=>j.labels.find(l=>l.id===id),m=L('g1man'),w=L('g1woman');return [['두 명 모두 화면 안',m?.visible&&w?.visible,''],['남자가 화면 왼쪽',m.screen.bbox[0]<w.screen.bbox[0],'']];}},
+];
 // The package prompt's mannequin section (app/src/llm-package.js), used by b3 only.
 const MANNEQUIN_LINES=['','## 마네킹을 따라 그리지 말 것','- color.png의 인물은 위치·자세용 무채색 마네킹입니다. 마네킹의 체형(가슴·엉덩이 곡선), 관절 구슬, 민머리를 그리지 마세요.','- 마네킹에는 얼굴이 없습니다. 얼굴이 보이는 인물은 아이를 포함해 모두 눈·코·입이 있는 얼굴로 그리세요.','- 벽·바닥의 그림자도 마네킹 윤곽이 아니라 최종으로 그린 인물(옷·머리·소지품)의 실루엣으로 그리세요.'];
 function prompt(j,scene,cond){
@@ -95,14 +104,14 @@ function depthPrompt(j,scene,cond){
  lines.push(`- 카메라에서 가까운 순서: ${order.map(l=>`${l.name}(${l.distanceM.median}m)`).join(' → ')}`,'- 인물들의 화면 속 크기 비율은 color.png 그대로 두고, 멀리 있는 인물을 키우거나 가깝게 당기지 마세요.','','글자·라벨·도표·말풍선은 그림에 넣지 마세요.');
  return lines.join('\n');
 }
-const FILES={'b1-female':['color.png','depth.png'],'b2-typed':['color.png','depth.png'],'b3-typed-face':['color.png','depth.png'],'d1-gray':['color.png','depth.png'],'d2-range':['color.png','depth.png','range.png'],'d3-plan':['color.png','depth.png','range.png','plan.png'],'c1-color':['color.png'],'c2-text':['color.png'],'c3-light':['color.png','light.png'],'c4-depth':['color.png','depth.png']};
+const FILES={'g1-off':['color.png','label.png','depth.png','range.png','light.png','pose.png'],'g2-on':['color.png','label.png','depth.png','range.png','light.png','pose.png'],'b1-female':['color.png','depth.png'],'b2-typed':['color.png','depth.png'],'b3-typed-face':['color.png','depth.png'],'d1-gray':['color.png','depth.png'],'d2-range':['color.png','depth.png','range.png'],'d3-plan':['color.png','depth.png','range.png','plan.png'],'c1-color':['color.png'],'c2-text':['color.png'],'c3-light':['color.png','light.png'],'c4-depth':['color.png','depth.png']};
 const browser=await chromium.launch({channel:'chrome',headless:true,args:['--enable-webgl','--use-gl=angle','--use-angle=swiftshader']});
 const page=await browser.newPage({viewport:{width:1600,height:1000}});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
 const report={generatedAt:new Date().toISOString(),scenes:[]};
 try{
  await page.goto(base);await page.waitForFunction(()=>window.__bodyV1?.studio&&document.getElementById('studio-example'));
- for(const sc of SET==='depth'?DEPTH_SCENES:SET==='body'?BODY_SCENES:SCENES){
+ for(const sc of SET==='depth'?DEPTH_SCENES:SET==='body'?BODY_SCENES:SET==='gaze'?GAZE_SCENES:SCENES){
   const text=await readFile(sc.file,'utf8'),scene=JSON.parse(text);
   const build=text=>page.evaluate(async({text,aspect})=>{
    const S=window.__bodyV1.studio,$=id=>document.getElementById(id);
@@ -111,7 +120,7 @@ try{
    const pkg=await S.createShotPackage(),z=pkg.zip,files={};
    for(let i=0;i<z.length-4;i++){if(z[i]==0x50&&z[i+1]==0x4b&&z[i+2]==3&&z[i+3]==4){const sz=z[i+18]|z[i+19]<<8|z[i+20]<<16|z[i+21]<<24,nl=z[i+26]|z[i+27]<<8;const name=new TextDecoder().decode(z.subarray(i+30,i+30+nl));files[name.split('/').slice(1).join('/')]=z.slice(i+30+nl,i+30+nl+sz);i+=30+nl+sz-1;}}
    const b64=u=>{let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);};
-   return {json:pkg.json,files:{...Object.fromEntries(['color.png','light.png','depth.png','range.png'].map(n=>[n,b64(files[n])])),'plan.png':S.planPNG().split(',')[1]}};
+   return {json:pkg.json,prompt:pkg.prompt,files:{...Object.fromEntries(['color.png','light.png','depth.png','range.png','label.png','pose.png'].map(n=>[n,b64(files[n])])),'plan.png':S.planPNG().split(',')[1]}};
   },{text,aspect:sc.aspect});
   // A scene with variants is built once per condition; otherwise one build serves all.
   const builds=sc.variant?{}:null;
@@ -120,7 +129,7 @@ try{
   const checks=sc.verify(r.json).map(([name,ok,detail])=>({name,ok:!!ok,detail}));
   const dir=path.join(out,sc.id);
   // Rewrite only the condition folders; results/ holds generated images and must survive.
-  for(const cond of sc.conditions){await rm(path.join(dir,cond),{recursive:true,force:true});const files=FILES[cond];const d=path.join(dir,cond);await mkdir(d,{recursive:true});const rc=builds?.[cond]||r;for(const f of files)await writeFile(path.join(d,f),Buffer.from(rc.files[f],'base64'));await writeFile(path.join(d,'prompt.txt'),prompt((sc.tests==='body'?r:rc).json,scene,cond));}
+  for(const cond of sc.conditions){await rm(path.join(dir,cond),{recursive:true,force:true});const files=FILES[cond];const d=path.join(dir,cond);await mkdir(d,{recursive:true});const rc=builds?.[cond]||r;for(const f of files)await writeFile(path.join(d,f),Buffer.from(rc.files[f],'base64'));await writeFile(path.join(d,'prompt.txt'),sc.tests==='gaze'?rc.prompt:prompt((sc.tests==='body'?r:rc).json,scene,cond));}
   await mkdir(path.join(dir,'results'),{recursive:true});
   await writeFile(path.join(dir,'questions.md'),[`# ${sc.id} 채점 질문 (모두 "예"가 정답)`,'',...sc.questions.map((q,i)=>`${i+1}. ${q}`),'',`조건: ${sc.conditions.map((c,i)=>`${String(i+1).padStart(2,'0')}=${c}`).join(', ')} · 각 3회`,'결과 파일: results/<조건번호>_<회차>.png  예) results/03_2.png = '+sc.conditions[2]+' 2회차'].join('\n'));
   report.scenes.push({id:sc.id,tests:sc.tests,conditions:sc.conditions,checks,questions:sc.questions});
