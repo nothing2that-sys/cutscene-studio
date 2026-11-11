@@ -193,7 +193,7 @@ export const EXAMPLE_SCENE = {
   assumptions:'방 크기·인물 키·위치·저녁빛은 연출을 위한 추정이다. 두 인물과 상자가 함께 읽히는 한 순간을 선택했다.',
   room:{size:[6,3,5],color:'#b9b5ac',walls:true},
   actors:[
-    {id:'jihoon',name:'지훈',position:[-0.8,0,0],yaw:35,height:1.78,pose:'standing',joints:{head:{turn:25}},role:'탁자 앞에 선 인물',intent:'문가의 서연을 돌아본다'},
+    {id:'jihoon',name:'지훈',position:[-1.2,0,0],yaw:35,height:1.78,pose:'standing',joints:{head:{turn:25}},role:'탁자 앞에 선 인물',intent:'문가의 서연을 돌아본다'},
     {id:'seoyeon',name:'서연',position:[1.6,0,-1.4],yaw:-40,height:1.65,pose:'standing',joints:{head:{turn:-15}},role:'문가에 멈춘 방문자',intent:'지훈을 바라본다'},
   ],
   props:[

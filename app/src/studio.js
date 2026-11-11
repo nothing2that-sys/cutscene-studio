@@ -346,6 +346,14 @@ export function initCutsceneStudio(api) {
   // Character sheets live outside undo history, so a new scene or a project file must
   // replace them explicitly; otherwise sheets from the previous work stay attached to
   // any person or prop that happens to share an id (e.g. the example scene's 'jihoon').
+  // People/props whose volumes overlap (a person inside a table, two people merged).
+  // A held prop touching its holder is expected and left out.
+  function overlapWarnings(){
+    const objects=[...api.mannequins,...api.importedModels];if(objects.length<2)return [];
+    const holder=o=>o.userData.attachTo?.actor||o.userData.primitive?.attachTo?.actor;
+    return inspectObjectOverlaps(objects).issues.filter(i=>{const [a,b]=i.objects.map(k=>objects[k]);return !(holder(a)&&holder(a)===b.userData.studioId)&&!(holder(b)&&holder(b)===a.userData.studioId);})
+      .map(i=>({severity:'warning',path:'scene',code:'POSSIBLE_VOLUME_OVERLAP',message:`${i.names.join(' ↔ ')}: 3D 공간에서 겹칠 수 있습니다. 앉기·기대기처럼 의도한 접촉이 아니면 위치를 옮기세요.`}));
+  }
   function clearReferences(){
     const before=Object.values(references).reduce((n,list)=>n+list.length,0);
     references={};renderReferences();
@@ -359,7 +367,7 @@ export function initCutsceneStudio(api) {
     if(!apply){status('검사 완료 · 오류 0개 / 경고 '+report.warnings.length+'개 · 아직 적용하지 않았습니다.');return true;}
     const previous=api.getState();
     try {
-      if(report.inputKind==='scene')for(const message of loadScene(report.value)||[])report.warnings.push({severity:'warning',path:'actors',code:'LOOK_AT_LIMIT',message});
+      if(report.inputKind==='scene'){for(const message of loadScene(report.value)||[])report.warnings.push({severity:'warning',path:'actors',code:'LOOK_AT_LIMIT',message});report.warnings.push(...overlapWarnings());}
       else if(report.inputKind==='object')api.addObject(report.value);
       else {const applied=api.applyState(JSON.stringify(report.value));if(applied?.then)return applied.then(()=>{api.commit();report.applied=true;feedback.show(report);const cleared=report.value.characterReferences?'':clearReferences();status('입력 적용 완료 · 오류 0개 / 경고 '+report.warnings.length+'개'+cleared);return true;},error=>{report.valid=false;report.scenePreserved=true;report.errors.push({severity:'error',path:'$',code:'APPLY_FAILED',message:error.message});feedback.show(report);status('복원 실패 · 기존 장면을 유지했습니다.',true);return false;});api.commit();}
       report.applied=true;feedback.show(report);
@@ -518,7 +526,7 @@ export function initCutsceneStudio(api) {
     // One pre-capture step (fixed-view bake) for both, so color.png and the passes line up.
     beforeCapture?.();const color=renderPNG(false,{commit:false}),r=computePasses(width,height,{commit:false});lastDepthRange=r.range;
     const notes=new Map([...r.actors,...r.props].map(item=>[item.id,objectNotes(item.root,document)]));
-    const {json,refFiles}=buildShotJson({shot,scene:document,camera:shotCamera,facts:r.facts,description:r.description,labels:r.labels,stats:r.stats,range:r.range,lightNotes:r.lightNotes,references,objectNotes:notes,width,height,lighting:document.lighting,warnings:r.labelWarnings||[]});
+    const {json,refFiles}=buildShotJson({shot,scene:document,camera:shotCamera,facts:r.facts,description:r.description,labels:r.labels,stats:r.stats,range:r.range,lightNotes:r.lightNotes,references,objectNotes:notes,width,height,lighting:document.lighting,warnings:[...(r.labelWarnings||[]),...overlapWarnings().map(({code,message})=>({code,message}))]});
     const images={'color.png':dataUrlBytes(color),'label.png':await encodePNG({width,height,channels:4,data:r.images.rgba}),'depth.png':await encodePNG({width,height,channels:1,data:r.images.depth8}),'depth16.png':await encodePNG({width,height,channels:1,bitDepth:16,data:r.images.depth16}),'light.png':await encodePNG({width,height,channels:1,data:r.images.light8}),'pose.png':dataUrlBytes(passCanvas('pose',r).toDataURL('image/png')),'range.png':dataUrlBytes(passCanvas('range',r).toDataURL('image/png'))};
     const folder='shot-'+(order?String(order).padStart(2,'0')+'_':'')+safeName(shot.name);
     const prompt=buildPrompt(json);
