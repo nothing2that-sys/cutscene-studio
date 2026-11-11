@@ -154,7 +154,9 @@ export function drawPose(canvas,facts,labels,source=null){
   ctx.setLineDash([]);
   for(const [k,p]of Object.entries(P)){const [x,y]=xy(p),c=side(k);ctx.beginPath();ctx.arc(x,y,s*2.2,0,Math.PI*2);if(p.occludedBy){ctx.strokeStyle=`rgb(${c})`;ctx.lineWidth=s;ctx.stroke();}else{ctx.fillStyle=`rgb(${c})`;ctx.fill();}}
   ctx.fillStyle='#fff';for(const k of ['wristL','wristR','ankleL','ankleR'])if(P[k]){const [x,y]=xy(P[k]);ctx.fillText(k.endsWith('L')?'L':'R',x+s*4,y);}
-  names.push({text:actor.name,color:label.color,x:xy(P.headTop)[0],y:xy(P.headTop)[1]-s*8});
+  // Tag above the highest joint that is inside the frame (head may be cut off).
+  const top=P.headTop?.inFrame?P.headTop:Object.values(P).filter(p=>p.inFrame).sort((a,b)=>a.screen[1]-b.screen[1])[0]||P.headTop;
+  names.push({text:actor.name,color:label.color,x:xy(top)[0],y:xy(top)[1]-s*8});
  }
  // Light marker: a yellow sun where the light is when it is in frame, otherwise an arrow
  // on the frame edge pointing into the picture the way the light travels.
@@ -224,6 +226,17 @@ export function assignLabelColors(labels,stats){
  for(const l of labels)if((l.kind==='person'||l.kind==='prop')&&!stats.get(l.index))l.color='';
  return shown.length>LABEL_PALETTE.length?[{code:'LABEL_COLORS_REPEAT',message:`화면에 보이는 인물·소품이 ${shown.length}개로 라벨 색 ${LABEL_PALETTE.length}개를 넘어 색이 겹칩니다: ${shown.slice(LABEL_PALETTE.length).map(l=>l.name).join(', ')}. 작은 소품을 숨기거나 컷을 나누세요.`}]:[];
 }
+// Image models read words better than hex: hue and saturation to a short phrase.
+export function lightColorWords(code){
+ const [r,g,b]=hex(code).map(v=>v/255),max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min,s=max===0?0:d/max; // HSV saturation: pale tints stay pale
+ let h=0;if(d){if(max===r)h=((g-b)/d)%6;else if(max===g)h=(b-r)/d+2;else h=(r-g)/d+4;h=(h*60+360)%360;}
+ if(s<0.08)return '흰빛(중성)';
+ if(h<55||h>=330)return s>0.45?'짙은 주황빛(촛불·노을처럼 따뜻한 빛)':s>0.2?'따뜻한 주황빛(백열등 같은 빛)':'살짝 따뜻한 흰빛(햇빛)';
+ if(h<75)return s>0.3?'노란빛(따뜻한 빛)':'살짝 노르스름한 흰빛';
+ if(h<170)return '초록빛';
+ if(h<260)return s>0.3?'푸른빛(달빛·새벽처럼 차가운 빛)':'살짝 차가운 흰빛(그늘·흐린 날)';
+ return '보랏빛·분홍빛';
+}
 export function buildShotJson({shot,scene,camera,facts,description,labels,stats,range,lightNotes,references,objectNotes,width,height,lighting,warnings=[]}){
  const type=lighting.type||'sun',toLight=new THREE.Vector3(...lighting.position).sub(new THREE.Vector3(...(lighting.target||[0,0,0]))).normalize().toArray(),camDir=cameraFrameDirection(camera,toLight);
  const source=lightSource(lighting,camera,facts);
@@ -292,8 +305,8 @@ export function buildPrompt(json){
  '- 벽·바닥의 그림자도 마네킹 윤곽이 아니라 최종으로 그린 인물(옷·머리·소지품)의 실루엣으로 그리세요. 그림자의 위치·방향·크기만 light.png를 따릅니다.',
  '',
  '## 카메라와 조명',...(cameraLine?[cameraLine]:[`- 렌즈 약 ${json.camera.focal35mm}mm(35mm 환산), 카메라 높이 ${json.camera.heightM}m`]),
- `- 광원 종류: ${json.lighting.typeText}`,`- ${json.lighting.text}. 빛 색 ${json.lighting.color}.`,
- ...(json.lighting.extras||[]).map((x,i)=>`- 보조광 ${i+1}: ${x.typeText}${x.text?' · '+x.text:''}, 세기는 주광의 ${Math.round(x.intensity/Math.max(json.lighting.intensity,0.01)*100)}%, 빛 색 ${x.color}. 그림자는 만들지 않는 보조광이고 light.png에는 없으니 color.png의 밝은 곳을 참고하세요.`),
+ `- 광원 종류: ${json.lighting.typeText}`,`- ${json.lighting.text}. 빛 색: ${lightColorWords(json.lighting.color)} (${json.lighting.color}).`,
+ ...(json.lighting.extras||[]).map((x,i)=>`- 보조광 ${i+1}: ${x.typeText}${x.text?' · '+x.text:''}, 세기는 주광의 ${Math.round(x.intensity/Math.max(json.lighting.intensity,0.01)*100)}%, 빛 색: ${lightColorWords(x.color)} (${x.color}). 그림자는 만들지 않는 보조광이고 light.png에는 없으니 color.png의 밝은 곳을 참고하세요.`),
  '',
  '## 인물',...people.map(person),...(props.length?['','## 소품',...props.map(prop)]:[]),
  ...(json.scene.sourceText?['','## 원문',json.scene.sourceText]:[]),

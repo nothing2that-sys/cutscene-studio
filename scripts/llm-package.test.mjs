@@ -87,3 +87,7 @@ test('prompt ranks depth, spells out the distance order and warns against manneq
  assert.doesNotMatch(prompt,/중복 문장|## 장면 설명|설정화: 없음/,'no repeated shot description or empty reference lines');
  assert.doesNotMatch(prompt,/plan\.png/,'plan.png is not given to image models');assert.equal(json.files.plan,undefined);
 });
+test('light colour is described in words for the image model (R11)',async()=>{
+  const {lightColorWords}=await import('../app/src/llm-package.js');
+  assert.equal(lightColorWords('#ffffff'),'흰빛(중성)');assert.match(lightColorWords('#ff8c2a'),/주황빛/);assert.match(lightColorWords('#9fb8ff'),/푸른빛/);assert.match(lightColorWords('#fff0d6'),/따뜻한 흰빛/);
+});

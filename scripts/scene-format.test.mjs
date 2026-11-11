@@ -79,3 +79,7 @@ test('a child body defaults to a child height and warns when tall (R7)',()=>{
   assert.equal(validateScene({...scene({}),actors:[{id:'m',position:[0,0,0],bodyType:'male'}]}).actors[0].height,1.75);
   const r=analyzeInputText(JSON.stringify(scene({height:1.75})),'t',true);assert.ok(r.warnings.some(w=>w.code==='BODY_TYPE_HEIGHT'));
 });
+test('spot-only light fields on other lights are reported, not silently dropped (R10)',()=>{
+  const r=analyzeInputText(JSON.stringify({version:1,units:'meters',actors:[],camera:{position:[0,1,4],target:[0,1,0]},lighting:{type:'lamp',position:[1,2,1],target:[0,1,0],coneDeg:40}}),'t',true);
+  assert.ok(r.warnings.some(w=>w.code==='IGNORED_FIELD'));
+});

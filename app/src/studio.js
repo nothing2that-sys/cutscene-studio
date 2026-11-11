@@ -177,9 +177,9 @@ export function initCutsceneStudio(api) {
     if(kind==='range'){drawRange(c,{passes:r.passes,labels:r.labels,facts:r.facts,range:r.range});return c;}
     drawPose(c,r.facts,r.labels,lightSource(document.lighting,shotCamera,r.facts));return c;
   }
-  function renderPNG(depth=false) {
+  function renderPNG(depth=false,{commit=true}={}) {
     if(depth){const {width,height}=exportSize(),r=computePasses(width,height);lastDepthRange=r.range;captureObserver?.('depth');return passCanvas('depth',r).toDataURL('image/png');}
-    beforeCapture?.();updateShotCamera();
+    if(commit)beforeCapture?.();updateShotCamera();
     const width=aspect>=1?1600:Math.round(1600*aspect),height=Math.round(width/aspect);
     const previousSize=preview.getSize(new THREE.Vector2());
     const bg=stage.scene.background,override=stage.scene.overrideMaterial;
@@ -202,7 +202,7 @@ export function initCutsceneStudio(api) {
       return preview.domElement.toDataURL('image/png');
     } finally {
       stage.scene.background=bg; stage.scene.overrideMaterial=override;
-      depthMaterial?.dispose(); preview.setSize(previousSize.x,previousSize.y,false);
+      depthMaterial?.dispose(); preview.setSize(previousSize.x,previousSize.y,false);previewDirty=true;
     }
   }
   function savePNG(depth) {
@@ -217,7 +217,7 @@ export function initCutsceneStudio(api) {
     const camera=new THREE.PerspectiveCamera(35,0.75,0.01,50);camera.position.copy(center).add(new THREE.Vector3(0.55,0.2,1).normalize().multiplyScalar(height*1.8));camera.lookAt(center);
     for(const object of [...api.mannequins,...api.importedModels,environment,stage.ground])if(object!==model){hidden.push([object,object.visible]);object.visible=false;}
     try{preview.setSize(180,240,false);cleanRender(()=>preview.render(stage.scene,camera));return preview.domElement.toDataURL('image/png');}
-    finally{hidden.forEach(([object,visible])=>object.visible=visible);preview.setSize(size.x,size.y,false);}
+    finally{hidden.forEach(([object,visible])=>object.visible=visible);preview.setSize(size.x,size.y,false);previewDirty=true;}
   }
   function clearEnvironment() {
     for(const child of [...environment.children]) {
@@ -452,7 +452,7 @@ export function initCutsceneStudio(api) {
   $('studio-light').onchange=()=>api.commit();
   $('studio-light-color').onchange=()=>{document.lighting.color=$('studio-light-color').value;rebuildRoom();api.commit();};
   $('studio-ambient').onchange=()=>run(()=>{const v=Number($('studio-ambient').value);if(v<0||v>3||!Number.isFinite(v))throw new Error('주변광은 0~3입니다.');document.lighting.ambient=v;rebuildRoom();api.commit();});
-  $('studio-light-direction').onchange=()=>{const position=lightPresets[$('studio-light-direction').value];if(!position)return;document.lighting.position=[...position];rebuildRoom();api.commit();};
+  $('studio-light-direction').onchange=()=>{const position=lightPresets[$('studio-light-direction').value];if(!position)return;setLighting({position:[...position]});};
   panel.querySelectorAll('[data-prop]').forEach(btn=>btn.onclick=()=>run(()=>{
     const type=btn.dataset.prop;
     const def={id:`prop-${crypto.randomUUID()}`,name:PROP_NAMES[type],type,position:[0,0,0],size:[...PROP_DEFAULT_SIZES[type]],yaw:0,color:'#8c7965'};
@@ -510,7 +510,8 @@ export function initCutsceneStudio(api) {
   const safeName=t=>String(t||'cut').replace(/[\\/:*?"<>|\s]+/g,'_').slice(0,40);
   async function buildShot(order=null){
     const {width,height}=exportSize(),shot=currentShot();
-    const color=renderPNG(false),r=computePasses(width,height);lastDepthRange=r.range;
+    // One pre-capture step (fixed-view bake) for both, so color.png and the passes line up.
+    beforeCapture?.();const color=renderPNG(false,{commit:false}),r=computePasses(width,height,{commit:false});lastDepthRange=r.range;
     const notes=new Map([...r.actors,...r.props].map(item=>[item.id,objectNotes(item.root,document)]));
     const {json,refFiles}=buildShotJson({shot,scene:document,camera:shotCamera,facts:r.facts,description:r.description,labels:r.labels,stats:r.stats,range:r.range,lightNotes:r.lightNotes,references,objectNotes:notes,width,height,lighting:document.lighting,warnings:r.labelWarnings||[]});
     const images={'color.png':dataUrlBytes(color),'label.png':await encodePNG({width,height,channels:4,data:r.images.rgba}),'depth.png':await encodePNG({width,height,channels:1,data:r.images.depth8}),'depth16.png':await encodePNG({width,height,channels:1,bitDepth:16,data:r.images.depth16}),'light.png':await encodePNG({width,height,channels:1,data:r.images.light8}),'pose.png':dataUrlBytes(passCanvas('pose',r).toDataURL('image/png')),'range.png':dataUrlBytes(passCanvas('range',r).toDataURL('image/png'))};

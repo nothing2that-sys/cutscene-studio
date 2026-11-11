@@ -151,6 +151,7 @@ export function analyzeScene(input) {
       return e;});
     if(extras.length)scene.lighting.extras=extras;
   }
+  if(lightType!=='spot'&&(light.coneDeg!==undefined||light.softness!==undefined))warn('lighting.coneDeg','IGNORED_FIELD','coneDeg·softness는 spot 조명에서만 씁니다. 지금 조명 종류('+lightType+')에서는 무시됩니다.');
   if(lightType!=='sun'&&scene.lighting.position.every((v,i)=>Math.abs(v-scene.lighting.target[i])<1e-6))error('lighting.target','LIGHT_NO_DIRECTION','전등·스포트의 위치와 목표점은 달라야 합니다. 목표점은 밝기 기준이 되는 지점입니다.','position != target',light.target);
   if(!c.errors.length){
     const [w,h,d]=scene.room.size;
