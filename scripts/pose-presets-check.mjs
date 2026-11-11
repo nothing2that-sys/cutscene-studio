@@ -13,8 +13,8 @@ const EXPECT={
  standing:{stance:/^서 있음/,touch:[[['footL','footR'],2,.005]]},
  kneeling:{stance:/두 무릎을 꿇음/,touch:[[['thighL','thighR'],2,.012]]},
  'half-kneeling':{stance:/(왼쪽|오른쪽) 무릎을 꿇음/,touch:[[['thighL','thighR'],1,.012],[['footL','footR'],1,.012]]},
- squatting:{stance:/쪼그려 앉음, 상체를 앞으로/,touch:[[['footL','footR'],2,.005]]},
- crouching:{stance:/쪼그려 앉음, 상체를 앞으로/,touch:[[['footL','footR'],2,.005]]},
+ squatting:{stance:/^쪼그려 앉음, 상체를 앞으로/,touch:[[['footL','footR'],2,.005]]},
+ crouching:{stance:/^웅크려 앉음, 상체를 앞으로/,touch:[[['footL','footR'],2,.005]]},
  lying:{stance:/등을 대고 누움/,touch:[[['thorax'],1,.02],[['head'],1,.04]]},
 };
 await mkdir(out,{recursive:true});

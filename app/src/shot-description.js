@@ -134,7 +134,7 @@ function stance(a,props){
  if(seat&&(pelvisRatio<.5||sitting))text=`${seat.name}에 앉음`;
  else if(kneesDown.length===2)text='두 무릎을 꿇음';
  else if(kneesDown.length===1)text=`${kneesDown[0]==='L'?'왼쪽':'오른쪽'} 무릎을 꿇음`;
- else if(pelvisRatio<.4&&(bends.L+bends.R)/2>115)text='쪼그려 앉음';
+ else if(pelvisRatio<.4&&(bends.L+bends.R)/2>115)text=torsoTilt>=23?'웅크려 앉음':'쪼그려 앉음';
  else if(sitting&&pelvisRatio<.12)text='바닥에 앉음';
  else if(sitting)text='앉은 자세(엉덩이 아래 받침 없음)';
  else if(pelvisRatio<.47&&Math.max(bends.L,bends.R)>30)text='무릎을 굽혀 몸을 낮춤';

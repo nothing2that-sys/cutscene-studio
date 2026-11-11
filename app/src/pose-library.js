@@ -5,6 +5,8 @@ import {POSES} from './scene-format.js';
 import {constrainBody,snapshotBodyJoints,clampJoint,createCharacter} from './body-rig.js';
 import {bodyPartBounds} from './body-surface.js';
 import {STARTER_POSES} from './starter-poses.js';
+// Starter ids shipped before per-id seeding (2026-11-11).
+const LEGACY_STARTER_IDS=['standing','sitting','pointing','reaching','wave','both-arms-up','walking','squat','bent-arm','looking-back'].map(k=>'starter-'+k);
 import {openPoseStore} from './pose-store.js';
 import {installImageReferences} from './image-references.js';
 
@@ -163,7 +165,12 @@ export function installPoseLibrary(editor,api){
       await store.putMany(imported);records=await store.all();known.clear();records.forEach(r=>r.fingerprint&&known.add(r.fingerprint));render();editor.status(imported.length+'개 포즈를 복원했습니다.');
     }catch(error){editor.status('백업을 적용하지 못했습니다: '+error.message);}finally{e.target.value='';}
   };
-  openPoseStore().then(async db=>{store=db;records=await store.all();let seeded=false;try{seeded=localStorage.getItem('pose-starters-seeded')==='true';}catch{}if(!records.length&&!seeded){records=structuredClone(STARTER_POSES);await store.putMany(records);}try{localStorage.setItem('pose-starters-seeded','true');}catch{}records.forEach(r=>r.fingerprint&&known.add(r.fingerprint));ready=true;render();}).catch(error=>{editor.status('브라우저 저장소를 열지 못했습니다. 포즈 JSON 저장을 이용하세요: '+error.message);});
+  openPoseStore().then(async db=>{store=db;records=await store.all();// Starter cards are seeded once per id: cards added in later versions appear for
+    // existing users too, and a starter the user deleted is not brought back.
+    let seeded=null;try{const ids=localStorage.getItem('pose-starters-seeded-ids');seeded=ids?new Set(JSON.parse(ids)):localStorage.getItem('pose-starters-seeded')==='true'?new Set(LEGACY_STARTER_IDS):null;}catch{}
+    const fresh=STARTER_POSES.filter(r=>seeded?!seeded.has(r.id):!records.length).filter(r=>!records.some(x=>x.id===r.id));
+    if(fresh.length){const added=structuredClone(fresh);await store.putMany(added);records.push(...added);}
+    try{localStorage.setItem('pose-starters-seeded-ids',JSON.stringify(STARTER_POSES.map(r=>r.id)));localStorage.setItem('pose-starters-seeded','true');}catch{}records.forEach(r=>r.fingerprint&&known.add(r.fingerprint));ready=true;render();}).catch(error=>{editor.status('브라우저 저장소를 열지 못했습니다. 포즈 JSON 저장을 이용하세요: '+error.message);});
   installImageReferences(editor,{applyConverted:(pose,referenceView)=>{const references=readReferencePoses(JSON.stringify(pose));if(references.length!==1)throw Error('단일 변환 포즈가 필요합니다.');apply(references[0],null,{groundVolume:true,referenceView});},saveLinked:async(name,reference)=>{if(!ready)throw Error('라이브러리를 여는 중입니다.');if(!api.getSelection()?.torso)throw Error('먼저 저장할 인물을 선택하세요.');document.getElementById('pose-library-name').value=name;await recordCurrent(true,reference);}});
   return {recordCurrent:()=>recordCurrent().catch(error=>editor.status(error.message))};
 }

@@ -1,0 +1,12 @@
+{"version":1,"units":"meters","title":"비교 B2 · 노을 역광의 세 사람",
+ "sourceText":"해 질 녘 바닷가 방파제 위. 해가 세 사람 바로 뒤 수평선에 걸려 있어 세 사람이 거의 검은 실루엣으로 보인다.",
+ "assumptions":"비교 실험용 장면. 해가 인물 뒤에서 카메라 쪽으로 비추는 역광이라 얼굴·옷보다 윤곽으로 체형이 드러난다.",
+ "room":{"size":[16,3,16],"color":"#8a8478","walls":false},
+ "actors":[
+  {"id":"b2man","name":"왼쪽 · 마른 남자","position":[-1.0,0,0],"yaw":20,"height":1.78,"bodyType":"male","pose":"standing","description":"얇은 바람막이와 바지, 마른 30대 남성"},
+  {"id":"b2heavy","name":"가운데 · 큰 체격 남자","position":[0.05,0,-0.2],"yaw":0,"height":1.75,"bodyType":"male-heavy","pose":"standing","description":"반팔 셔츠와 반바지, 배가 나온 큰 체격의 50대 남성"},
+  {"id":"b2child","name":"오른쪽 · 아이","position":[0.95,0,0.1],"yaw":-20,"height":1.15,"bodyType":"child","pose":"standing","description":"티셔츠와 반바지, 7살 남자아이"}],
+ "props":[],
+ "camera":{"position":[0,1.1,5.2],"target":[0,1.0,0],"fov":40},
+ "lighting":{"type":"sun","position":[0.4,1.6,-12],"target":[0,1,0],"color":"#ffb36b","intensity":2.6,"ambient":0.12},
+ "shots":[{"id":"b2","name":"B2 역광","purpose":"역광 실루엣에서 체형","camera":{"position":[0,1.1,5.2],"target":[0,1.0,0],"fov":40}}]}

@@ -12,6 +12,8 @@
 //   mannequin body differs
 //   b1-female: everyone on the default (female) mannequin, bodyType removed
 //   b2-typed : matching body types (male, male-heavy, child)
+//   b3-typed-face (B1 only): b2 + the package prompt's mannequin section, incl. the faces line
+//   B2 (2026-11-11): backlit sunset silhouettes, b1/b2 as above
 // Usage: node scripts/llm-ablation.mjs [baseUrl] [outDir] [--set=depth|--set=body]
 import {loadPlaywright} from './playwright-runtime.mjs';
 import {readFile,writeFile,mkdir,rm} from 'node:fs/promises';
@@ -54,16 +56,26 @@ const DEPTH_SCENES=[
    ['정답 비율 기록',true,`주황÷남색 ${(h(a)/h(b)).toFixed(2)}`]];}},
 ];
 const BODY_SCENES=[
- {id:'B1-body-types',file:fixture('b1-body-types.json'),aspect:16/9,tests:'body',conditions:['b1-female','b2-typed'],
-  // The only difference between the conditions is the mannequin body.
+ {id:'B1-body-types',file:fixture('b1-body-types.json'),aspect:16/9,tests:'body',conditions:['b1-female','b2-typed','b3-typed-face'],
+  // The only difference between b1 and b2 is the mannequin body; b3 adds prompt lines only.
   variant:(cond,scene)=>cond==='b1-female'?{...scene,actors:scene.actors.map(({bodyType,...a})=>a)}:scene,
   questions:['세 사람이 모두 그려졌는가','왼쪽 마른 남자가 남성 체형인가(가슴 볼륨·잘록한 허리·넓은 골반·둥근 엉덩이가 없음)','가운데 남자가 배가 나온 큰 체격으로 그려졌는가','오른쪽 아이가 아이 비율인가(몸에 비해 큰 머리, 짧은 팔다리)—"작은 어른"이면 아니오','뒤 벽 그림자 세 개가 모두 남성·아이 윤곽인가(그림자에 여성 마네킹의 가슴·허리·엉덩이 곡선이 없음)','측정: 오른쪽 아이 ÷ 왼쪽 마른 남자의 화면 키(머리 꼭대기~발바닥) 비율'],
   verify:j=>{const L=id=>j.labels.find(l=>l.id===id),h=l=>l.screen.bbox[3]-l.screen.bbox[1],m=L('b1man'),c=L('b1child'),hv=L('b1heavy');return [
    ['세 명 모두 화면 안',[m,c,hv].every(l=>l?.visible),''],
    ['뒤 벽이 보임',j.labels.some(l=>l.kind==='wall'&&l.visible),''],
    ['정답 비율 기록',true,`아이÷마른 남자 ${(h(c)/h(m)).toFixed(2)}`]];}},
+ {id:'B2-backlit',file:fixture('b2-backlit.json'),aspect:16/9,tests:'body',conditions:['b1-female','b2-typed'],
+  variant:(cond,scene)=>cond==='b1-female'?{...scene,actors:scene.actors.map(({bodyType,...a})=>a)}:scene,
+  questions:['세 사람이 모두 그려졌는가','역광 실루엣인가(해가 인물 뒤, 인물 앞면이 어두움)','왼쪽 마른 남자의 윤곽이 남성형인가(잘록한 허리·넓은 골반·가슴 곡선 없음)','가운데 남자의 윤곽에 배가 나온 큰 체격이 드러나는가','오른쪽 아이의 윤곽이 아이 비율인가(큰 머리, 짧은 팔다리)','측정: 오른쪽 아이 ÷ 왼쪽 마른 남자의 화면 키 비율'],
+  verify:j=>{const L=id=>j.labels.find(l=>l.id===id),h=l=>l.screen.bbox[3]-l.screen.bbox[1],m=L('b2man'),c=L('b2child'),hv=L('b2heavy');return [
+   ['세 명 모두 화면 안',[m,c,hv].every(l=>l?.visible),''],
+   ['역광(해가 인물 뒤, 화면 안)',j.lighting.source?.relation==='behind'||j.lighting.source?.inFrame,j.lighting.source?.text||''],
+   ['정답 비율 기록',true,`아이÷마른 남자 ${(h(c)/h(m)).toFixed(2)}`]];}},
 ];
+// The package prompt's mannequin section (app/src/llm-package.js), used by b3 only.
+const MANNEQUIN_LINES=['','## 마네킹을 따라 그리지 말 것','- color.png의 인물은 위치·자세용 무채색 마네킹입니다. 마네킹의 체형(가슴·엉덩이 곡선), 관절 구슬, 민머리를 그리지 마세요.','- 마네킹에는 얼굴이 없습니다. 얼굴이 보이는 인물은 아이를 포함해 모두 눈·코·입이 있는 얼굴로 그리세요.','- 벽·바닥의 그림자도 마네킹 윤곽이 아니라 최종으로 그린 인물(옷·머리·소지품)의 실루엣으로 그리세요.'];
 function prompt(j,scene,cond){
+ if(cond==='b3-typed-face'){const t=depthPrompt(j,scene,'d1-gray').split(String.fromCharCode(10)),i=t.findIndex(l=>l.startsWith('## 거리'));t.splice(i-1,0,...MANNEQUIN_LINES);return t.join(String.fromCharCode(10));}
  if(cond.startsWith('b'))return depthPrompt(j,scene,'d1-gray');
  if(cond.startsWith('d'))return depthPrompt(j,scene,cond);
  const people=j.labels.filter(l=>l.kind==='person'),lines=[`# ${j.scene.title}`,'','## 화풍 (가장 먼저 지킬 것)',j.style,'첨부 이미지는 구도·명암 참고 자료일 뿐 그림체 참고가 아닙니다. 회색 3D 렌더나 흑백 이미지의 질감을 따라 그리지 말고 위 화풍으로 그리세요.','',
@@ -83,7 +95,7 @@ function depthPrompt(j,scene,cond){
  lines.push(`- 카메라에서 가까운 순서: ${order.map(l=>`${l.name}(${l.distanceM.median}m)`).join(' → ')}`,'- 인물들의 화면 속 크기 비율은 color.png 그대로 두고, 멀리 있는 인물을 키우거나 가깝게 당기지 마세요.','','글자·라벨·도표·말풍선은 그림에 넣지 마세요.');
  return lines.join('\n');
 }
-const FILES={'b1-female':['color.png','depth.png'],'b2-typed':['color.png','depth.png'],'d1-gray':['color.png','depth.png'],'d2-range':['color.png','depth.png','range.png'],'d3-plan':['color.png','depth.png','range.png','plan.png'],'c1-color':['color.png'],'c2-text':['color.png'],'c3-light':['color.png','light.png'],'c4-depth':['color.png','depth.png']};
+const FILES={'b1-female':['color.png','depth.png'],'b2-typed':['color.png','depth.png'],'b3-typed-face':['color.png','depth.png'],'d1-gray':['color.png','depth.png'],'d2-range':['color.png','depth.png','range.png'],'d3-plan':['color.png','depth.png','range.png','plan.png'],'c1-color':['color.png'],'c2-text':['color.png'],'c3-light':['color.png','light.png'],'c4-depth':['color.png','depth.png']};
 const browser=await chromium.launch({channel:'chrome',headless:true,args:['--enable-webgl','--use-gl=angle','--use-angle=swiftshader']});
 const page=await browser.newPage({viewport:{width:1600,height:1000}});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -108,7 +120,7 @@ try{
   const checks=sc.verify(r.json).map(([name,ok,detail])=>({name,ok:!!ok,detail}));
   const dir=path.join(out,sc.id);
   // Rewrite only the condition folders; results/ holds generated images and must survive.
-  for(const cond of sc.conditions){await rm(path.join(dir,cond),{recursive:true,force:true});const files=FILES[cond];const d=path.join(dir,cond);await mkdir(d,{recursive:true});const rc=builds?.[cond]||r;for(const f of files)await writeFile(path.join(d,f),Buffer.from(rc.files[f],'base64'));await writeFile(path.join(d,'prompt.txt'),prompt(rc.json,scene,cond));}
+  for(const cond of sc.conditions){await rm(path.join(dir,cond),{recursive:true,force:true});const files=FILES[cond];const d=path.join(dir,cond);await mkdir(d,{recursive:true});const rc=builds?.[cond]||r;for(const f of files)await writeFile(path.join(d,f),Buffer.from(rc.files[f],'base64'));await writeFile(path.join(d,'prompt.txt'),prompt((sc.tests==='body'?r:rc).json,scene,cond));}
   await mkdir(path.join(dir,'results'),{recursive:true});
   await writeFile(path.join(dir,'questions.md'),[`# ${sc.id} 채점 질문 (모두 "예"가 정답)`,'',...sc.questions.map((q,i)=>`${i+1}. ${q}`),'',`조건: ${sc.conditions.map((c,i)=>`${String(i+1).padStart(2,'0')}=${c}`).join(', ')} · 각 3회`,'결과 파일: results/<조건번호>_<회차>.png  예) results/03_2.png = '+sc.conditions[2]+' 2회차'].join('\n'));
   report.scenes.push({id:sc.id,tests:sc.tests,conditions:sc.conditions,checks,questions:sc.questions});

@@ -3,6 +3,18 @@
 // pose wording, light condition and character reference images.
 import * as THREE from 'three';
 import {encodePNG,createZip,dataUrlBytes} from './package-files.js';
+import {BODY_TYPES,bodyTypeOf} from './doll-profiles.js';
+
+// The mannequin body behind a person label: body type of the common body, or the
+// older body for actors made with other head proportions.
+export function mannequinBody(root){
+ const p=root?.userData?.bodyProfile;if(!p)return null;
+ if(!root.userData.bodyAsset)return {type:'legacy',specified:true,label:`이전 버전 인체 · ${p.headUnits}등신`,heightM:r2(p.height)};
+ // The default body is used whenever no body type was chosen; it says nothing about the
+ // person's sex, so the prompt must not present it as "female".
+ const type=bodyTypeOf(p),specified=!!p.bodyType;
+ return {type,specified,label:specified?BODY_TYPES[type]?.label||type:'지정 안 함(기본 마네킹)',heightM:r2(p.height)};
+}
 
 // Distinct, saturated colours that stay apart for a vision model. Index 0 is background.
 export const LABEL_PALETTE=['#e6194b','#3cb44b','#4363d8','#f58231','#911eb4','#42d4f4','#f032e6','#bfef45','#ffe119','#469990','#9a6324','#fabed4','#800000','#aaffc3','#000075','#dcbeff','#808000','#ffd8b1'];
@@ -210,7 +222,8 @@ export function buildShotJson({shot,scene,camera,facts,description,labels,stats,
  const entries=labels.map(l=>{
   const s=stats.get(l.index),notes=objectNotes.get(l.id)||{},actor=facts.actors.find(a=>a.id===l.id),descActor=description?.structured?.actors?.find(a=>a.id===l.id),descProp=description?.structured?.props?.find(p=>p.id===l.id);
   const refs=(references[l.id]||[]).map((r,i)=>{const file=`refs/${safe(l.id)}/${i+1}-${REF_SLUG[r.label]||'other'}.${ext(r.mime)}`;refFiles.push({name:file,dataUrl:r.dataUrl});return {file,label:r.label,note:r.note||'',originalName:r.name};});
-  return {index:l.index,color:l.color,kind:l.kind,id:l.id,name:l.name,...(notes.role||notes.intent||notes.description?{notes}:{}),references:refs,visible:!!s,
+  const body=l.kind==='person'?mannequinBody(l.root||l.source?.root):null;
+  return {index:l.index,color:l.color,kind:l.kind,id:l.id,name:l.name,...(notes.role||notes.intent||notes.description?{notes}:{}),...(body?{body}:{}),references:refs,visible:!!s,
    ...(s?{screen:{bbox:s.bbox,pixelShare:s.pixelShare},distanceM:s.depthM,directLight:s.direct}:{}),
    ...(actor?{pose:{text:Array.isArray(descActor?.text)?descActor.text.join('. '):(descActor?.text||''),stance:descActor?.stance||'',yawToCameraDeg:actor.yawToCamera,joints:Object.fromEntries(Object.entries(actor.points).map(([k,p])=>[k,{xy:p.screen,distanceM:p.depth,visible:p.inFrame&&!p.occludedBy,...(p.occludedBy?{hiddenBy:p.occludedBy}:{}),...(!p.inFrame?{outOfFrame:true}:{})}]))}}:{}),
    ...(lightNotes.get(l.id)?{lightCondition:lightNotes.get(l.id)}:{}),
@@ -241,7 +254,8 @@ export function buildPrompt(json){
  const people=json.labels.filter(l=>l.kind==='person'),props=json.labels.filter(l=>l.kind==='prop');
  const hasRefs=json.labels.some(l=>l.references.length);
  const refs=l=>l.references.length?`\n  설정화: ${l.references.map(r=>`${r.file}(${r.label}${r.note?': '+r.note:''})`).join(', ')}`:'';
- const person=l=>`- ${l.color} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}${refs(l)}${l.visible?`${l.pose?.text?`\n  포즈: ${l.pose.text}`:''}${l.lightCondition?`\n  명암: ${l.lightCondition.text}`:''}`:'\n  (이 컷에서는 화면에 보이지 않음)'}`;
+ const person=l=>`- ${l.color} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}${l.body?`
+  마네킹 체형: ${l.body.label}, 키 ${l.body.heightM}m (${l.body.specified?'생김새·옷은':'성별·체형·생김새·옷은 모두'} 설명과 설정화를 따름)`:''}${refs(l)}${l.visible?`${l.pose?.text?`\n  포즈: ${l.pose.text}`:''}${l.lightCondition?`\n  명암: ${l.lightCondition.text}`:''}`:'\n  (이 컷에서는 화면에 보이지 않음)'}`;
  const prop=l=>`- ${l.color} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}${refs(l)}${l.visible?'':' (화면에 보이지 않음)'}`;
  const order=people.filter(l=>l.visible).sort((a,b)=>a.distanceM.median-b.distanceM.median),others=json.labels.filter(l=>l.kind!=='person'&&l.visible&&l.distanceM).sort((a,b)=>a.distanceM.median-b.distanceM.median);
  const cameraLine=String(json.shotDescription||'').split('\n').find(t=>t.startsWith('- 카메라:'));
