@@ -92,7 +92,11 @@ export function analyzeScene(input) {
   const ids=new Set();
   function id(v,p){const value=str(v,p);if(!/^[A-Za-z0-9_-]{1,64}$/.test(value))error(p,'INVALID_ID','1~64자의 영문·숫자·밑줄·하이픈 ID가 필요합니다.','[A-Za-z0-9_-]{1,64}',v);else if(ids.has(value))error(p,'DUPLICATE_ID','인물·소품 ID가 중복됩니다. 고유한 ID로 바꾸세요.','unique actor/prop id',v);ids.add(value);return value;}
   const actors=list(raw.actors===undefined?[]:raw.actors,'actors',12).map((a,i)=>{
-    const p='actors['+i+']';keys(a,['id','name','position','yaw','height','headUnits','bodyType','chest','pose','joints','intent','role','description'],p);
+    const p='actors['+i+']';keys(a,['id','name','position','yaw','height','headUnits','bodyType','chest','pose','joints','intent','role','description','lookAt','expression'],p);
+    // lookAt: another actor's or a prop's id, or a point [x, y, z] in metres. The head and
+    // neck are turned toward it when the scene loads (checked against ids below).
+    const lookAt=a.lookAt===undefined?undefined:typeof a.lookAt==='string'?a.lookAt:vec(a.lookAt,p+'.lookAt');
+    if(a.expression!==undefined&&(typeof a.expression!=='string'||a.expression.length>200))error(p+'.expression','STRING_REQUIRED','표정은 200자 이하 문자열로 적으세요.','string, maxLength 200',a.expression);
     if(a.bodyType!==undefined){if(!BODY_TYPE_NAMES.includes(a.bodyType))error(p+'.bodyType','UNSUPPORTED_BODY_TYPE','지원하지 않는 체형 종류입니다.',BODY_TYPE_NAMES,a.bodyType);else if(a.bodyType!=='female'&&(a.chest!==undefined||(a.headUnits!==undefined&&a.headUnits!==8)))error(p+'.bodyType','BODY_TYPE_CONFLICT','체형 종류를 쓰면 headUnits·chest는 넣지 않습니다(아이 체형은 비례가 내장됨).','bodyType only',a.bodyType);}
     const chest=a.chest===undefined?undefined:normalizeChest(a.chest);
     if(a.chest!==undefined)c.errors.push(...chestIssues(a.chest,p+'.chest').slice(0,Math.max(0,100-c.errors.length)));
@@ -104,12 +108,19 @@ export function analyzeScene(input) {
       const props=obj(values,p+'.joints.'+joint);keys(props,Object.keys(JOINTS[joint]),p+'.joints.'+joint);joints[joint]={};
       for(const [key,value]of Object.entries(props))if(Object.hasOwn(JOINTS[joint],key))joints[joint][key]=num(value,p+'.joints.'+joint+'.'+key,...JOINTS[joint][key]);
     }
-    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),position:vec(a.position,p+'.position'),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),height:num(a.height===undefined?1.75:a.height,p+'.height',0.5,3),headUnits:num(a.headUnits===undefined?8:a.headUnits,p+'.headUnits',3,12),...(a.bodyType!==undefined&&a.bodyType!=='female'?{bodyType:a.bodyType}:{}),...(chest?{chest}:{}),pose,joints,intent:str(a.intent,p+'.intent'),role:str(a.role,p+'.role'),description:str(a.description,p+'.description')};
+    return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),position:vec(a.position,p+'.position'),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),height:num(a.height===undefined?1.75:a.height,p+'.height',0.5,3),headUnits:num(a.headUnits===undefined?8:a.headUnits,p+'.headUnits',3,12),...(a.bodyType!==undefined&&a.bodyType!=='female'?{bodyType:a.bodyType}:{}),...(chest?{chest}:{}),pose,joints,intent:str(a.intent,p+'.intent'),role:str(a.role,p+'.role'),description:str(a.description,p+'.description'),...(lookAt!==undefined?{lookAt}:{}),...(typeof a.expression==='string'&&a.expression&&a.expression.length<=200?{expression:a.expression}:{})};
   });
   const props=list(raw.props===undefined?[]:raw.props,'props',80).map((a,i)=>{
     const p='props['+i+']';keys(a,['id','name','type','position','size','yaw','color','role','intent','description'],p);
     if(!PROP_TYPES.includes(a.type))error(p+'.type','UNSUPPORTED_PROP','지원하지 않는 소품 형상입니다.',PROP_TYPES,a.type);
     return {id:id(a.id,p+'.id'),name:str(a.name,p+'.name',typeof a.id==='string'?a.id:''),type:a.type,position:vec(a.position,p+'.position'),size:vec(a.size,p+'.size',0.02,20),yaw:num(a.yaw===undefined?0:a.yaw,p+'.yaw',-360,360),color:color(a.color,p+'.color','#8c7965'),role:str(a.role,p+'.role'),intent:str(a.intent,p+'.intent'),description:str(a.description,p+'.description')};
+  });
+  // Gaze targets must name someone or something in this scene, and not the person itself.
+  actors.forEach((a,i)=>{
+    if(typeof a.lookAt!=='string')return;const p='actors['+i+'].lookAt';
+    if(a.lookAt===a.id)error(p,'SELF_LOOK_TARGET','자기 자신을 바라볼 수는 없습니다.','other actor or prop id',a.lookAt);
+    else if(!actors.some(o=>o.id===a.lookAt)&&!props.some(o=>o.id===a.lookAt))error(p,'UNKNOWN_LOOK_TARGET','이 장면에 없는 인물·소품 ID입니다.',[...actors.map(o=>o.id),...props.map(o=>o.id)].filter(x=>x!==a.id),a.lookAt);
+    if(a.pose==='lying')warn(p,'LOOK_AT_LYING','누운 자세에서는 시선을 자동으로 맞추지 않습니다. 필요하면 joints로 머리를 돌리세요.');
   });
   const shotIds=new Set();
   const shots=list(raw.shots===undefined?[]:raw.shots,'shots',24).map((s,i)=>{

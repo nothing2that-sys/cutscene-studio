@@ -223,7 +223,7 @@ export function buildShotJson({shot,scene,camera,facts,description,labels,stats,
   const s=stats.get(l.index),notes=objectNotes.get(l.id)||{},actor=facts.actors.find(a=>a.id===l.id),descActor=description?.structured?.actors?.find(a=>a.id===l.id),descProp=description?.structured?.props?.find(p=>p.id===l.id);
   const refs=(references[l.id]||[]).map((r,i)=>{const file=`refs/${safe(l.id)}/${i+1}-${REF_SLUG[r.label]||'other'}.${ext(r.mime)}`;refFiles.push({name:file,dataUrl:r.dataUrl});return {file,label:r.label,note:r.note||'',originalName:r.name};});
   const body=l.kind==='person'?mannequinBody(l.root||l.source?.root):null;
-  return {index:l.index,color:l.color,kind:l.kind,id:l.id,name:l.name,...(notes.role||notes.intent||notes.description?{notes}:{}),...(body?{body}:{}),references:refs,visible:!!s,
+  return {index:l.index,color:l.color,kind:l.kind,id:l.id,name:l.name,...(Object.values(notes).some(v=>v&&v.length)?{notes}:{}),...(body?{body}:{}),references:refs,visible:!!s,
    ...(s?{screen:{bbox:s.bbox,pixelShare:s.pixelShare},distanceM:s.depthM,directLight:s.direct}:{}),
    ...(actor?{pose:{text:Array.isArray(descActor?.text)?descActor.text.join('. '):(descActor?.text||''),stance:descActor?.stance||'',yawToCameraDeg:actor.yawToCamera,joints:Object.fromEntries(Object.entries(actor.points).map(([k,p])=>[k,{xy:p.screen,distanceM:p.depth,visible:p.inFrame&&!p.occludedBy,...(p.occludedBy?{hiddenBy:p.occludedBy}:{}),...(!p.inFrame?{outOfFrame:true}:{})}]))}}:{}),
    ...(lightNotes.get(l.id)?{lightCondition:lightNotes.get(l.id)}:{}),
@@ -253,10 +253,14 @@ export function buildShotJson({shot,scene,camera,facts,description,labels,stats,
 export function buildPrompt(json){
  const people=json.labels.filter(l=>l.kind==='person'),props=json.labels.filter(l=>l.kind==='prop');
  const hasRefs=json.labels.some(l=>l.references.length);
+ // Role and intent carry the action and emotion of the cut; gaze and expression are
+ // not visible on the faceless mannequin, so they must be said in words.
+ const nameOf=id=>Array.isArray(id)?'지정한 지점':(json.labels.find(x=>x.id===id)?.name||id);
+ const story=l=>{const n=l.notes||{},lines=[];if(n.role||n.intent)lines.push(`\n  역할·의도: ${[n.role,n.intent].filter(Boolean).join(' — ')}`);if(n.lookAt)lines.push(`\n  시선: ${nameOf(n.lookAt)}을(를) 봄`);if(n.expression)lines.push(`\n  표정: ${n.expression}`);return lines.join('');};
  const refs=l=>l.references.length?`\n  설정화: ${l.references.map(r=>`${r.file}(${r.label}${r.note?': '+r.note:''})`).join(', ')}`:'';
- const person=l=>`- ${l.color} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}${l.body?`
+ const person=l=>`- ${l.color} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}${story(l)}${l.body?`
   마네킹 체형: ${l.body.label}, 키 ${l.body.heightM}m (${l.body.specified?'생김새·옷은':'성별·체형·생김새·옷은 모두'} 설명과 설정화를 따름)`:''}${refs(l)}${l.visible?`${l.pose?.text?`\n  포즈: ${l.pose.text}`:''}${l.lightCondition?`\n  명암: ${l.lightCondition.text}`:''}`:'\n  (이 컷에서는 화면에 보이지 않음)'}`;
- const prop=l=>`- ${l.color} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}${refs(l)}${l.visible?'':' (화면에 보이지 않음)'}`;
+ const prop=l=>`- ${l.color} = ${l.name}${l.notes?.description?` — ${l.notes.description}`:''}${l.notes?.role?`\n  역할: ${l.notes.role}`:''}${refs(l)}${l.visible?'':' (화면에 보이지 않음)'}`;
  const order=people.filter(l=>l.visible).sort((a,b)=>a.distanceM.median-b.distanceM.median),others=json.labels.filter(l=>l.kind!=='person'&&l.visible&&l.distanceM).sort((a,b)=>a.distanceM.median-b.distanceM.median);
  const cameraLine=String(json.shotDescription||'').split('\n').find(t=>t.startsWith('- 카메라:'));
  return [`# 컷 작화 지시 · ${json.scene.title} / ${json.shot.name}`,

@@ -1019,7 +1019,7 @@ function updatePropertiesPanel() {
     if(cfg.target!=='self'&&activeMannequin[cfg.target])setHighlight(activeMannequin[cfg.target]);else clearHighlight();
     updatePropertiesPanel();
   };
-  renderObjectInfo(content,activeMannequin,studio?.snapshot().document,{objects:()=>[...mannequins,...importedModels],commit:()=>{captureState();updateLayerWindow();}});
+  renderObjectInfo(content,activeMannequin,studio?.snapshot().document,{objects:()=>[...mannequins,...importedModels],constrain:constrainBody,commit:()=>{captureState();updateLayerWindow();}});
   setupSliderListeners();bindBodyProfile();attachGizmo(activeMannequin);
 }
 

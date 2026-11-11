@@ -62,3 +62,10 @@ test('low pose presets are accepted for every body type',()=>{
   }
   assert.ok(POSES.lying.body,'lying turns the whole figure');
 });
+test('gaze and expression: targets must exist, not be the person, and expression stays short',()=>{
+  const base={version:1,units:'meters',actors:[{id:'a',position:[0,0,0],lookAt:'b',expression:'놀란 얼굴'},{id:'b',position:[1,0,0],lookAt:[0,1.5,2]}],props:[{id:'cup',type:'box',position:[0,0,1],size:[.1,.1,.1]}],camera:{position:[0,1,4],target:[0,1,0]}};
+  const v=validateScene(base);assert.equal(v.actors[0].lookAt,'b');assert.equal(v.actors[0].expression,'놀란 얼굴');assert.deepEqual(v.actors[1].lookAt,[0,1.5,2]);
+  assert.equal(validateScene({...base,actors:[{...base.actors[0],lookAt:'cup'},base.actors[1]]}).actors[0].lookAt,'cup');
+  const code=a=>{try{validateScene({...base,actors:[{...base.actors[0],...a},base.actors[1]]});return null;}catch(e){return e.issues.map(i=>i.code).join(',');}};
+  assert.equal(code({lookAt:'nobody'}),'UNKNOWN_LOOK_TARGET');assert.equal(code({lookAt:'a'}),'SELF_LOOK_TARGET');assert.equal(code({expression:'x'.repeat(201)}),'STRING_REQUIRED');
+});

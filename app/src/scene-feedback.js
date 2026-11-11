@@ -15,7 +15,7 @@ export function analyzeEditorState(data) {
   function transform(m,p){
     if(!plain(m)){add(p,'OBJECT_REQUIRED','변환 객체가 필요합니다.','object',m);return;}
     vector(m.position,p+'.position');rotation(m.rotation,p+'.rotation');vector(m.scale,p+'.scale',true);
-    if(m.sceneNotes!==undefined){if(!plain(m.sceneNotes))add(p+'.sceneNotes','OBJECT_REQUIRED','대상 설명은 객체여야 합니다.');else for(const [key,value]of Object.entries(m.sceneNotes))if(!['role','intent','description'].includes(key)||typeof value!=='string'||value.length>12000)add(p+'.sceneNotes.'+key,'INVALID_DESCRIPTION','역할·배치 의도·외형 설명은 12000자 이하 문자열로 지정하세요.');}
+    if(m.sceneNotes!==undefined){if(!plain(m.sceneNotes))add(p+'.sceneNotes','OBJECT_REQUIRED','대상 설명은 객체여야 합니다.');else for(const [key,value]of Object.entries(m.sceneNotes))if(key==='lookAt'?!(typeof value==='string'&&value.length<=64||Array.isArray(value)&&value.length===3&&value.every(Number.isFinite)):key==='expression'?typeof value!=='string'||value.length>200:!['role','intent','description'].includes(key)||typeof value!=='string'||value.length>12000)add(p+'.sceneNotes.'+key,'INVALID_DESCRIPTION','역할·배치 의도·외형 설명은 12000자 이하 문자열로 지정하세요.');}
     if(m.name!==undefined&&typeof m.name!=='string')add(p+'.name','STRING_REQUIRED','이름은 문자열이어야 합니다.');
   }
   function mannequin(m,p){

@@ -24,7 +24,7 @@
 | title/sourceText/assumptions | 제목, 관련 원문, 원문과 구별한 연출상 가정 |
 | style | 최종 작화 화풍(문자열, 최대 2000자). 생략하면 2D 웹툰 일러스트 기본값 |
 | room | size, color(#RRGGBB), walls(boolean) |
-| actors[] | 고유 id, name, position, yaw, height, headUnits, bodyType, chest, pose, joints, role, intent, description |
+| actors[] | 고유 id, name, position, yaw, height, headUnits, bodyType, chest, pose, joints, role, intent, description, lookAt, expression |
 | props[] | 인물과도 중복되지 않는 id, name, type, position, size, yaw, color, role, intent, description |
 | camera | position, target, fov(10~100). 위치와 목표점은 달라야 함. zoom·view는 편집기가 쓰는 값이므로 새 장면에는 넣지 않음 |
 | lighting | type(sun·lamp·spot, 생략 시 sun), position, target, color, intensity(0~10), ambient(0~3), spot일 때 coneDeg(5~170, 기본 50)·softness(0~1, 기본 0.3) |
@@ -32,7 +32,23 @@
 
 관절은 l/r가 인물 기준 좌우다.
 
-role·description은 최종 작화에 쓰이는 외형·역할 설명이다. 인물이면 옷·머리·나이대처럼 그림에 필요한 것만 쓰고, 소품이면 재질·색·디자인을 쓴다. intent는 왜 그 자리·자세에 두었는지다. 이 문장들은 LLM 패키지의 인물 목록에 라벨 색과 짝지어 그대로 들어간다.
+role·description은 최종 작화에 쓰이는 외형·역할 설명이다. 인물이면 옷·머리·나이대처럼 그림에 필요한 것만 쓰고, 소품이면 재질·색·디자인을 쓴다. intent는 왜 그 자리·자세에 두었는지다. 이 문장들은 LLM 패키지의 인물 목록에 라벨 색과 짝지어 그대로 들어간다(인물은 설명·역할·의도, 소품은 설명·역할).
+
+## 시선과 표정 (lookAt, expression)
+
+마네킹에는 얼굴이 없어서 누가 누구를 보는지와 표정이 그림에 드러나지 않는다. 원문에 시선이나 표정이 있으면 적는다.
+
+| 필드 | 값 | 동작 |
+| --- | --- | --- |
+| lookAt | 다른 인물·소품의 id, 또는 지점 [x, y, z] (m) | 장면을 불러올 때 목과 머리를 그쪽으로 돌린다. 지시문에 「시선: ○○을(를) 봄」으로 들어간다 |
+| expression | 200자 이하 문장 (예: "놀라 굳은 얼굴") | 지시문에 「표정: …」으로 들어간다 |
+
+- 목과 머리는 합쳐서 좌우 80°, 위아래 45°까지만 돈다.
+  - 대상이 그보다 옆이나 뒤에 있으면 한계까지만 돌리고 경고(LOOK_AT_LIMIT)를 낸다.
+  - 이때는 yaw로 몸도 대상 쪽으로 돌린다.
+- lookAt을 쓰면 joints의 head·neck turn/nod는 덮어쓴다. tilt는 그대로 둔다.
+- 자기 자신이나 장면에 없는 id는 오류다(SELF_LOOK_TARGET, UNKNOWN_LOOK_TARGET).
+- lying 자세에서는 자동으로 돌리지 않는다(경고 LOOK_AT_LYING).
 
 ## 체형 종류 (bodyType)
 

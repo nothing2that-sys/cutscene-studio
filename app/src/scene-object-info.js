@@ -1,10 +1,20 @@
 import * as THREE from 'three';
 import {getBodyV1,displayedObjectBounds} from './body-v1-adapter.js';
 import {OBB} from 'three/addons/math/OBB.js';
+import {aimHead,lookTarget} from './look-at.js';
+
+const objectId=o=>o.userData.studioId||o.userData.primitive?.id||null;
+// Gaze targets in the live scene: people by their head, props by their centre.
+export function liveLookScene(objects){
+ return {actors:objects.filter(o=>o.torso&&objectId(o)).map(o=>({id:objectId(o),root:o})),props:objects.filter(o=>!o.torso&&objectId(o)).map(o=>({id:objectId(o),center:displayedObjectBounds(o).getCenter(new THREE.Vector3())}))};
+}
 
 export function objectNotes(object,scene){
  const source=object.torso?scene?.actors?.find(a=>a.id===object.userData.studioId):object.userData.primitive;
- return Object.fromEntries(['role','intent','description'].map(key=>[key,object.userData.sceneNotes?.[key]??source?.[key]??'']));
+ const notes=Object.fromEntries(['role','intent','description'].map(key=>[key,object.userData.sceneNotes?.[key]??source?.[key]??'']));
+ // Gaze and expression exist for people only and are left out when unset.
+ for(const key of ['lookAt','expression']){const v=object.userData.sceneNotes?.[key]??source?.[key];if(v!==undefined&&v!==''&&v!==null)notes[key]=v;}
+ return notes;
 }
 export function describeObjects(objects,scene){
  let actorIndex=0,propIndex=0;const used=new Set();
@@ -50,8 +60,28 @@ export function renderObjectInfo(container,object,scene,api){
  }
  if(object.torso){fields.description.placeholder='손발의 형태·손톱·피부·장갑·신발 등 최종 작화에 필요한 설명';const hint=document.createElement('p');hint.className='body-hint';hint.textContent='손발은 닫힌 단순 외피로 표시합니다. 세부 형태·손톱·장갑·신발은 인물 설명으로 전달합니다. 손목·발목 방향과 접촉 위치는 현재 포즈를 유지합니다.';section.appendChild(hint);}
  const status=document.createElement('output');status.id='object-info-status';
- const save=()=>{object.name=fields.name.value;object.userData.sceneNotes=Object.fromEntries(['role','intent','description'].map(key=>[key,fields[key].value]));if(object.userData.primitive)Object.assign(object.userData.primitive,{name:object.name,...object.userData.sceneNotes});heading.textContent='선택한 대상 · '+(object.name||'이름 없음');api.commit();status.textContent='설명 저장됨 · 최종 전달 묶음과 작화 지시문에 포함됩니다.';};
- Object.values(fields).forEach(field=>field.onchange=save);
+ // People: expression and gaze target. Both go to the image prompt in words; the gaze
+ // button also turns the neck and head toward the target.
+ let gaze=null;
+ if(object.torso){
+  const own=objectId(object),others=api.objects().filter(o=>o!==object&&objectId(o));
+  const expRow=document.createElement('label');expRow.className='studio-label';expRow.textContent='표정';
+  const exp=document.createElement('input');exp.id='object-info-expression';exp.maxLength=200;exp.value=values.expression||'';exp.placeholder='예: 놀라 굳은 얼굴 · 눈썹을 찌푸림';expRow.appendChild(exp);section.appendChild(expRow);fields.expression=exp;
+  const lookRow=document.createElement('label');lookRow.className='studio-label';lookRow.textContent='시선 대상';
+  const look=document.createElement('select');look.id='object-info-lookAt';
+  const opts=[['','지정 안 함'],...others.map(o=>[objectId(o),(o.torso?'인물 · ':'소품 · ')+(o.name||objectId(o))])];
+  if(Array.isArray(values.lookAt))opts.push(['@point','지정한 지점 ('+values.lookAt.map(n=>n.toFixed(1)).join(', ')+')']);
+  for(const [v,t]of opts){const o=document.createElement('option');o.value=v;o.textContent=t;look.appendChild(o);}
+  look.value=Array.isArray(values.lookAt)?'@point':(values.lookAt||'');lookRow.appendChild(look);section.appendChild(lookRow);
+  const aim=document.createElement('button');aim.className='btn';aim.id='object-info-aim';aim.textContent='시선 맞추기 (목·머리 회전)';section.appendChild(aim);
+  gaze={look,exp,point:Array.isArray(values.lookAt)?values.lookAt:null,own};
+  aim.onclick=()=>{const v=look.value;if(!v){status.textContent='시선 대상을 먼저 고르세요.';return;}
+   const target=lookTarget(v==='@point'?gaze.point:v,liveLookScene(api.objects()));if(!target){status.textContent='시선 대상을 찾지 못했습니다.';return;}
+   const r=aimHead(object,target,{constrain:api.constrain});save();status.textContent=r?.clamped?'목·머리 회전 한계까지 돌렸습니다. 몸 방향도 돌려 보세요.':'시선을 맞췄습니다.';};
+ }
+ const save=()=>{object.name=fields.name.value;object.userData.sceneNotes=Object.fromEntries(['role','intent','description'].map(key=>[key,fields[key].value]));
+  if(gaze){const v=gaze.look.value,lookAt=v==='@point'?gaze.point:v||undefined;if(lookAt!==undefined)object.userData.sceneNotes.lookAt=lookAt;if(gaze.exp.value.trim())object.userData.sceneNotes.expression=gaze.exp.value.trim();}if(object.userData.primitive)Object.assign(object.userData.primitive,{name:object.name,...object.userData.sceneNotes});heading.textContent='선택한 대상 · '+(object.name||'이름 없음');api.commit();status.textContent='설명 저장됨 · 최종 전달 묶음과 작화 지시문에 포함됩니다.';};
+ Object.values(fields).forEach(field=>field.onchange=save);if(gaze)gaze.look.onchange=save;
  const hint=document.createElement('p');hint.className='body-hint';hint.textContent='입력을 마치면 자동 저장합니다. 설명을 바꿔도 3D 크기·위치·포즈는 바뀌지 않습니다. 공간 수정은 뷰어에서 하세요.';section.append(hint,status);
  const check=document.createElement('button');check.className='btn';check.id='object-overlap-check';check.textContent='현재 공간 겹침 검사';const report=document.createElement('output');report.id='object-overlap-report';
  check.onclick=()=>{const result=inspectObjectOverlaps(api.objects(),object);report.textContent=result.issues.length?result.issues.map(i=>i.names.join(' ↔ ')+' · 겹침 가능성').join('\n')+'\n의도한 접촉인지 측면·위에서도 확인하세요.':'큰 외곽 겹침을 찾지 못했습니다. 정밀 접촉 검증은 아닙니다.';report.dataset.warning=String(!!result.issues.length);};

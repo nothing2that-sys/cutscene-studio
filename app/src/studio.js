@@ -14,6 +14,7 @@ import {buildLabels,renderPasses,analyzePasses,depthRange,passImages,drawPose,li
 import {dataUrlBytes} from './package-files.js';
 import {drawRange,drawPlan} from './depth-views.js';
 import {fitViewToAspect} from './camera-view.js';
+import {aimHead,lookTarget} from './look-at.js';
 import {ensureBodyTypes,bodyTypeReady} from './body-v1-adapter.js';
 import {BODY_TYPES,bodyTypeOf} from './doll-profiles.js';
 
@@ -263,6 +264,7 @@ export function initCutsceneStudio(api) {
   function loadScene(raw) {
     const next=validateScene(raw); // Validate the entire proposal before changing the scene.
     const data={mannequins:[],importedModels:[],activeIndex:0,activeImportIndex:-1,selectedBodyPart:'Root'};
+    const built=[];
     for(const actor of next.actors) {
       const m=api.createFullMannequin({height:actor.height,headUnits:actor.headUnits,...(actor.chest?{chest:actor.chest}:{}),...(actor.bodyType?{bodyType:actor.bodyType}:{})});
       // Mannequin.js adds new instances to its shared scene automatically.
@@ -276,7 +278,18 @@ export function initCutsceneStudio(api) {
       constrainBody(m);m.rotation.y=THREE.MathUtils.degToRad(actor.yaw);m.updateMatrixWorld(true);
       const bottom=displayedObjectBounds(m).min.y;
       m.position.x=actor.position[0];m.position.z=actor.position[2];m.position.y+=actor.position[1]-bottom;
-      data.mannequins.push({name:actor.name,studioId:actor.id,sceneNotes:{role:actor.role,intent:actor.intent,description:actor.description},bodyProfile:m.userData.bodyProfile,...serializeBodyV1(m),boneLayout:captureBoneLayout(m),joints:snapshotBodyJoints(m),position:m.position.toArray(),rotation:m.rotation.toArray(),scale:m.scale.toArray(),posture:m.posture});
+      built.push({actor,m});
+    }
+    // Gaze: turn neck and head toward the target once everyone stands in place.
+    const lookIssues=[];
+    const lookScene={actors:built.map(b=>({id:b.actor.id,root:b.m})),props:next.props.map(p=>({id:p.id,center:new THREE.Vector3(p.position[0],p.position[1]+p.size[1]/2,p.position[2])}))};
+    for(const {actor,m} of built){
+      if(actor.lookAt===undefined||actor.pose==='lying')continue;
+      const target=lookTarget(actor.lookAt,lookScene),result=target&&aimHead(m,target,{constrain:constrainBody});
+      if(result?.clamped)lookIssues.push(actor.name+'의 시선은 목·머리 회전 한계까지만 돌렸습니다. 몸 방향(yaw)도 돌리세요.');
+    }
+    for(const {actor,m} of built){
+      data.mannequins.push({name:actor.name,studioId:actor.id,sceneNotes:{role:actor.role,intent:actor.intent,description:actor.description,...(actor.lookAt!==undefined?{lookAt:actor.lookAt}:{}),...(actor.expression?{expression:actor.expression}:{})},bodyProfile:m.userData.bodyProfile,...serializeBodyV1(m),boneLayout:captureBoneLayout(m),joints:snapshotBodyJoints(m),position:m.position.toArray(),rotation:m.rotation.toArray(),scale:m.scale.toArray(),posture:m.posture});
     }
     data.importedModels=next.props.map(p=>({name:p.name,primitive:p,position:p.position,rotation:[0,THREE.MathUtils.degToRad(p.yaw),0,'XYZ'],scale:[1,1,1]}));
     const camera=new THREE.PerspectiveCamera();setCamera(camera,next.camera);
@@ -284,6 +297,7 @@ export function initCutsceneStudio(api) {
     data.studio={document:next,initialProposal:structuredClone(next),proposalOrigin:'scene-import',shots:next.shots.length?next.shots:[{id:'initial',name:'첫 구도',purpose:'초기 추천 구도',camera:next.camera}],activeShot:0,aspect};
     api.applyState(JSON.stringify(data));api.commit();
     status(`「${next.title}」 · 인물 ${next.actors.length}명, 소품 ${next.props.length}개를 배치했습니다.`);
+    return lookIssues;
   }
   function showImportError(error,text='',source='불러오기',scenePreserved=true) {
     const report={reportVersion:1,source,originalJSON:text,inputKind:'project',valid:false,applied:false,scenePreserved,visualReview:false,errors:error.issues||[{severity:'error',path:'$',code:'IMPORT_FAILED',message:error.message}],warnings:[]};
@@ -305,7 +319,7 @@ export function initCutsceneStudio(api) {
     if(!apply){status('검사 완료 · 오류 0개 / 경고 '+report.warnings.length+'개 · 아직 적용하지 않았습니다.');return true;}
     const previous=api.getState();
     try {
-      if(report.inputKind==='scene')loadScene(report.value);
+      if(report.inputKind==='scene')for(const message of loadScene(report.value)||[])report.warnings.push({severity:'warning',path:'actors',code:'LOOK_AT_LIMIT',message});
       else if(report.inputKind==='object')api.addObject(report.value);
       else {const applied=api.applyState(JSON.stringify(report.value));if(applied?.then)return applied.then(()=>{api.commit();report.applied=true;feedback.show(report);const cleared=report.value.characterReferences?'':clearReferences();status('입력 적용 완료 · 오류 0개 / 경고 '+report.warnings.length+'개'+cleared);return true;},error=>{report.valid=false;report.scenePreserved=true;report.errors.push({severity:'error',path:'$',code:'APPLY_FAILED',message:error.message});feedback.show(report);status('복원 실패 · 기존 장면을 유지했습니다.',true);return false;});api.commit();}
       report.applied=true;feedback.show(report);
