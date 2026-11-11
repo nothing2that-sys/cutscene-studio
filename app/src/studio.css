@@ -93,3 +93,6 @@ body.left-collapsed #studio-panel,body.right-collapsed #right-panels{display:non
 .studio-ref-row{display:grid;grid-template-columns:48px 72px 1fr auto;gap:6px;align-items:center}
 .studio-ref-row img{width:48px;height:48px;object-fit:cover;border-radius:4px;background:#111}
 .studio-ref-row input,.studio-ref-row select{min-width:0}
+/* Restore offer for unsaved work kept by autosave.js */
+#autosave-banner {position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;gap:8px;align-items:center;max-width:calc(100vw - 32px);padding:8px 12px;border-radius:10px;background:#1f2937;border:1px solid #6366f1;color:#e5e7eb;font-size:13px;box-shadow:0 6px 24px #0008;}
+#autosave-banner[hidden] {display:none;}

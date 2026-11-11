@@ -32,7 +32,8 @@ export function initCutsceneStudio(api) {
   let shotProjection=null;
   // Character sheets / references per object id. Kept out of undo history (large images);
   // saved with the project file.
-  let references={};
+  let references={},referencesObserver=null;
+  const referencesChanged=()=>referencesObserver?.();
   let passView='color',lastDepthRange=null,passTimer=0;
   const environment = new THREE.Group();
   environment.name = 'Cutscene room';
@@ -288,6 +289,14 @@ export function initCutsceneStudio(api) {
     const report={reportVersion:1,source,originalJSON:text,inputKind:'project',valid:false,applied:false,scenePreserved,visualReview:false,errors:error.issues||[{severity:'error',path:'$',code:'IMPORT_FAILED',message:error.message}],warnings:[]};
     feedback.show(report);status(error.message,true);
   }
+  // Character sheets live outside undo history, so a new scene or a project file must
+  // replace them explicitly; otherwise sheets from the previous work stay attached to
+  // any person or prop that happens to share an id (e.g. the example scene's 'jihoon').
+  function clearReferences(){
+    const before=Object.values(references).reduce((n,list)=>n+list.length,0);
+    references={};renderReferences();
+    return before?' · 이전 설정화 '+before+'장을 비웠습니다':'';
+  }
   function importText(text,source='붙여넣기',sceneOnly=true,apply=true) {
     const report=analyzeInputText(text,source,sceneOnly);
     feedback.show(report);
@@ -298,10 +307,11 @@ export function initCutsceneStudio(api) {
     try {
       if(report.inputKind==='scene')loadScene(report.value);
       else if(report.inputKind==='object')api.addObject(report.value);
-      else {const applied=api.applyState(JSON.stringify(report.value));if(applied?.then)return applied.then(()=>{api.commit();report.applied=true;feedback.show(report);status('입력 적용 완료 · 오류 0개 / 경고 '+report.warnings.length+'개');return true;},error=>{report.valid=false;report.scenePreserved=true;report.errors.push({severity:'error',path:'$',code:'APPLY_FAILED',message:error.message});feedback.show(report);status('복원 실패 · 기존 장면을 유지했습니다.',true);return false;});api.commit();}
+      else {const applied=api.applyState(JSON.stringify(report.value));if(applied?.then)return applied.then(()=>{api.commit();report.applied=true;feedback.show(report);const cleared=report.value.characterReferences?'':clearReferences();status('입력 적용 완료 · 오류 0개 / 경고 '+report.warnings.length+'개'+cleared);return true;},error=>{report.valid=false;report.scenePreserved=true;report.errors.push({severity:'error',path:'$',code:'APPLY_FAILED',message:error.message});feedback.show(report);status('복원 실패 · 기존 장면을 유지했습니다.',true);return false;});api.commit();}
       report.applied=true;feedback.show(report);
+      const cleared=report.inputKind==='scene'||(report.inputKind==='project'&&!report.value.characterReferences)?clearReferences():'';
       const counts=report.inputKind==='scene'?' · 인물 '+report.value.actors.length+'명, 소품 '+report.value.props.length+'개':'';
-      status('입력 적용 완료'+counts+' · 오류 0개 / 경고 '+report.warnings.length+'개');return true;
+      status('입력 적용 완료'+counts+' · 오류 0개 / 경고 '+report.warnings.length+'개'+cleared);return true;
     }catch(error){
       let preserved=true;if(report.inputKind!=='project'&&!error.scenePreserved)try{api.applyState(JSON.stringify(previous));}catch{preserved=false;}
       report.valid=false;report.scenePreserved=preserved;report.errors.push({severity:'error',path:'$',code:'APPLY_FAILED',message:error.message});
@@ -411,14 +421,14 @@ export function initCutsceneStudio(api) {
       list.forEach((ref,i)=>{
         const row=window.document.createElement('div');row.className='studio-ref-row';
         const thumb=window.document.createElement('img');thumb.src=ref.dataUrl;thumb.alt=ref.name;thumb.title=ref.name;
-        const kind=window.document.createElement('select');kind.setAttribute('aria-label','설정화 종류');for(const l of REF_LABELS){const o=window.document.createElement('option');o.value=o.textContent=l;kind.appendChild(o);}kind.value=ref.label;kind.onchange=()=>{ref.label=kind.value;};
-        const note=window.document.createElement('input');note.placeholder='메모 (예: 비 오는 장면 의상)';note.value=ref.note||'';note.maxLength=500;note.setAttribute('aria-label','설정화 메모');note.onchange=()=>{ref.note=note.value;};
-        const remove=window.document.createElement('button');remove.className='btn';remove.textContent='×';remove.setAttribute('aria-label',ref.name+' 연결 해제');remove.onclick=()=>{list.splice(i,1);if(!list.length)delete references[t.id];renderReferences();};
+        const kind=window.document.createElement('select');kind.setAttribute('aria-label','설정화 종류');for(const l of REF_LABELS){const o=window.document.createElement('option');o.value=o.textContent=l;kind.appendChild(o);}kind.value=ref.label;kind.onchange=()=>{ref.label=kind.value;referencesChanged();};
+        const note=window.document.createElement('input');note.placeholder='메모 (예: 비 오는 장면 의상)';note.value=ref.note||'';note.maxLength=500;note.setAttribute('aria-label','설정화 메모');note.onchange=()=>{ref.note=note.value;referencesChanged();};
+        const remove=window.document.createElement('button');remove.className='btn';remove.textContent='×';remove.setAttribute('aria-label',ref.name+' 연결 해제');remove.onclick=()=>{list.splice(i,1);if(!list.length)delete references[t.id];renderReferences();referencesChanged();};
         row.append(thumb,kind,note,remove);item.appendChild(row);
       });
       const add=window.document.createElement('label');add.className='btn';add.textContent='+ 설정화 이미지';
       const input=window.document.createElement('input');input.type='file';input.accept='image/png,image/jpeg,image/webp';input.multiple=true;input.hidden=true;input.dataset.refInput=t.id;
-      input.onchange=async()=>{try{for(const file of input.files){const loaded=await loadReference(file);(references[t.id]??=[]).push({id:crypto.randomUUID(),name:file.name,label:(references[t.id]?.length)?'기타':'전신',note:'',...loaded});}status(`${t.name}에 설정화 ${references[t.id]?.length||0}장 연결됨 · 프로젝트 Save에 함께 저장됩니다.`);}catch(e){status(e.message,true);}finally{input.value='';renderReferences();}};
+      input.onchange=async()=>{try{for(const file of input.files){const loaded=await loadReference(file);(references[t.id]??=[]).push({id:crypto.randomUUID(),name:file.name,label:(references[t.id]?.length)?'기타':'전신',note:'',...loaded});}status(`${t.name}에 설정화 ${references[t.id]?.length||0}장 연결됨 · 프로젝트 Save에 함께 저장됩니다.`);}catch(e){status(e.message,true);}finally{input.value='';renderReferences();referencesChanged();}};
       add.appendChild(input);item.appendChild(add);host.appendChild(item);
     }
   }
@@ -481,7 +491,7 @@ export function initCutsceneStudio(api) {
     shotCamera,previewRenderer:preview,updateShotCamera,cleanRender,renderPNG,createHandoffPacket,createShotPackage,computePasses,shotDescription,
     // Top-down plan for people and experiments; not part of the LLM package.
     planPNG(){const {width,height}=exportSize();return passCanvas('plan',computePasses(width,height,{only:'plan'})).toDataURL('image/png');},
-    references:()=>references,
+    references:()=>references,setReferencesObserver(fn){referencesObserver=fn;},
     restoreReferences(value){if(!value||typeof value!=='object')return;const next={};for(const [id,list]of Object.entries(value)){if(!Array.isArray(list))continue;const ok=list.filter(r=>r&&typeof r.dataUrl==='string'&&/^data:image\/(png|jpeg|webp);base64,/.test(r.dataUrl)).map(r=>({id:String(r.id||crypto.randomUUID()),name:String(r.name||'reference'),label:REF_LABELS.includes(r.label)?r.label:'기타',note:String(r.note||'').slice(0,500),mime:r.dataUrl.slice(5,r.dataUrl.indexOf(';')),dataUrl:r.dataUrl}));if(ok.length)next[id]=ok;}references=next;renderReferences();},
     snapshot:()=>structuredClone({document,initialProposal,proposalOrigin,shots,activeShot,aspect,shotProjection}),
     restore(state) {if(!state)return;document=validateScene(state.document);initialProposal=validateScene(state.initialProposal||state.document);proposalOrigin=state.initialProposal?(state.proposalOrigin||'scene-import'):'legacy-current-state';shots=structuredClone(state.shots||[]);activeShot=state.activeShot ?? -1;aspect=state.aspect||16/9;shotProjection=state.shotProjection?structuredClone(state.shotProjection):null;rebuildRoom();syncUI();updateShotCamera();},

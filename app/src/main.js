@@ -15,6 +15,7 @@ import {BODY_TYPES,bodyTypeOf} from './doll-profiles.js';
 import {installBodyV1Main} from './body-v1-main.js';
 import {installSceneFixedView} from './body-v1-fixed.js';
 import {installLayout} from './layout.js';
+import {installAutosave} from './autosave.js';
 import { SceneValidationError, JOINTS } from './scene-format.js';
 import { createCharacter, configureBody, captureBoneLayout, lockBoneLayout, enforceBoneLengths, constrainBody, clampJoint, manipulationChain, solveConstrainedIK, snapshotBodyJoints, readLegacyPosture } from './body-rig.js';
 
@@ -73,6 +74,7 @@ let selectedBodyPart = 'Root';
 const historyStack = [];
 let historyIndex = -1;
 let studio = null;
+let autosave = null;
 let restoreGeneration = 0;
 let restoringState = false;
 let pendingRestore = null;
@@ -149,6 +151,7 @@ function captureState() {
   if (historyStack.length > 30) historyStack.shift();
   else historyIndex++;
   updateHistoryButtons();
+  autosave?.changed();
   const actor=state.mannequins[state.activeIndex],prior=actor?.studioId?previous?.mannequins.find(m=>m.studioId===actor.studioId):previous?.mannequins[state.activeIndex];
   const poseOnly=m=>m&&poseFingerprint({rotations:Object.fromEntries(Object.entries(m.joints).map(([key,j])=>[key,j.rotation]))});
   if(actor&&poseOnly(actor)!==poseOnly(prior))poseLibrary?.recordCurrent();
@@ -695,7 +698,7 @@ function addMannequinFromPickedFile() {
 // ─── Save/Load Project ────────────────────────────────────────────────────────
 async function saveProject() {
   try{await whenSceneReady();}catch(error){studio?.showImportError(error);return;}
-  if (studio) { studio.saveProject(snapshotState()); return; }
+  if (studio) { studio.saveProject(snapshotState()); autosave?.markSaved(); return; }
   const data = {
     mannequins: mannequins.map(m => ({
       position: m.position.toArray(),
@@ -730,7 +733,7 @@ async function loadProject(file) {
   try {
     if(file.size>40_000_000)throw new Error('프로젝트 JSON은 40MB 이하로 넣어주세요.');
     text=await file.text();
-    await studio.importText(text,file.name,false);
+    if(await studio.importText(text,file.name,false))autosave?.markSaved();
   }catch(error){studio?.showImportError(error,text,file.name);}
   finally{document.getElementById('btn-load').value='';}
 }
@@ -1377,6 +1380,11 @@ async function init() {
   installSceneFixedView(bodyV1);
   installLayout();
   captureState();
+  // Installed after the first capture so opening the app never counts as a change.
+  autosave=installAutosave({snapshot:()=>({...snapshotState(),characterReferences:structuredClone(studio?.references()||{})}),
+    restore:state=>Promise.resolve(studio.importText(JSON.stringify(state),'자동 저장',false)).then(ok=>{if(!ok)throw Error('검사 보고서를 확인하세요.');})});
+  studio?.setReferencesObserver(()=>autosave?.changed());
+  window.__autosave=autosave;
 }
 
 function addMannequin(poseName = 'Default') {
