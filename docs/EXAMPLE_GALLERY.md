@@ -1,6 +1,6 @@
 # 예제와 결과 갤러리
 
-[사용 영상](demo/cutscene-studio-demo.webm) · [영상 시나리오](DEMO_SCENARIO.md) · [처음 실행하기](../README.md)
+[42초 기능 소개 · MP4](demo/social/cutscene-studio-x.mp4) · [영상 시나리오](DEMO_SCENARIO_SOCIAL.md) · [80초 사용 흐름](demo/cutscene-studio-demo.webm) · [처음 실행하기](../README.md)
 
 ## 1. 빗속 액션: 장면 → 참조 → 작화
 

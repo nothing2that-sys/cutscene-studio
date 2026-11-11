@@ -4,7 +4,9 @@
 
 ## 예제와 사용 영상
 
-[예제·결과 갤러리](docs/EXAMPLE_GALLERY.md) · [사용 동영상 (한국어 자막)](docs/demo/cutscene-studio-demo.webm) · [영상 시나리오](docs/DEMO_SCENARIO.md) · [개발 과정](docs/DEVELOPMENT.md)
+[예제·결과 갤러리](docs/EXAMPLE_GALLERY.md) · [42초 기능 소개 · X용 MP4](docs/demo/social/cutscene-studio-x.mp4) · [빠른 영상 시나리오](docs/DEMO_SCENARIO_SOCIAL.md) · [개발 과정](docs/DEVELOPMENT.md)
+
+기본 포즈 변경, 포즈 저장·복원, 내 포즈 라이브러리, 구도 저장, 거리·광원 참조, 작화 비교를 빠르게 볼 수 있습니다. [80초 사용 흐름 영상](docs/demo/cutscene-studio-demo.webm)도 제공합니다.
 
 ![3D 참조와 최종 작화 비교](docs/demo/before-after.png)
 
