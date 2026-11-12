@@ -89,7 +89,11 @@ export function initAiWorkflow({host,importScene,buildShot,useWorkingCamera}){
     for(const ref of shot.refFiles)images.push({name:ref.name,dataUrl:ref.dataUrl});
     if(images.length>20)throw Error('참조 이미지가 너무 많습니다. 인물·소품 설정화를 합계 15장 이하로 정리하세요.');
     say('3/3 · 최종 이미지를 생성하는 중… 최대 10분 정도 걸릴 수 있습니다.');
-    const job=await runJob({operation:'image',...selection,prompt:shot.prompt,shot:shot.json,images});
+    // The planner may keep appearance out of a neutral mannequin proposal. Carry
+    // the user's current character/direction notes directly into the art request.
+    const notes=$('ai-notes').value.trim();
+    const prompt=shot.prompt+(notes?'\n\n사용자가 입력한 인물 설정·연출 요청 (현재 값):\n'+notes+'\n외형·복식·화풍은 이 설정을 반영하고, 위치·포즈·카메라 구도는 첨부한 현재 장면을 유지하세요.':'');
+    const job=await runJob({operation:'image',...selection,prompt,shot:shot.json,images});
     showImage(job);say('이미지가 완성됐습니다. 구도를 더 수정한 뒤 다시 생성할 수 있습니다.');
   }
   async function perform(action){

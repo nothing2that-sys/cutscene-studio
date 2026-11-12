@@ -1,0 +1,168 @@
+{
+  "success": true,
+  "durationSeconds": 84,
+  "format": "1920x1080 / 30 fps / H.264 / yuv420p / AAC silent track",
+  "bytes": 4244813,
+  "decodeCheck": "passed",
+  "edits": [
+    {
+      "id": "intro",
+      "title": "소설 입력부터 작화까지, 앱 안에서 한 사이클",
+      "subtitle": "API 키 신규 발급 없이 · 로그인된 Codex CLI로 실제 실행",
+      "seconds": 5,
+      "start": 2.588,
+      "end": 6.377,
+      "outputStart": 0,
+      "outputEnd": 5,
+      "actualSeconds": 3.7889999999999997,
+      "speed": 0.7577999999999999
+    },
+    {
+      "id": "request",
+      "title": "01  소설과 인물 설정을 입력합니다",
+      "subtitle": "원문 + 인물 외형 + 화풍을 한 번에 요청",
+      "seconds": 9,
+      "start": 6.655,
+      "end": 20.683,
+      "outputStart": 5,
+      "outputEnd": 14,
+      "actualSeconds": 14.027999999999999,
+      "speed": 1.5586666666666664
+    },
+    {
+      "id": "auto",
+      "title": "02  “한 번에 이미지까지”를 누릅니다",
+      "subtitle": "장면 JSON을 직접 옮기거나 이미지를 다시 첨부하지 않습니다",
+      "seconds": 3,
+      "start": 21.121,
+      "end": 23.679,
+      "outputStart": 14,
+      "outputEnd": 17,
+      "actualSeconds": 2.558,
+      "speed": 0.8526666666666666
+    },
+    {
+      "id": "planning",
+      "title": "03  소설에서 3D 장면을 자동 구성",
+      "subtitle": "실제 모델 응답 대기 · 이 구간은 영상에서 배속",
+      "seconds": 5,
+      "start": 23.94,
+      "end": 55.877,
+      "outputStart": 17,
+      "outputEnd": 22,
+      "actualSeconds": 31.937,
+      "speed": 6.3874
+    },
+    {
+      "id": "first-wait",
+      "title": "04  현재 장면의 참조를 보내 최종 이미지 생성",
+      "subtitle": "컬러 · 라벨 · 깊이 · 조명 · 포즈를 자동 첨부 · 대기 구간 배속",
+      "seconds": 6,
+      "start": 56.211,
+      "end": 107.636,
+      "outputStart": 22,
+      "outputEnd": 28,
+      "actualSeconds": 51.425,
+      "speed": 8.570833333333333
+    },
+    {
+      "id": "first-result",
+      "title": "05  첫 번째 이미지가 앱으로 돌아왔습니다",
+      "subtitle": "새 API 키 없이 실제 PNG 생성 · 저장도 바로 가능",
+      "seconds": 9,
+      "start": 107.935,
+      "end": 114.867,
+      "outputStart": 28,
+      "outputEnd": 37,
+      "actualSeconds": 6.932000000000002,
+      "speed": 0.7702222222222225
+    },
+    {
+      "id": "edit-style",
+      "title": "06  결과를 보고 화풍과 구도를 수정합니다",
+      "subtitle": "같은 인물·소품을 유지하면서 편집기의 현재 값을 변경",
+      "seconds": 9,
+      "start": 115.303,
+      "end": 118.176,
+      "outputStart": 37,
+      "outputEnd": 46,
+      "actualSeconds": 2.8730000000000047,
+      "speed": 0.31922222222222274
+    },
+    {
+      "id": "edit-camera",
+      "title": "07  화면을 돌려 새 구도를 잡습니다",
+      "subtitle": "실제 마우스 드래그 + 화각 수정 · 장면을 새로 만들지 않습니다",
+      "seconds": 8,
+      "start": 118.351,
+      "end": 126.944,
+      "outputStart": 46,
+      "outputEnd": 54,
+      "actualSeconds": 8.593000000000004,
+      "speed": 1.0741250000000004
+    },
+    {
+      "id": "continue",
+      "title": "08  수정한 현재 구도로 이어서 생성",
+      "subtitle": "소설 재분석 없이 · 수정한 장면에서 참조를 다시 촬영",
+      "seconds": 5,
+      "start": 127.163,
+      "end": 131.545,
+      "outputStart": 54,
+      "outputEnd": 59,
+      "actualSeconds": 4.381999999999991,
+      "speed": 0.8763999999999982
+    },
+    {
+      "id": "second-wait",
+      "title": "09  수정한 참조로 두 번째 이미지 생성",
+      "subtitle": "실제 CLI 이미지 생성 · 대기 구간은 배속",
+      "seconds": 6,
+      "start": 131.759,
+      "end": 181.222,
+      "outputStart": 59,
+      "outputEnd": 65,
+      "actualSeconds": 49.46300000000002,
+      "speed": 8.243833333333336
+    },
+    {
+      "id": "second-result",
+      "title": "10  수정된 구도의 이미지까지 완성",
+      "subtitle": "소설 요청 → 자동 생성 → 장면 수정 → 재생성, 한 사이클 완료",
+      "seconds": 9,
+      "start": 181.437,
+      "end": 188.346,
+      "outputStart": 65,
+      "outputEnd": 74,
+      "actualSeconds": 6.908999999999992,
+      "speed": 0.7676666666666657
+    },
+    {
+      "id": "compare",
+      "title": "한 장면, 구도 수정 전과 후",
+      "subtitle": "같은 장면의 실제 생성 결과 두 장 · 구도 보존 정도는 생성 모델에 따라 달라집니다",
+      "seconds": 10,
+      "start": 188.777,
+      "end": 197.037,
+      "outputStart": 74,
+      "outputEnd": 84,
+      "actualSeconds": 8.26000000000002,
+      "speed": 0.826000000000002
+    }
+  ],
+  "sourceModelCalls": [
+    {
+      "operation": "plan",
+      "provider": "codex-cli"
+    },
+    {
+      "operation": "image",
+      "provider": "codex-cli"
+    },
+    {
+      "operation": "image",
+      "provider": "codex-cli"
+    }
+  ],
+  "mediaInfo": "Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'D:\\github\\cutscene-studio\\docs\\demo\\ai-cycle\\cutscene-ai-cycle.mp4':\r\n  Metadata:\r\n    major_brand     : isom\r\n    minor_version   : 512\r\n    compatible_brands: isomiso2avc1mp41\r\n    encoder         : Lavf60.16.100\r\n  Duration: 00:01:24.00, start: 0.000000, bitrate: 404 kb/s\r\n  Stream #0:0[0x1](eng): Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080 [SAR 1:1 DAR 16:9], 393 kb/s, 30 fps, 30 tbr, 15360 tbn (default)\r\n    Metadata:\r\n      handler_name    : VideoHandler\r\n      vendor_id       : [0][0][0][0]\r\n      encoder         : Lavc60.31.102 libx264\r\n  Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 2 kb/s (default)\r\n    Metadata:\r\n      handler_name    : SoundHandler\r\n      vendor_id       : [0][0][0][0]\r\nAt least one output file must be specified\r\n"
+}

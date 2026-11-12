@@ -43,7 +43,7 @@ try{
   const generated=await page.evaluate(async url=>{const response=await fetch(url);return {status:response.status,bytes:[...new Uint8Array(await response.arrayBuffer())]};},imageUrl);assert.equal(generated.status,200);await writeFile(path.join(out,live?'live-result.png':'fixture-result.png'),Buffer.from(generated.bytes));
   await page.locator('#studio-ai').screenshot({path:path.join(out,live?'live-ui.png':'fixture-ui.png')});
   if(!live){
-    assert.equal(requests.length,2);assert.equal(requests[1].images.length,5);assert.match(requests[1].prompt,/2D 웹툰, 검은 선화/);assert.ok(requests[1].shot.camera.position.every((x,i)=>Math.abs(x-editedCamera[i])<.011),'capture uses the edited working camera');
+    assert.equal(requests.length,2);assert.equal(requests[1].images.length,5);assert.match(requests[1].prompt,/2D 웹툰, 검은 선화/);assert.match(requests[1].prompt,/검은 단발머리에 크림색 셔츠/,'character notes reach the final image request even when absent from the scene proposal');assert.ok(requests[1].shot.camera.position.every((x,i)=>Math.abs(x-editedCamera[i])<.011),'capture uses the edited working camera');
     await page.locator('#ai-auto').click();await waitStatus(/이미지가 완성/);assert.equal(requests.length,4);assert.deepEqual(requests.map(x=>x.operation),['plan','image','plan','image']);
     await page.reload();await waitStatus(/최근 생성 이미지/);assert.equal(await page.locator('#ai-result-image').isVisible(),true);
     await page.locator('#studio-ai > details > summary').click();await page.locator('#ai-image-provider').selectOption('openai');await page.locator('#ai-auto').click();await waitStatus(/OPENAI_API_KEY/);assert.equal(requests.length,4,'unavailable image connection must stop before a planning call');

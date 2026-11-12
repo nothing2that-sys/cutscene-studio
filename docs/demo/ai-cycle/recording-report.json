@@ -1,0 +1,203 @@
+{
+  "success": true,
+  "recordedAt": "2026-11-12T02:10:11.691Z",
+  "source": ".review-tools/ai-cycle-capture-final/source.webm",
+  "sourceElapsedSeconds": 199.163,
+  "clips": [
+    {
+      "id": "intro",
+      "title": "소설 입력부터 작화까지, 앱 안에서 한 사이클",
+      "subtitle": "API 키 신규 발급 없이 · 로그인된 Codex CLI로 실제 실행",
+      "seconds": 5,
+      "start": 2.588,
+      "end": 6.377
+    },
+    {
+      "id": "request",
+      "title": "01  소설과 인물 설정을 입력합니다",
+      "subtitle": "원문 + 인물 외형 + 화풍을 한 번에 요청",
+      "seconds": 9,
+      "start": 6.655,
+      "end": 20.683
+    },
+    {
+      "id": "auto",
+      "title": "02  “한 번에 이미지까지”를 누릅니다",
+      "subtitle": "장면 JSON을 직접 옮기거나 이미지를 다시 첨부하지 않습니다",
+      "seconds": 3,
+      "start": 21.121,
+      "end": 23.679
+    },
+    {
+      "id": "planning",
+      "title": "03  소설에서 3D 장면을 자동 구성",
+      "subtitle": "실제 모델 응답 대기 · 이 구간은 영상에서 배속",
+      "seconds": 5,
+      "start": 23.94,
+      "end": 55.877
+    },
+    {
+      "id": "first-wait",
+      "title": "04  현재 장면의 참조를 보내 최종 이미지 생성",
+      "subtitle": "컬러 · 라벨 · 깊이 · 조명 · 포즈를 자동 첨부 · 대기 구간 배속",
+      "seconds": 6,
+      "start": 56.211,
+      "end": 107.636
+    },
+    {
+      "id": "first-result",
+      "title": "05  첫 번째 이미지가 앱으로 돌아왔습니다",
+      "subtitle": "새 API 키 없이 실제 PNG 생성 · 저장도 바로 가능",
+      "seconds": 9,
+      "start": 107.935,
+      "end": 114.867
+    },
+    {
+      "id": "edit-style",
+      "title": "06  결과를 보고 화풍과 구도를 수정합니다",
+      "subtitle": "같은 인물·소품을 유지하면서 편집기의 현재 값을 변경",
+      "seconds": 9,
+      "start": 115.303,
+      "end": 118.176
+    },
+    {
+      "id": "edit-camera",
+      "title": "07  화면을 돌려 새 구도를 잡습니다",
+      "subtitle": "실제 마우스 드래그 + 화각 수정 · 장면을 새로 만들지 않습니다",
+      "seconds": 8,
+      "start": 118.351,
+      "end": 126.944
+    },
+    {
+      "id": "continue",
+      "title": "08  수정한 현재 구도로 이어서 생성",
+      "subtitle": "소설 재분석 없이 · 수정한 장면에서 참조를 다시 촬영",
+      "seconds": 5,
+      "start": 127.163,
+      "end": 131.545
+    },
+    {
+      "id": "second-wait",
+      "title": "09  수정한 참조로 두 번째 이미지 생성",
+      "subtitle": "실제 CLI 이미지 생성 · 대기 구간은 배속",
+      "seconds": 6,
+      "start": 131.759,
+      "end": 181.222
+    },
+    {
+      "id": "second-result",
+      "title": "10  수정된 구도의 이미지까지 완성",
+      "subtitle": "소설 요청 → 자동 생성 → 장면 수정 → 재생성, 한 사이클 완료",
+      "seconds": 9,
+      "start": 181.437,
+      "end": 188.346
+    },
+    {
+      "id": "compare",
+      "title": "한 장면, 구도 수정 전과 후",
+      "subtitle": "같은 장면의 실제 생성 결과 두 장 · 구도 보존 정도는 생성 모델에 따라 달라집니다",
+      "seconds": 10,
+      "start": 188.777,
+      "end": 197.037
+    }
+  ],
+  "pageErrors": [],
+  "calls": [
+    {
+      "operation": "plan",
+      "provider": "codex-cli",
+      "at": 21.216
+    },
+    {
+      "operation": "image",
+      "provider": "codex-cli",
+      "at": 53.927,
+      "images": 5,
+      "camera": {
+        "position": [
+          3.4,
+          2.6,
+          4.6
+        ],
+        "heightM": 2.6,
+        "rollDeg": 0,
+        "pitchDeg": -16.6,
+        "verticalFovDeg": 36,
+        "focal35mm": 37,
+        "aspect": 1.78,
+        "lookAt": [
+          -0.05,
+          0.9,
+          0.05
+        ]
+      },
+      "characterNotesForwarded": true
+    },
+    {
+      "operation": "image",
+      "provider": "codex-cli",
+      "at": 129.276,
+      "images": 5,
+      "camera": {
+        "position": [
+          -0.63,
+          3.55,
+          5.35
+        ],
+        "heightM": 3.55,
+        "rollDeg": 0,
+        "pitchDeg": -26.4,
+        "verticalFovDeg": 31,
+        "focal35mm": 43,
+        "aspect": 1.78,
+        "lookAt": [
+          -0.05,
+          0.9,
+          0.05
+        ]
+      },
+      "characterNotesForwarded": true
+    }
+  ],
+  "jobs": [
+    {
+      "id": "e11eb2cf-c9d4-464f-aa56-c3ddf9d98e30",
+      "operation": "plan",
+      "status": "completed",
+      "createdAt": "2026-11-12T02:07:14.316Z"
+    },
+    {
+      "id": "690fdf12-2192-4902-a06c-9ca026168c61",
+      "operation": "image",
+      "status": "completed",
+      "createdAt": "2026-11-12T02:07:46.546Z"
+    },
+    {
+      "id": "d7f74c22-c68c-4fde-b205-f137cfbb83de",
+      "operation": "image",
+      "status": "completed",
+      "createdAt": "2026-11-12T02:09:01.902Z"
+    }
+  ],
+  "beforeCamera": {
+    "position": [
+      3.399999999999999,
+      2.6000000000000005,
+      4.599999999999999
+    ],
+    "fov": 36
+  },
+  "afterCamera": {
+    "position": [
+      -0.6263860052897784,
+      3.5524686256012203,
+      5.3535072700154895
+    ],
+    "fov": 31
+  },
+  "results": [
+    "result-1.png",
+    "result-2.png"
+  ],
+  "note": "All model calls were live. No fixture replay. Captions and result enlargements are recording annotations."
+}

@@ -2,6 +2,8 @@
 
 소설에서 LLM이 제안한 공간·인물·카메라·조명을 불러와 직접 수정하고, 이미지 생성용 참조를 촬영하는 로컬 도구입니다. Python 대신 JavaScript와 Three.js를 사용합니다. [pose-toolkit](https://github.com/fanverseio/pose-toolkit)을 기반으로 확장했습니다.
 
+[84초 실제 실행 영상: 소설 요청 → 자동 생성 → 구도 수정 → 재생성](docs/demo/ai-cycle/README.md). 로그인된 Codex CLI로 실행했으며 OpenAI/Gemini API도 선택할 수 있습니다.
+
 ## 예제와 사용 영상
 
 [예제·결과 갤러리](docs/EXAMPLE_GALLERY.md) · [42초 기능 소개 · X용 MP4](docs/demo/social/cutscene-studio-x.mp4) · [빠른 영상 시나리오](docs/DEMO_SCENARIO_SOCIAL.md) · [개발 과정](docs/DEVELOPMENT.md)
