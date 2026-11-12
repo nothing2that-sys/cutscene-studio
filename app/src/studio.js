@@ -17,6 +17,7 @@ import {fitViewToAspect} from './camera-view.js';
 import {aimHead,lookTarget} from './look-at.js';
 import {ensureBodyTypes,bodyTypeReady} from './body-v1-adapter.js';
 import {BODY_TYPES,bodyTypeOf} from './doll-profiles.js';
+import {initAiWorkflow} from './ai-workflow.js';
 
 export function initCutsceneStudio(api) {
   const { THREE, stage } = api;
@@ -601,6 +602,8 @@ export function initCutsceneStudio(api) {
     updateShotCamera();withShot(()=>cleanRender(()=>preview.render(stage.scene,shotCamera)));
     if(passView!=='color'){clearTimeout(passTimer);passTimer=setTimeout(()=>{try{showPassView();}catch(e){console.error(e);}},500);}
   }
+  initAiWorkflow({host:panel.querySelector('.studio-scroll'),importScene:text=>importText(text,'AI 장면 구성',true),buildShot,
+    useWorkingCamera(){if(shots[activeShot]){shots[activeShot].camera=readCamera();shotProjection=null;syncUI();api.commit();}}});
   return {
     setBeforeCapture(fn){beforeCapture=fn;},setBeforeReadCamera(fn){beforeReadCamera=fn;},setCaptureObserver(fn){captureObserver=fn;},
     rememberShotProjection(){shotProjection={key:JSON.stringify(currentShot().camera),zoom:shotCamera.zoom,view:shotCamera.view?{...shotCamera.view}:null};},

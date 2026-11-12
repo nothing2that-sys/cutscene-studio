@@ -1,5 +1,7 @@
 # 재사용 코드와 출처
 
+2026-11-12 모델 연결: [nothing2that-sys/reviewgate](https://github.com/nothing2that-sys/reviewgate)의 CLI 실행·결과 수집과 제공자 어댑터/HTTP 전송 분리 구조를 JavaScript로 옮겨 컷신 작업에 맞게 수정했습니다. 원본 C# 앱을 번들하지 않습니다. [대상 소스·SHA·변경 범위](docs/AI_WORKFLOW.md#reviewgate에서-가져온-부분).
+
 2026-11-03 현행 인체는 부위별 곡선·단면으로 생성한 작화용 볼륨과 기존 MakeHuman CC0 손·발 영역을 조합합니다. 손·발 절단면을 닫고 기존 관절에 연결했으며 라이선스·원본 SHA-256은 `app/src/assets/reference-human.source.json`과 기존 CC0 전문을 유지합니다. [현행 구현·검증·한계](docs/SEGMENTED_BODY.md). 아래 연속 인체 관련 항목은 이전 버전 이력입니다.
 
 2026-11-02 현행 인체: MakeHuman CC0 인체·기본 가중치·성인 체형/비례·가슴 변형 데이터를 가공합니다. 얼굴은 목 경계에 연결된 단순 머리로 재구성했습니다. 고정 원본·SHA-256·변형 계수는 `app/src/assets/gallery-human.source.json`, [사용·제한·재현](docs/GALLERY_PROPORTIONS.md)에 기록했습니다. AI Pose Gallery의 이미지는 시각 참고로만 확인했으며 앱이나 보고서에 재배포하지 않습니다. 아래 부위 도형 생성·손발만 재사용한 항목은 이전 버전의 이력입니다.

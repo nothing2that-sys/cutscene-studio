@@ -3,6 +3,15 @@
 .studio-heading p,.studio-help {font-size:11px;line-height:1.65;color:#a4aebb;}
 .eyebrow {font-size:9px;letter-spacing:1.8px;color:#a5b4fc;font-weight:600;}
 .studio-scroll {overflow-y:auto;min-height:0;padding-right:3px;display:flex;flex-direction:column;gap:12px;}
+#studio-ai {border:1px solid #a5b4fc44 !important;border-radius:8px;padding:10px;}
+#studio-ai summary {color:#c7d2fe;}
+#studio-ai #ai-notes {min-height:54px;}
+#studio-ai #ai-connections {white-space:pre-line;}
+#studio-ai #ai-result-image {width:100%;height:auto;border-radius:6px;margin-bottom:8px;}
+#studio-ai .error {color:#fca5a5;}
+#studio-ai button:disabled {opacity:.5;cursor:wait;}
+#studio-ai a.btn {display:inline-block;color:#e4e8ef;text-decoration:none;background:#ffffff12;}
+#studio-ai [hidden] {display:none !important;}
 #studio-panel details,.studio-section {padding-top:10px;border-top:1px solid #ffffff16;}
 #studio-panel summary {cursor:pointer;font-size:12px;font-weight:600;margin-bottom:9px;}
 .studio-row {display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:7px;}

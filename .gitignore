@@ -11,3 +11,4 @@ app/public/local-pose-references/
 # Personal assistant sessions and attachments
 .claude/
 .codex-attachments/
+.cutscene-ai/
